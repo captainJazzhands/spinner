@@ -1,0 +1,599 @@
+{
+	"apiData": [
+		{
+			"theJobs": [
+				{
+					"id": 0,
+					"where": "That Place Again",
+					"title": "Typesetter, Graphic Artist",
+					"hero": "video/HB-Logo-Face-v3b.mp4",
+					"dateStart": "1989-01-04",
+					"dateEnd": "1990-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 1,
+					"where": "That One Place",
+					"title": "Web App Developer",
+					"hero": "images/Busted Glass 3340.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum",
+					"tags": [
+						"SQL",
+						"DDL",
+						"PHP",
+						"Javascript",
+						"CSS",
+						"Jquery",
+						"Bootstrap"
+					]
+				},
+				{
+					"id": 2,
+					"where": "That Other Place",
+					"title": "Web App Developer",
+					"hero": "images/Hummingbird-3743.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 3,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 4,
+					"where": "That Same Place",
+					"title": "Database Manager",
+					"hero": "images/Smirk-4028-square-1600.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 5,
+					"where": "Yup Still There",
+					"title": "Web App Developer",
+					"hero": "video/ANIM Student EXTRACTED v1c.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 6,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 7,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "video/Dolly DUIK v2.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 8,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Duke-Med-at-Souhpoint-v2e.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 9,
+					"where": "That Place Again",
+					"title": "Web App Developer",
+					"hero": "video/HB-Logo-Face-v3b.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 10,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "html/hero.html",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 11,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Roofster Crow 4403.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 12,
+					"where": "That Other Place",
+					"title": "Database Manager",
+					"hero": "video/sparky.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				}
+			]
+		},
+		{
+			"remediations": [
+				{
+					"id": 1,
+					"where": "That One Place",
+					"title": "Web App Developer",
+					"hero": "images/Busted Glass 3340.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 2,
+					"where": "That Other Place",
+					"title": "Web App Developer",
+					"hero": "images/Hummingbird-3743.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 3,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 4,
+					"where": "That Same Place",
+					"title": "Database Manager",
+					"hero": "images/Smirk-4028-square-1600.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 5,
+					"where": "Yup Still There",
+					"title": "Web App Developer",
+					"hero": "video/ANIM Student EXTRACTED v1c.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 6,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 7,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "video/Dolly DUIK v2.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 8,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Duke-Med-at-Southpoint-v2e.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 9,
+					"where": "That Place Again",
+					"title": "Web App Developer",
+					"hero": "video/HB-Logo-Face-v3b.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 10,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "html/hero.html",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 11,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Roofster Crow 4403.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 12,
+					"where": "That Other Place",
+					"title": "Database Manager",
+					"hero": "video/sparky.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				}
+			]
+		},
+		{
+			"lipsum": "Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipiscing velit, sed quia non numquam do eius modi tempora incididunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum[d] exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."
+		},
+		{
+			"tags": [
+				"MacOS",
+				"MS-DOS",
+				"Unix",
+				"Publishing",
+				"Pasteup",
+				"Layout",
+				"Logo",
+				"Color Separation",
+				"Pagemaker",
+				"Illustrator",
+				"PostScript",
+				"SCSI",
+				"Color Laser",
+				"Live music",
+				"Alarm",
+				"Automotive",
+				"Installation",
+				"Phone",
+				"RJ45",
+				"Audio",
+				"DC",
+				"Wiring",
+				"FreeHand",
+				"PhoneNet",
+				"Carbonless",
+				"Thermographic",
+				"TOPS",
+				"Offset",
+				"Print Brokering",
+				"Ad Spec",
+				"Silk Screen",
+				"Pad Print",
+				"Engraving",
+				"Dye Sublimation",
+				"Glassware",
+				"Darkroom",
+				"Flexographic",
+				"Chemistry",
+				"Web Press",
+				"Platemaking",
+				"Print 3",
+				"Trapping",
+				"Logistics",
+				"Real Estate",
+				"Typesetting",
+				"Letterpress",
+				"Maps",
+				"Web",
+				"ethernet",
+				"HTML",
+				"CSS",
+				"Javascript",
+				"Netscape Navigat",
+				"Internet Explore",
+				"Opera",
+				"iCab",
+				"FTP",
+				"Product",
+				"Wedding",
+				"Portrait",
+				"Lighting",
+				"Theater",
+				"SQL",
+				"Access",
+				"VBA",
+				"SQL-Server",
+				"Authorware",
+				"TWAIN",
+				"Badge Printing",
+				"Classroom AV",
+				"PII Secur5y",
+				"Testing Secur5y",
+				"OSHA",
+				"A/V",
+				"Installation",
+				"Soldering",
+				"XLR",
+				"BNC",
+				"Serial",
+				"RS-232",
+				"RCA",
+				"Rackmount",
+				"Audio",
+				"Wiring",
+				"SQL",
+				"DDL",
+				"PHP",
+				"Javascript",
+				"CSS",
+				"Jquery",
+				"Bootstrap",
+				"Wordpress",
+				"Apache",
+				"MySQL",
+				"SQL 7",
+				"Consulting",
+				"Premiere",
+				"Aftereffects",
+				"photography",
+				"Lighting",
+				"Video",
+				"Chroma Key",
+				"Audio",
+				"Voiceover"
+			]
+		},
+		{
+			"theJobs_PII": [
+				{
+					"id": 0,
+					"where": "That Place Again",
+					"title": "Typesetter, Graphic Artist",
+					"hero": "video/HB-Logo-Face-v3b.mp4",
+					"dateStart": "1989-01-04",
+					"dateEnd": "1990-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 1,
+					"where": "That One Place",
+					"title": "Web App Developer",
+					"hero": "images/Busted Glass 3340.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum",
+					"tags": [
+						"SQL",
+						"DDL",
+						"PHP",
+						"Javascript",
+						"CSS",
+						"Jquery",
+						"Bootstrap"
+					]
+				},
+				{
+					"id": 2,
+					"where": "That Other Place",
+					"title": "Web App Developer",
+					"hero": "images/Hummingbird-3743.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 3,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 4,
+					"where": "That Same Place",
+					"title": "Database Manager",
+					"hero": "images/Smirk-4028-square-1600.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 5,
+					"where": "Yup Still There",
+					"title": "Web App Developer",
+					"hero": "video/ANIM Student EXTRACTED v1c.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 6,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 7,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "video/Dolly DUIK v2.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 8,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Duke-Med-at-Souhpoint-v2e.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 9,
+					"where": "That Place Again",
+					"title": "Web App Developer",
+					"hero": "video/HB-Logo-Face-v3b.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 10,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "html/hero.html",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 11,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Roofster Crow 4403.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 12,
+					"where": "That Other Place",
+					"title": "Database Manager",
+					"hero": "video/sparky.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				}
+			]
+		},
+		{
+			"remediations_PII": [
+				{
+					"id": 1,
+					"where": "That One Place",
+					"title": "Web App Developer",
+					"hero": "images/Busted Glass 3340.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 2,
+					"where": "That Other Place",
+					"title": "Web App Developer",
+					"hero": "images/Hummingbird-3743.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 3,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 4,
+					"where": "That Same Place",
+					"title": "Database Manager",
+					"hero": "images/Smirk-4028-square-1600.jpg",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 5,
+					"where": "Yup Still There",
+					"title": "Web App Developer",
+					"hero": "video/ANIM Student EXTRACTED v1c.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 6,
+					"where": "The Safety School",
+					"title": "Registrar",
+					"hero": "video/STUDENT FLOW v1e.mp4",
+					"dateStart": "2002-01-04",
+					"dateEnd": "2010-07-01",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 7,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "video/Dolly DUIK v2.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 8,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Duke-Med-at-Southpoint-v2e.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 9,
+					"where": "That Place Again",
+					"title": "Web App Developer",
+					"hero": "video/HB-Logo-Face-v3b.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 10,
+					"where": "That Place",
+					"title": "Web App Developer",
+					"hero": "html/hero.html",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 11,
+					"where": "My Big Mistake",
+					"title": "Multimedia Specialist",
+					"hero": "video/Roofster Crow 4403.mp4",
+					"dateStart": "2016-11-01",
+					"dateEnd": "2019-06-15",
+					"bodyCopy": "lipsum"
+				},
+				{
+					"id": 12,
+					"where": "That Other Place",
+					"title": "Database Manager",
+					"hero": "video/sparky.mp4",
+					"dateStart": "2013-01-04",
+					"dateEnd": "2016-06-15",
+					"bodyCopy": "lipsum"
+				}
+			]
+		}
+	]
+}

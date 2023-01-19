@@ -1,0 +1,16 @@
+.scoreboard,
+.interfaceWrapper {
+  display: flex;
+  text-align: center;
+}
+.scoreboard div,
+.interfaceWrapper div {
+  flex-grow: 1;
+  display: inline-block;
+}
+.scoreboard .status,
+.interfaceWrapper .status {
+  text-align: center;
+}
+
+/*# sourceMappingURL=ScoreBoard.css.map */

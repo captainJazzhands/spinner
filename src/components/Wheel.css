@@ -1,0 +1,1858 @@
+@charset "UTF-8";
+/*# sizes */
+/* end sizes */
+/*# Size Matrices */
+/* end Size Matrices */
+/*# colors */
+/*# end colors */
+/*# borders */
+/* end borders */
+#root {
+  background-color: black;
+}
+
+.container {
+  max-width: unset;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+#theScene {
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: rgb(26, 26, 26);
+}
+
+#ScoreBoard {
+  order: 1;
+  z-index: 99;
+}
+#ScoreBoard .turn {
+  order: 1;
+}
+#ScoreBoard .status {
+  order: 2;
+}
+#ScoreBoard .score {
+  order: 3;
+}
+
+#theFloor {
+  order: 2;
+  z-index: 20;
+  margin: 0;
+  padding: 0;
+  font-size: 2.5vh;
+  line-height: 3.125vh;
+  display: block;
+  position: absolute;
+  width: 100vw !important;
+  height: 100vh !important;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  transition: all ease-in 1068ms;
+  overflow: hidden;
+}
+
+#Frame {
+  pointer-events: none;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 91;
+}
+
+#blackboard {
+  background-image: url(gfx/Blackboard.svg);
+  top: 55vh;
+  bottom: 0;
+}
+@media (min-width: 1000px) {
+  #blackboard {
+    top: calc(2vh - 2px);
+    left: 50vw;
+    right: 0;
+  }
+}
+
+#television {
+  background-image: url(gfx/One_Hole.svg);
+  background-color: hsl(0deg, 0%, 5%);
+  z-index: 99 !important;
+}
+
+.tile {
+  z-index: 50 !important;
+  position: absolute;
+}
+
+#blackboard,
+#television {
+  position: absolute;
+  width: 100vw;
+  height: 45vh;
+  background-position: center;
+  transform: rotateY(-0.5deg) rotateX(-0.5deg) rotateZ(-0.5deg);
+  transition: all ease-in 1428ms;
+}
+@media (min-width: 1000px) {
+  #blackboard,
+  #television {
+    width: 50vw;
+    height: 75vh;
+  }
+}
+
+#television {
+  background-size: 100vw 45vh;
+}
+@media (min-width: 1000px) {
+  #television {
+    background-size: 52.5vw 75vh;
+  }
+}
+
+#blackboard {
+  background-size: 100vw 45vh;
+}
+@media (min-width: 1000px) {
+  #blackboard {
+    background-size: 45vw 75vh;
+  }
+}
+
+.onBlackboard {
+  top: 58vh;
+  bottom: 4vh;
+  left: 5vw;
+  right: 5vw;
+  width: auto;
+  height: auto;
+  transform: rotateY(0.5deg) rotateX(0.5deg) rotateZ(0.5deg);
+  transition: all ease-in 1530ms !important;
+}
+@media (min-width: 1000px) {
+  .onBlackboard {
+    top: calc(2vh - 2px);
+    left: 52.5vw;
+    right: 2.5vw;
+    width: 45vw;
+    transform: rotateY(1.5deg) rotateX(1.5deg) rotateZ(1.5deg);
+  }
+}
+.onBlackboard div {
+  color: hsl(0deg, 0%, 85%);
+}
+
+.onTelevision {
+  top: 5vh;
+  bottom: 60vh;
+  left: 15vw;
+  right: 15vw;
+  width: auto;
+  height: auto;
+  border-radius: 4vw;
+  transition: all ease-out 1638ms !important;
+}
+@media (min-width: 1000px) {
+  .onTelevision {
+    top: 7vh;
+    bottom: 33vh;
+    left: 7.5vw;
+    right: 57.5vw;
+  }
+}
+
+.intro #blackboard {
+  top: 100vh !important;
+  bottom: 0 !important;
+  background-size: 100vw 0 !important;
+}
+
+#television .broderick code {
+  text-align: center;
+  position: absolute;
+  left: 15vw;
+  right: 85vw;
+  top: 25vh;
+  bottom: 50vh;
+  height: 25vh;
+  width: 70vw;
+  font-size: 5vw;
+  letter-spacing: 1pt;
+  color: hsl(120deg, 90%, 50%);
+}
+
+.intro #television {
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-size: 100vw 100vh !important;
+  background-position: center center;
+}
+
+.intro #blackboard {
+  top: -1vh;
+  bottom: 101vh;
+  left: 101vw;
+  right: -1vw;
+  transition: all ease-in 2448ms;
+}
+
+.intro .broderick {
+  bottom: 0;
+  background-size: 100vw 100vh !important;
+  background-position: center center;
+}
+.intro .broderick code {
+  left: -50vw;
+  right: 150vw;
+  letter-spacing: 5vw;
+  color: hsla(120deg, 90%, 50%, 0);
+}
+.intro .broderick :hover {
+  background-size: 80vw 80vh !important;
+  transition: all ease-in 1914ms;
+}
+
+#HumaneInterfaceMask {
+  display: none;
+}
+
+#ScoreBoard,
+#enter,
+#navigate {
+  position: fixed;
+  width: 100vw;
+  top: calc(50vh - 7.5vw);
+  height: 15vw;
+  max-height: 12vh;
+  transition: all ease-in 2400ms;
+}
+#ScoreBoard button,
+#enter button,
+#navigate button {
+  max-height: 3em;
+  background-color: rgb(26, 26, 26);
+}
+@media (min-width: 1000px) {
+  #ScoreBoard,
+  #enter,
+  #navigate {
+    width: 100vw;
+    top: calc(100vh - 15vw);
+  }
+}
+#ScoreBoard :is .offscreen,
+#enter :is .offscreen,
+#navigate :is .offscreen {
+  left: 100vw;
+}
+
+.intro #ScoreBoard,
+.intro #enter,
+.intro #navigate {
+  left: 100vw;
+}
+
+#enter,
+#navigate {
+  transform: translate3d(0, 0, 200px);
+  z-index: 100 !important;
+  width: 50%;
+  color: hsl(0deg, 0%, 85%);
+  background-color: unset;
+  padding: 4vw;
+}
+#enter {
+  left: unset;
+  right: 0;
+}
+
+#navigate {
+  left: 0;
+  right: unset;
+}
+
+#start {
+  z-index: 900 !important;
+  position: absolute;
+  height: 7.5vh;
+  width: 25vw;
+  left: 100vw;
+  right: 100vw;
+  top: 70vh;
+  bottom: 25vh;
+  letter-spacing: 0.25vh;
+  font-size: 5vw;
+}
+#start :hover {
+  letter-spacing: 2.5vh;
+  box-shadow: inset 5px 5px 20px rgba(38, 36, 40, 0), -4px -4px 25px rgba(38, 36, 40, 0);
+  transition: all ease-in 2160ms;
+}
+
+.intro #start {
+  left: 40vw;
+  right: 40vw;
+}
+
+.broderick code {
+  opacity: 0;
+}
+
+.intro .broderick code {
+  opacity: 1;
+}
+
+.intro {
+  transition: all ease-in 2616ms !important;
+}
+
+/* Colors */
+/* end Colors */
+/* Sizes */
+/* end Sizes */
+.topStrip.interfaceItem,
+.bottomStrip.interfaceWrapper {
+  border-radius: 0;
+}
+
+.wheelWrapper #facet1 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet1 {
+  transform-style: preserve-3d;
+  transform: scale(0.985);
+  transform-origin: center;
+  opacity: 0.1;
+}
+
+.wheelWrapper #facet2 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet2 {
+  transform-style: preserve-3d;
+  transform: scale(0.97);
+  transform-origin: center;
+  opacity: 0.2;
+}
+
+.wheelWrapper #facet3 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet3 {
+  transform-style: preserve-3d;
+  transform: scale(0.955);
+  transform-origin: center;
+  opacity: 0.3;
+}
+
+.wheelWrapper #facet4 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet4 {
+  transform-style: preserve-3d;
+  transform: scale(0.94);
+  transform-origin: center;
+  opacity: 0.4;
+}
+
+.wheelWrapper #facet5 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet5 {
+  transform-style: preserve-3d;
+  transform: scale(0.925);
+  transform-origin: center;
+  opacity: 0.5;
+}
+
+.wheelWrapper #facet6 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet6 {
+  transform-style: preserve-3d;
+  transform: scale(0.91);
+  transform-origin: center;
+  opacity: 0.6;
+}
+
+.wheelWrapper #facet7 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet7 {
+  transform-style: preserve-3d;
+  transform: scale(0.895);
+  transform-origin: center;
+  opacity: 0.7;
+}
+
+.wheelWrapper #facet8 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet8 {
+  transform-style: preserve-3d;
+  transform: scale(0.88);
+  transform-origin: center;
+  opacity: 0.8;
+}
+
+.wheelWrapper #facet9 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet9 {
+  transform-style: preserve-3d;
+  transform: scale(0.865);
+  transform-origin: center;
+  opacity: 0.9;
+}
+
+.wheelWrapper #facet10 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet10 {
+  transform-style: preserve-3d;
+  transform: scale(0.85);
+  transform-origin: center;
+  opacity: 1;
+}
+
+.wheelWrapper #facet11 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet11 {
+  transform-style: preserve-3d;
+  transform: scale(0.835);
+  transform-origin: center;
+  opacity: 1.1;
+}
+
+.wheelWrapper #facet12 {
+  transform-style: preserve-3d;
+  transform-origin: -80vw;
+}
+
+.flapWrapper #facet12 {
+  transform-style: preserve-3d;
+  transform: scale(0.82);
+  transform-origin: center;
+  opacity: 1.2;
+}
+
+.wheelWrapper.perspective-40 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-40 {
+  left: -80vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-39 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-39 {
+  left: -78vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-38 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-38 {
+  left: -76vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-37 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-37 {
+  left: -74vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-36 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-36 {
+  left: -72vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-35 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-35 {
+  left: -70vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-34 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-34 {
+  left: -68vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-33 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-33 {
+  left: -66vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-32 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-32 {
+  left: -64vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-31 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-31 {
+  left: -62vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-30 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-30 {
+  left: -60vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-29 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-29 {
+  left: -58vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-28 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-28 {
+  left: -56vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-27 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-27 {
+  left: -54vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-26 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-26 {
+  left: -52vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-25 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-25 {
+  left: -50vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-24 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-24 {
+  left: -48vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-23 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-23 {
+  left: -46vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-22 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-22 {
+  left: -44vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-21 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-21 {
+  left: -42vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-20 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-20 {
+  left: -40vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-19 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-19 {
+  left: -38vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-18 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-18 {
+  left: -36vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-17 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-17 {
+  left: -34vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-16 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-16 {
+  left: -32vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-15 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-15 {
+  left: -30vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-14 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-14 {
+  left: -28vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-13 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-13 {
+  left: -26vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-12 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-12 {
+  left: -24vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-11 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-11 {
+  left: -22vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-10 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-10 {
+  left: -20vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-9 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-9 {
+  left: -18vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-8 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-8 {
+  left: -16vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-7 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-7 {
+  left: -14vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-6 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-6 {
+  left: -12vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-5 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-5 {
+  left: -10vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-4 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-4 {
+  left: -8vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-3 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-3 {
+  left: -6vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-2 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-2 {
+  left: -4vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective-1 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective-1 {
+  left: -2vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective0 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective0 {
+  left: 0vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective1 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective1 {
+  left: 2vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective2 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective2 {
+  left: 4vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective3 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective3 {
+  left: 6vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective4 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective4 {
+  left: 8vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective5 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective5 {
+  left: 10vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective6 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective6 {
+  left: 12vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective7 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective7 {
+  left: 14vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective8 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective8 {
+  left: 16vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective9 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective9 {
+  left: 18vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective10 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective10 {
+  left: 20vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective11 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective11 {
+  left: 22vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective12 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective12 {
+  left: 24vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective13 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective13 {
+  left: 26vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective14 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective14 {
+  left: 28vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective15 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective15 {
+  left: 30vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective16 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective16 {
+  left: 32vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective17 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective17 {
+  left: 34vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective18 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective18 {
+  left: 36vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective19 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective19 {
+  left: 38vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective20 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective20 {
+  left: 40vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective21 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective21 {
+  left: 42vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective22 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective22 {
+  left: 44vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective23 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective23 {
+  left: 46vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective24 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective24 {
+  left: 48vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective25 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective25 {
+  left: 50vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective26 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective26 {
+  left: 52vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective27 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective27 {
+  left: 54vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective28 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective28 {
+  left: 56vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective29 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective29 {
+  left: 58vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective30 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective30 {
+  left: 60vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective31 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective31 {
+  left: 62vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective32 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective32 {
+  left: 64vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective33 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective33 {
+  left: 66vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective34 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective34 {
+  left: 68vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective35 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective35 {
+  left: 70vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective36 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective36 {
+  left: 72vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective37 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective37 {
+  left: 74vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective38 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective38 {
+  left: 76vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective39 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective39 {
+  left: 78vw;
+  transform-style: preserve-3d;
+}
+
+.wheelWrapper.perspective40 {
+  transform-style: preserve-3d;
+}
+
+.flapWrapper.perspective40 {
+  left: 80vw;
+  transform-style: preserve-3d;
+}
+
+.flapWrapper,
+.wheelWrapper {
+  transition: ease-in-out 0.3s;
+}
+.flapWrapper .wheel,
+.wheelWrapper .wheel {
+  z-index: 10;
+  visibility: hidden;
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: center;
+  margin: 0;
+  padding: 0;
+}
+.flapWrapper .WheelFacet,
+.wheelWrapper .WheelFacet {
+  visibility: visible;
+  position: fixed;
+  transform-style: preserve-3d;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+.wheelWrapper {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 50vw;
+}
+.wheelWrapper .wheel {
+  width: 100vw;
+  height: 50vw;
+  transition: ease-in-out 0.3s;
+}
+.wheelWrapper .WheelFacet {
+  background-color: rgba(128, 89, 166, 0.7);
+  border: 0 solid black;
+  border-radius: 0;
+  height: 40vw;
+  width: 80vw;
+  opacity: 1;
+  box-shadow: black 1vw 1vw 4vw;
+}
+
+.flapWrapper {
+  width: 100vw;
+  height: 50vw;
+}
+.flapWrapper .wheel {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 50vw;
+  transition: ease-in-out 0.3s;
+}
+.flapWrapper .WheelFacet {
+  background-color: rgba(128, 89, 166, 0.7);
+  border: 0 solid black;
+  border-radius: 0;
+  height: 40vw;
+  width: 80vw;
+  opacity: 1;
+  box-shadow: rgba(0, 0, 0, 0.8) 1vw 1vw 4vw;
+}
+
+.facetContent {
+  display: grid;
+  background-color: lightgray;
+  height: 40vw;
+  width: 80vw;
+}
+.facetContent p {
+  padding: 0.7em;
+  color: black;
+  font-family: "Garamond", serif;
+}
+
+.topStrip {
+  grid-column: 1/2;
+  grid-row: 1;
+  background-color: rgba(128, 89, 166, 0.2);
+  width: 50%;
+  left: 0;
+}
+
+.middleStrip {
+  grid-column: 1/2;
+  grid-row: 2;
+  height: 85%;
+  width: 100%;
+  overflow: hidden;
+}
+.middleStrip .bodyCopy {
+  float: left;
+  width: 50%;
+  padding: 1vw;
+  font-size: 1.75vh;
+  line-height: 115%;
+  text-align: left;
+}
+.middleStrip .hero {
+  width: 50%;
+  height: 100%;
+  float: right;
+  overflow: hidden;
+}
+.middleStrip .hero img,
+.middleStrip .hero video {
+  width: 100%;
+  height: auto;
+  position: relative;
+  right: 1vw;
+  top: 0;
+}
+
+.employer {
+  float: right;
+  right: 0;
+  width: 50%;
+  height: 100%;
+}
+
+.employer,
+.title {
+  font-size: 2.5vh;
+  color: black;
+  text-shadow: rgba(0, 0, 0, 0.8) 5px 5px;
+}
+
+.bottomStrip {
+  grid-column: 1/2;
+  grid-row: 3;
+  background-color: rgba(128, 89, 166, 0.2);
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.timeLine {
+  width: 50%;
+  height: 100%;
+  left: 0;
+  padding: 0.1vw;
+  overflow: hidden;
+}
+.timeLine .startShape,
+.timeLine .endShape {
+  position: absolute;
+  width: 1.6666666667vh;
+  height: 100%;
+}
+.timeLine .startShape,
+.timeLine .startShape:before {
+  color: black;
+  background-color: hsla(120deg, 80%, 50%, 0.7);
+}
+.timeLine .endShape,
+.timeLine .endShape:before {
+  color: white;
+  border: 0.5px solid hsla(0deg, 80%, 50%, 0.7);
+  background-color: hsla(0deg, 80%, 50%, 0.7);
+}
+.timeLine .startShape:before,
+.timeLine .endShape:before {
+  content: "•";
+  position: absolute;
+  top: 0;
+  left: -1.6666666667vh;
+  border-radius: 0 0 5vh 5vh;
+  width: 3em;
+  height: 1.5em;
+}
+.timeLine .startShape {
+  left: 26.28px;
+}
+.timeLine .endShape {
+  right: calc(50% + 26.28px);
+}
+
+.topStrip,
+.bottomStrip {
+  height: 5vw;
+}
+.topStrip div,
+.bottomStrip div {
+  display: inline-block;
+}
+
+.timeLine.ticks10 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 1.9px);
+}
+
+.timeLine.ticks11 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 2.09px);
+}
+
+.timeLine.ticks12 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 2.28px);
+}
+
+.timeLine.ticks13 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 2.47px);
+}
+
+.timeLine.ticks14 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 2.66px);
+}
+
+.timeLine.ticks15 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 2.85px);
+}
+
+.timeLine.ticks16 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 3.04px);
+}
+
+.timeLine.ticks17 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 3.23px);
+}
+
+.timeLine.ticks18 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 3.42px);
+}
+
+.timeLine.ticks19 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 3.61px);
+}
+
+.timeLine.ticks20 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 3.8px);
+}
+
+.timeLine.ticks21 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 3.99px);
+}
+
+.timeLine.ticks22 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 4.18px);
+}
+
+.timeLine.ticks23 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 4.37px);
+}
+
+.timeLine.ticks24 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 4.56px);
+}
+
+.timeLine.ticks25 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 4.75px);
+}
+
+.timeLine.ticks26 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 4.94px);
+}
+
+.timeLine.ticks27 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 5.13px);
+}
+
+.timeLine.ticks28 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 5.32px);
+}
+
+.timeLine.ticks29 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 5.51px);
+}
+
+.timeLine.ticks30 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 5.7px);
+}
+
+.timeLine.ticks31 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 5.89px);
+}
+
+.timeLine.ticks32 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 6.08px);
+}
+
+.timeLine.ticks33 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 6.27px);
+}
+
+.timeLine.ticks34 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 6.46px);
+}
+
+.timeLine.ticks35 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 6.65px);
+}
+
+.timeLine.ticks36 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 6.84px);
+}
+
+.timeLine.ticks37 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 7.03px);
+}
+
+.timeLine.ticks38 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 7.22px);
+}
+
+.timeLine.ticks39 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 7.41px);
+}
+
+.timeLine.ticks40 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 7.6px);
+}
+
+.timeLine.ticks41 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 7.79px);
+}
+
+.timeLine.ticks42 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 7.98px);
+}
+
+.timeLine.ticks43 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 8.17px);
+}
+
+.timeLine.ticks44 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 8.36px);
+}
+
+.timeLine.ticks45 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 8.55px);
+}
+
+.timeLine.ticks46 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 8.74px);
+}
+
+.timeLine.ticks47 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 8.93px);
+}
+
+.timeLine.ticks48 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 9.12px);
+}
+
+.timeLine.ticks49 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 9.31px);
+}
+
+.timeLine.ticks50 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 9.5px);
+}
+
+.timeLine.ticks51 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 9.69px);
+}
+
+.timeLine.ticks52 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 9.88px);
+}
+
+.timeLine.ticks53 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 10.07px);
+}
+
+.timeLine.ticks54 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 10.26px);
+}
+
+.timeLine.ticks55 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 10.45px);
+}
+
+.timeLine.ticks56 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 10.64px);
+}
+
+.timeLine.ticks57 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 10.83px);
+}
+
+.timeLine.ticks58 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 11.02px);
+}
+
+.timeLine.ticks59 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 11.21px);
+}
+
+.timeLine.ticks60 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 11.4px);
+}
+
+.timeLine.ticks61 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 11.59px);
+}
+
+.timeLine.ticks62 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 11.78px);
+}
+
+.timeLine.ticks63 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 11.97px);
+}
+
+.timeLine.ticks64 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 12.16px);
+}
+
+.timeLine.ticks65 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 12.35px);
+}
+
+.timeLine.ticks66 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 12.54px);
+}
+
+.timeLine.ticks67 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 12.73px);
+}
+
+.timeLine.ticks68 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 12.92px);
+}
+
+.timeLine.ticks69 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 13.11px);
+}
+
+.timeLine.ticks70 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 13.3px);
+}
+
+.timeLine.ticks71 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 13.49px);
+}
+
+.timeLine.ticks72 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 13.68px);
+}
+
+.timeLine.ticks73 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 13.87px);
+}
+
+.timeLine.ticks74 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 14.06px);
+}
+
+.timeLine.ticks75 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 14.25px);
+}
+
+.timeLine.ticks76 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 14.44px);
+}
+
+.timeLine.ticks77 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 14.63px);
+}
+
+.timeLine.ticks78 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 14.82px);
+}
+
+.timeLine.ticks79 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 15.01px);
+}
+
+.timeLine.ticks80 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 15.2px);
+}
+
+.timeLine.ticks81 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 15.39px);
+}
+
+.timeLine.ticks82 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 15.58px);
+}
+
+.timeLine.ticks83 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 15.77px);
+}
+
+.timeLine.ticks84 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 15.96px);
+}
+
+.timeLine.ticks85 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 16.15px);
+}
+
+.timeLine.ticks86 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 16.34px);
+}
+
+.timeLine.ticks87 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 16.53px);
+}
+
+.timeLine.ticks88 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 16.72px);
+}
+
+.timeLine.ticks89 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 16.91px);
+}
+
+.timeLine.ticks90 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 17.1px);
+}
+
+.timeLine.ticks91 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 17.29px);
+}
+
+.timeLine.ticks92 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 17.48px);
+}
+
+.timeLine.ticks93 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 17.67px);
+}
+
+.timeLine.ticks94 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 17.86px);
+}
+
+.timeLine.ticks95 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 18.05px);
+}
+
+.timeLine.ticks96 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 18.24px);
+}
+
+.timeLine.ticks97 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 18.43px);
+}
+
+.timeLine.ticks98 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 18.62px);
+}
+
+.timeLine.ticks99 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 18.81px);
+}
+
+.timeLine.ticks100 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 19px);
+}
+
+.timeLine.ticks101 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 19.19px);
+}
+
+.timeLine.ticks102 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 19.38px);
+}
+
+.timeLine.ticks103 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 19.57px);
+}
+
+.timeLine.ticks104 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 19.76px);
+}
+
+.timeLine.ticks105 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 19.95px);
+}
+
+.timeLine.ticks106 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 20.14px);
+}
+
+.timeLine.ticks107 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 20.33px);
+}
+
+.timeLine.ticks108 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 20.52px);
+}
+
+.timeLine.ticks109 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 20.71px);
+}
+
+.timeLine.ticks110 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 20.9px);
+}
+
+.timeLine.ticks111 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 21.09px);
+}
+
+.timeLine.ticks112 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 21.28px);
+}
+
+.timeLine.ticks113 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 21.47px);
+}
+
+.timeLine.ticks114 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 21.66px);
+}
+
+.timeLine.ticks115 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 21.85px);
+}
+
+.timeLine.ticks116 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 22.04px);
+}
+
+.timeLine.ticks117 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 22.23px);
+}
+
+.timeLine.ticks118 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 22.42px);
+}
+
+.timeLine.ticks119 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 22.61px);
+}
+
+.timeLine.ticks120 {
+  background: repeating-linear-gradient(to right, #1a4d1a, #a67ece 2px, #a67ece 22.8px);
+}
+
+@keyframes spin {}
+@keyframes softSpin {}
+@keyframes goto10 {}
+.floater {
+  position: fixed;
+  visibility: visible;
+  transform-style: preserve-3d;
+  transform: translateX(-40vw);
+  left: 20%;
+  top: 20%;
+  width: 80vw;
+  height: 80vw;
+  border: 1px solid hsla(240deg, 80%, 80%, 0.3);
+  border-radius: 4vw;
+  background-color: hsla(240deg, 80%, 80%, 0.3);
+}
+
+/*# sourceMappingURL=Wheel.css.map */
