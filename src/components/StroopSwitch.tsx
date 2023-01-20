@@ -5,7 +5,7 @@ import './SoundBoard.css'
 
 export function StroopSwitch(props: {
 	StroopMode: IStroopMode,
-	CurrentVoice: SpeechSynthesisVoice,
+	CurrentVoice: any,
 	StroopUpdater: Function,
 	VoiceUpdater: Function
 }) {
@@ -33,7 +33,6 @@ export function StroopSwitch(props: {
 			let two = voices[i].lang.split('-')
 			LanguageListUnfiltered.push(two[0])
 		}
-		// @ts-ignore
 		LanguageList = [...new Set(LanguageListUnfiltered)] as string[]
 	}
 
@@ -98,8 +97,8 @@ export function StroopSwitch(props: {
 			<div className={'mode'}>
 				<button
 					// ToDoButNotToday: enumerate IStroopMode
-					onClick={() => setStroopMode('uncertain')}
-				>uncertain
+					onClick={() => setStroopMode('unsure')}
+				>unsure
 				</button>
 				<button
 					onClick={() => setStroopMode('text')}
@@ -145,6 +144,7 @@ export function StroopSwitch(props: {
 				{
 					VoiceList.map(function (whichVoice, i) {
 						return <button
+							className={"LCD"}
 							key={i}
 							onMouseDown={() => console.log(
 								CurrentVoice.name, 'becomes', whichVoice.name

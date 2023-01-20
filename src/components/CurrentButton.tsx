@@ -11,7 +11,7 @@ export function CurrentButton(props: { CurrentButton: IButton }) {
 
 	return (
 		<div className={'box ' + button.color} id={'CurrentButton'}>
-			<label>Current Button:</label>
+			{/*<label>Current Button:</label>*/}
 			<ul className={'LCD'}>
 				{
 					Object.keys(button).map((item, i, thing) => {

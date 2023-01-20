@@ -3,6 +3,8 @@ import {useContext, useState} from 'react';
 import {CurrentButton} from "./CurrentButton";
 import {TheSoundBoard, soundContext, stroopContext, voiceContext} from "./SoundBoard";
 
+let override = true
+
 let noteContext: AudioContext
 noteContext = new AudioContext()
 
@@ -33,18 +35,29 @@ const wave = ac.createPeriodicWave(real, imag)
 osc.setPeriodicWave(wave)
 osc.connect(ac.destination)
 
-// let CurrentVoice = voiceContext.displayName as unknown as SpeechSynthesisVoice
+let CurrentVoice = voiceContext
+
 
 export const Speak: Function = (sound: ISound) => {
+	let synth = window.speechSynthesis
+	let voices = synth.getVoices()
 	let what = new SpeechSynthesisUtterance('')
+	for (let i = 0; i < voices.length; i++) {
+		if (voices[i].name === CurrentVoice.displayName) {
+			if (override) {
+				what.voice = voices[i] as SpeechSynthesisVoice
+			} else {
+				what.voice = sound.voice as SpeechSynthesisVoice
+			}
+		}
+	}
 	what.text = sound.pronunciation
 	what.volume = 1
 	what.pitch = sound.pitch as number
 	what.rate = 1
 	console.log('attempting to say', what, sound.pronunciation)
-	what.voice = sound.voice as SpeechSynthesisVoice
-	// speechSynthesis.cancel()
-	speechSynthesis.speak(what)
+	// synth.cancel()
+	synth.speak(what)
 }
 
 export const MakeNoise: Function = (sound: ISound, duration: number) => {
@@ -66,9 +79,9 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 		audioCtx.sampleRate
 	)
 
-	let sweepLength = 1
-	let attackTime = duration / 10
-	let releaseTime = duration / 10
+	let sweepLength = .5
+	let attackTime = duration / 5
+	let releaseTime = duration / 5
 
 	let basePitch: number = 600
 
@@ -80,7 +93,7 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 		osc.setPeriodicWave(wave)
 		osc.frequency.value = basePitch / Math.pow(2, -pitch)
 
-		let volumeCompensator: number = Math.pow(2, -pitch)
+		let volumeCompensator: number = Math.pow(2, -pitch / 12)
 
 		console.log('TONE:', osc.frequency.value, 'hz', volumeCompensator.valueOf())
 

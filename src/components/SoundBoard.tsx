@@ -98,13 +98,16 @@ let soundList: IButton[] = [
 
 //</editor-fold>
 
+let override = true
+
 let RecordingTimer: NodeJS.Timer
 let elapsedTime: number = 0
 let planck: number = 10
 let delta: number = 0
 
 const voices = window.speechSynthesis.getVoices()
-export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[1])
+export const voiceContext: React.Context<any> = React.createContext(voices[0].name)
+// export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
 export const soundContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
 
@@ -123,8 +126,8 @@ export function TheSoundBoard(this: any) {
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
 	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState([  {SessionData: [] } , {Sequences:[] } , Function ] )
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
-	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('uncertain')
-	const [CurrentVoice, setCurrentVoice]: [SpeechSynthesisVoice, Function] = useState(voices[3])
+	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
+	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
 
 	const [userID, setUserID]: [number, Function] = useState(666)
 	const [sessionID, setSessionID]: [number, Function] = useState(0)
@@ -186,7 +189,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
-		console.log('current:', CurrentVoice.name, 'new:', NewVoice.name)
+		console.log('current:', CurrentVoice.displayName, 'new:', NewVoice.name)
 		setCurrentVoice(NewVoice)
 	}
 
@@ -299,8 +302,16 @@ export function TheSoundBoard(this: any) {
 		}
 		delta = thisButton.begin - RecordingStart + Date.now()
 
-		thisButton.sound.voice = CurrentVoice
-		
+		for (let i = 0; i < voices.length; i++) {
+			if (voices[i].name === CurrentVoice.displayName) {
+				if (override) {
+					thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+				} else {
+					thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+				}
+			}
+		}
+
 		setButton(thisButton)
 
 		function stop(thisButton: IButton) {
@@ -337,6 +348,7 @@ export function TheSoundBoard(this: any) {
 
 	}
 
+
 	return (
 		<React.StrictMode>
 			<div
@@ -344,85 +356,88 @@ export function TheSoundBoard(this: any) {
 			>
 
 				<stroopContext.Provider value={StroopMode}>
+					<voiceContext.Provider value={CurrentVoice}>
 
-					<StroopSwitch
-						StroopMode={StroopMode}
-						CurrentVoice={CurrentVoice}
-						StroopUpdater={HandleStroopChange}
-						VoiceUpdater={HandleVoiceChange}
-					/>
-					<SoundBoardStatus
-						Sequence={tally}
-					/>
-
-					<soundContext.Provider value={RecordingSession}>
-
-						<div
-							className={'box'}
-							id='buttonBoard'
-							ref={buttonBoardRef}
-						>
-
-							{/*<h1>Do your buttons!</h1>*/}
-
-							<div id={'TheClock'}
-							     ref={recordClockRef}
-							>
-								<button
-									value={'StartRecording'}
-									//  ToDoButNotToday: replace onClick with addEventListener()
-									onClick={() => startRecordingTimer()}
-									disabled={isRecording}
-								>{'Record'}</button>
-
-								<p className={'LCD'}>
-									time since<br/>last click: {delta}
-									<br/>
-									session time: {Date.now() - RecordingStart}
-									<br/>
-									total clicks: {count}
-								</p>
-
-								<button
-									value={'StopRecording'}
-									//  ToDoButNotToday: replace onClick with addEventListener()
-									onClick={() => stopRecordingTimer()}
-									disabled={!isRecording}
-								>{'stop'}</button>
-
-								<button
-									value={'reset'}
-									//  ToDoButNotToday: replace onClick with addEventListener()
-									onClick={() => resetRecordingTimer()}
-									disabled={isRecording || elapsedTime === 0}
-								>{'reset'}</button>
-
-							</div>
-
-							<div className={'' + button.color} id={'TheButtons'}>
-								{soundList.map(function (oneButton: IButton, i: React.Key) {
-									return <button
-										key={i}
-										name={oneButton.sound!.name}
-										value={oneButton.sound!.name}
-										className={oneButton.color ? oneButton.color.toString() : ''}
-										//  ToDoButNotToday: replace onClick with addEventListener()
-										onMouseDown={() => DoTheButton(oneButton)}
-									>{oneButton.sound!.name}</button>
-								})}
-							</div>
-						</div>
-
-						<RecordingSessions
-							RSP={RecordingSession}
-							UpdaterFunction={HandleRecordChange}
+						<StroopSwitch
+							StroopMode={StroopMode}
+							CurrentVoice={CurrentVoice}
+							StroopUpdater={HandleStroopChange}
+							VoiceUpdater={HandleVoiceChange}
 						/>
-					</soundContext.Provider>
 
-					<CurrentButton
-						CurrentButton={button}
-					/>
+						<SoundBoardStatus
+							Sequence={tally}
+						/>
 
+						<soundContext.Provider value={RecordingSession}>
+
+							<div
+								className={'box'}
+								id='buttonBoard'
+								ref={buttonBoardRef}
+							>
+
+								{/*<h1>Do your buttons!</h1>*/}
+
+								<div id={'TheClock'}
+								     ref={recordClockRef}
+								>
+									<button
+										value={'StartRecording'}
+										//  ToDoButNotToday: replace onClick with addEventListener()
+										onClick={() => startRecordingTimer()}
+										disabled={isRecording}
+									>{'Record'}</button>
+
+									<p className={'LCD'}>
+										time since<br/>last click: {delta}
+										<br/>
+										session time: {Date.now() - RecordingStart}
+										<br/>
+										total clicks: {count}
+									</p>
+
+									<button
+										value={'StopRecording'}
+										//  ToDoButNotToday: replace onClick with addEventListener()
+										onClick={() => stopRecordingTimer()}
+										disabled={!isRecording}
+									>{'stop'}</button>
+
+									<button
+										value={'reset'}
+										//  ToDoButNotToday: replace onClick with addEventListener()
+										onClick={() => resetRecordingTimer()}
+										disabled={isRecording || elapsedTime === 0}
+									>{'reset'}</button>
+
+								</div>
+
+								<div className={'' + button.color} id={'TheButtons'}>
+									{soundList.map(function (oneButton: IButton, i: React.Key) {
+										return <button
+											key={i}
+											name={oneButton.sound!.name}
+											value={oneButton.sound!.name}
+											className={oneButton.color ? oneButton.color.toString() : ''}
+											//  ToDoButNotToday: replace onClick with addEventListener()
+											onMouseDown={() => DoTheButton(oneButton)}
+										>{oneButton.sound!.name}</button>
+									})}
+								</div>
+							</div>
+
+							{/*<RecordingSessions*/}
+							{/*	RSP={RecordingSession}*/}
+							{/*	UpdaterFunction={HandleRecordChange}*/}
+							{/*/>*/}
+						</soundContext.Provider>
+
+						<CurrentButton
+							CurrentButton={button}
+						/>
+
+					</voiceContext.Provider>
 				</stroopContext.Provider>
 
 

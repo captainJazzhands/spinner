@@ -25,7 +25,7 @@ export interface IQuestions {
 	[key: string]: IAnswerFields
 }
 
-export type IStroopMode = "uncertain" | "text" | "speech" | "color" | "sound" | "tone"
+export type IStroopMode = "unsure" | "text" | "speech" | "color" | "sound" | "tone"
 
 export interface IGameState {
 	turn?: number
