@@ -399,7 +399,6 @@ button:disabled {
   overflow: hidden;
   background-color: #9d9d7b;
   border-radius: 1rem;
-  border: 1px solid white;
   transition: ease-in 0.3s 0.7s;
 }
 .box ul, .box div {
@@ -409,7 +408,6 @@ button:disabled {
   flex-shrink: 1;
   overflow: hidden;
   white-space: nowrap;
-  background-color: hsl(60deg, 40%, 40%);
   color: hsl(0deg, 0%, 85%);
 }
 .box div {
@@ -419,7 +417,6 @@ button:disabled {
   justify-content: space-around;
   flex-wrap: nowrap;
   margin: 0.75rem;
-  background-color: rgba(58, 58, 120, 0.25);
 }
 .box h1 {
   color: hsl(60deg, 40%, 40%);

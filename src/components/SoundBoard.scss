@@ -89,7 +89,7 @@ button:disabled {
 	overflow: hidden;
 	background-color: $clr_boxBG;
 	border-radius: 1rem;
-	border: 1px solid white;
+	//border: 1px solid white;
 	transition: ease-in .3s 0.7s;
 	ul, div {
 		transition: ease-in .3s 0.4s;
@@ -98,7 +98,7 @@ button:disabled {
 		flex-shrink: 1;
 		overflow: hidden;
 		white-space: nowrap;
-		background-color: $clr_primaryColor;
+		//background-color: $clr_primaryColor;
 		color: $clr_white;
 	}
 	div {
@@ -109,7 +109,7 @@ button:disabled {
 		flex-wrap: nowrap;
 		//border: $soundBorder;
 		margin: .75rem;
-		background-color: $clr_tileBG;
+		//background-color: $clr_tileBG;
 		//border: 1px solid $clr_formBorder;
 		p {
 

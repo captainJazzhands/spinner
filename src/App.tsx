@@ -18,41 +18,21 @@ import {createGlobalStyle} from 'styled-components';
 import '../src/sanitize.css-main/sanitize.css'
 import {TheSoundBoard} from "./components/SoundBoard";
 // import {UseSessionProvider} from 'react-session-hook'
-import {GameReducer, initialState} from "./components/reducer";
-import {ActionTypes, GameActions, IGameContext, IGameState} from "./components/Types";
 
 let GlobalStyles = createGlobalStyle`
   html {
     --color-text: white;
     --color-background: blue;
-    --color-primary: rebeccapurple;
-    --hotFacet: 4;
+    --color-primary: white;
   }
 `
-
-export const GameContext = createContext(
-	// GameReducer
-	{
-		state: initialState,
-		dispatch: ActionTypes.Skip
-	}
-)
 
 export function App() {
 	const displayName = App.name
 
-	const [state, dispatch] = useReducer(
-		GameReducer,
-		initialState
-	)
-
 	return (
 		<Layout>
 			<GlobalStyles/>
-			{/*<Route*/}
-			{/*	exact path='/'*/}
-			{/*	component={TheSoundBoard}*/}
-			{/*/>*/}
 			<BrowserRouter>
 				<Routes>
 					<Route
@@ -66,20 +46,6 @@ export function App() {
 					/>
 				</Routes>
 			</BrowserRouter>
-
-
-			<GameContext.Provider
-				// @ts-ignore
-				value={[state, dispatch]}
-			>
-			</GameContext.Provider>
-
-			{/*<ErrorBoundary>*/}
-			{/*</ErrorBoundary>*/}
-			{/*<AuthorizeRoute*/}
-			{/*	path='/fetch-data'*/}
-			{/*	component={FetchData}*/}
-			{/*/>*/}
 		</Layout>
 	);
 }
