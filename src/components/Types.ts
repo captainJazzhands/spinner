@@ -1,8 +1,182 @@
 import React from "react";
 
+export type FieldType = "textbox" | "textarea" | "dropdown" | "radio" | "checkbox"
+
 export type path = { fullPath: string }
 
+export interface IFields {
+	[key: string]: IFieldProps
+}
+
+export type IFieldProps = {
+	id: number
+	label?: string
+	FieldType?: FieldType | string
+	options?: string[]
+	value?: any
+	validation?: IValidation
+}
+
+export interface IValues {
+	[key: string]: any
+}
+
+export interface IQuestions {
+	[key: string]: IAnswerFields
+}
+
 export type IStroopMode = "unsure" | "text" | "speech" | "color" | "sound" | "tone"
+
+export interface IGameState {
+	turn?: number
+	status?: TGameStatus
+	errors?: IErrors
+	job?: IJobProps
+	remediation?: IRemediationProps
+	progress: number
+}
+
+export interface IGameContext {
+	state: IGameState
+	dispatch: ActionTypes
+}
+
+export interface IGameProps {
+	action: string
+	fields: IFields | IQuestions
+	render?: () => React.ReactNode
+}
+
+export interface IQuestionProps {
+	[index: number]: number | string
+
+	id: number
+	ask: string
+	QuestionType?: FieldType | string
+	options?: string[]
+	answers: string[]
+	CorrectAnswer: number | number[]
+}
+
+export interface IAnswerFields {
+	[key: number]: number
+
+	answers: string[]
+	FieldType?: FieldType | string
+}
+
+export interface IJobProps {
+	[index: number]: number
+
+	id: number
+	where: string
+	title: string
+	hero: path
+	// hero: string
+	dateStart: Date
+	dateEnd: Date
+	bodyCopy: string
+	tags?: string[]
+}
+
+export interface IRemediationProps {
+	[index: number]: number
+
+	id: number
+	hero: path
+	// hero: string
+	headline: string
+	bodyCopy: string
+	tags: string[]
+}
+
+export interface IErrors {
+	[key: string]: string
+}
+
+export interface IValidation {
+	rule: (values: IValues, fieldName: string, args: any) => string
+	args?: any
+}
+
+export type TPlayerStatus = "active" | "watching" | "error" | string
+export type IPlayer = {
+	name: string
+	initials: string
+	color: string
+	score: number
+	status: TPlayerStatus
+}
+export type TGameStatus = "running" | "paused" | "error" | string
+
+// export interface IGameState {
+// 	players?: IPlayer[]
+// 	progress?: number
+// 	status?: TGameStatus
+// 	correct?: []
+// 	remediation?: IRemediationProps
+// 	perspective?: number
+// 	errors?: IErrors
+// 	children?: JSX.Element | JSX.Element[]
+// }
+//
+export interface IQuestionContext {
+	setState: (values: IValues) => void
+	answers: ([])
+	action: (dispatch: any) => void
+	validate?: (fieldName: string) => void
+}
+
+type ActionMap<M extends { [index: string]: any }> = {
+	[Key in keyof M]: M[Key] extends undefined
+		? {
+			type: Key;
+		}
+		: {
+			type: Key;
+			payload: M[Key];
+		}
+};
+
+export enum ActionTypes {
+	stub = "0",
+	game_start = "game_start",
+	game_end = "game_end",
+	submit_response = "submit_answer",
+	Skip = "SKIP",
+	Progress = "PROGRESS",
+	Remediate = "REMEDIATE",
+	Create = "CREATE"
+}
+
+type ActionPayload = {
+	[ActionTypes.stub]: {
+		progress: number;
+	}
+	[ActionTypes.game_start]: {
+		progress: number;
+	}
+	[ActionTypes.game_end]: {
+		progress: number;
+	}
+	[ActionTypes.Skip]: {
+		progress: number;
+	}
+	[ActionTypes.Progress]: {
+		progress: number;
+	}
+	[ActionTypes.submit_response]: {
+		answer: IAnswerFields
+	}
+	[ActionTypes.Create]: {
+		progress: number;
+		name: string;
+	};
+}
+
+export type GameActions = ActionMap<ActionPayload>[
+	keyof ActionMap<ActionPayload>
+	];
 
 export class IRecordingSession {
 	SessionData: ISessionData;

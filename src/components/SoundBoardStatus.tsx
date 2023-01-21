@@ -1,14 +1,10 @@
 import React, {Ref, useContext, useEffect, useRef, useState} from 'react'
-import {
-	IRecordingSession,
-	IButton,
-	ISound,
-	ISequence
-} from './Types'
+import {IRecordingSession, IButton, ISound, ISequence} from './Types'
 import {Speak, MakeNoise} from './AudioCode';
 import './SoundBoard.css'
 import {stroopContext} from './SoundBoard';
-import {TransportControls} from "./TransportControls";
+
+// console.clear()
 
 let planck: number = 10
 let playbackTimer: NodeJS.Timer
@@ -20,6 +16,10 @@ let RecStart: number = 0
 let duration: number = 0
 
 let root = document.documentElement;
+
+// root.addEventListener("mousemove", e => {
+//   root.style.setProperty('--scroll-distance', e.clientX + "px");
+// });
 
 export function SoundBoardStatus(props: { Sequence: IButton[] }) {
 	const [isPlaying, setIsPlaying] = useState(false)
@@ -140,53 +140,59 @@ export function SoundBoardStatus(props: { Sequence: IButton[] }) {
 	}
 
 	return (
-		<React.StrictMode>
-			<div className={'box'} id={'SoundBoardStatus'}>
-				<div className='LCD'>
-					<span>{countdownTime}</span>
-					<span>{elapsedTime}</span>
-					<button
-						className={playbackTimer ? 'playing' : 'stopped'}
-						ref={playbackButtons}
-						key={'playback'}
-						value={'playback'}
-						onClick={() => PlayButtStream()}
-					>{'play'}</button>
-					<button
-						key={'stop'}
-						value={'stop'}
-						onClick={() => StopEverything()}
-					>{'stop'}</button>
-				</div>
-				<div
-					className={'wrapper'}
-					id={''}
-				>
-					<ul className={'LCD scroller'}>
-						{
-							rs.map((button, index, sequence) => {
-									root.style.setProperty('--item-count', index.toString());
-									// root.style.setProperty('--scroll-distance', index * -2 + 'rem');
-									return (<li
-										className={'LCD ' + button.color}
-										key={index}
-										// onClick={props.HandleRecordChange}
-									>)
-										<span className={'meta'}>
+
+		<div className={'box'} id={'SoundBoardStatus'}>
+
+			<div className='LCD'>
+
+				<span>{countdownTime}</span>
+
+				<span>{elapsedTime}</span>
+
+				<button
+					className={playbackTimer ? 'playing' : 'stopped'}
+					ref={playbackButtons}
+					key={'playback'}
+					value={'playback'}
+					onClick={() => PlayButtStream()}
+				>{'play'}</button>
+
+				<button
+					key={'stop'}
+					value={'stop'}
+					onClick={() => StopEverything()}
+				>{'stop'}</button>
+
+			</div>
+
+			<div className={'wrapper'} id={''}>
+
+				<ul className={'LCD scroller'}>
+					{
+						rs.map((button, index, sequence) => {
+								root.style.setProperty('--item-count', index.toString());
+								// root.style.setProperty('--scroll-distance', index * -2 + 'rem');
+								return (<li
+									className={'LCD ' + button.color}
+									key={index}
+									// onClick={props.HandleRecordChange}
+								>)
+									<span className={'meta'}>
 								{button.sound!.toString()}
 							</span>
-										<span className={'meta'}>
+									<span className={'meta'}>
 								{button.sound!.pitch!.toString()}
 							</span>
-									</li>)
-								}
-							)
-						}
-					</ul>
-				</div>
-				<TransportControls/>
+								</li>)
+							}
+						)
+					}
+				</ul>
+
 			</div>
-		</React.StrictMode>
+		</div>
+
+
 	)
 }
 
