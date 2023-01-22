@@ -9,12 +9,7 @@ export function StroopSwitch(props: {
 }) {
 
 	let StroopMode: IStroopMode = useContext(stroopContext)
-
-	const [counter, setCounter]: [number, Function] = useState(0)
-
 	const setStroopMode: Function = props.StroopUpdater
-
-	console.log('StroopMode', StroopMode.toString())
 
 	return (
 		<React.StrictMode>
@@ -24,26 +19,37 @@ export function StroopSwitch(props: {
 			>
 				<button
 					// ToDoButNotToday: enumerate IStroopMode
+					className={'unsure'}
 					onClick={() => setStroopMode('unsure')}
 				>unsure
 				</button>
 				<button
+					className={'text'}
 					onClick={() => setStroopMode('text')}
 				>text
 				</button>
 				<button
+					className={'speech'}
 					onClick={() => setStroopMode('speech')}
 				>speech
 				</button>
 				<button
+					className={'color'}
 					onClick={() => setStroopMode('color')}
 				>color
 				</button>
 				<button
+					className={'shape'}
+					onClick={() => setStroopMode('shape')}
+				>color
+				</button>
+				<button
+					className={'sound'}
 					onClick={() => setStroopMode('sound')}
 				>sound
 				</button>
 				<button
+					className={'tone'}
 					onClick={() => setStroopMode('tone')}
 				>tone
 				</button>

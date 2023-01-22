@@ -3,6 +3,14 @@
 $sz_buttonBoardWidth: 40rem;
 $sz_buttonBoardHeight: $sz_buttonBoardWidth * .75;
 
+$clr_stroop-unsure: black;
+$clr_stroop-text: blue;
+$clr_stroop-speech: red;
+$clr_stroop-color: yellow;
+$clr_stroop-shape: green;
+$clr_stroop-sound: orange;
+$clr_stroop-tone: purple;
+
 :root {
 	--scroll-distance: 2em;
 }
@@ -30,7 +38,6 @@ $sz_buttonBoardHeight: $sz_buttonBoardWidth * .75;
 	src: url("fonts/LCD-mono-Ultra.woff") format("woff"), /* Pretty Modern Browsers */
 	url("fonts/LCD-mono-Ultra.ttf") format("truetype"); /* Safari, Android, iOS */
 }
-
 h1, h2, h3, h4, h5, h6, button {
 	color: $clr_white;
 	text-shadow: black .1rem .1rem .2rem;
@@ -48,6 +55,7 @@ button {
 	min-width: 3em; min-height: 3rem;
 	text-transform: uppercase;
 	font-weight: 900;
+	font-size: 12pt;
 	transition: ease-in .3s 0.4s;
 	background-color: $clr_formBG;
 	box-shadow: inset $clr_formShadow .2rem .2rem .6rem;
@@ -70,7 +78,7 @@ button:disabled {
 	opacity: 0.5;
 }
 
-.pageLayout {
+#pageLayout {
 	width: 100vw; height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -87,7 +95,7 @@ button:disabled {
 	height: 100%;
 	max-width: 95vw;
 	overflow: hidden;
-	background-color: $clr_boxBG;
+	background-color: $clr_boxBG_alpha;
 	border-radius: 1rem;
 	//border: 1px solid white;
 	transition: ease-in .3s 0.7s;
@@ -146,7 +154,7 @@ button:disabled {
 		//flex-direction: row;
 	}
 	button {
-		font-size: 12pt;
+		font-size: 3.5vw;
 		padding: 1rem;
 	}
 	.voice,
@@ -169,11 +177,34 @@ button:disabled {
 	}
 }
 
+.unsure,
+.text,
+.speech,
+.color,
+.shape,
+.sound,
+.tone { transition: ease-in .25s 0.01s;
+}
+
+.unsure {background-color: $clr_stroop-unsure;}
+
+.text {background-color: $clr_stroop-text;}
+
+.speech {background-color: $clr_stroop-speech;}
+
+.color {background-color: $clr_stroop-color;}
+
+.shape {background-color: $clr_stroop-shape;}
+
+.sound {background-color: $clr_stroop-sound;}
+
+.tone {background-color: $clr_stroop-tone;}
+
 #SoundBoardStatus,
 #CurrentButton {
 	flex-direction: column;
 	@media (min-width: 640px) {
-		flex-direction: row;
+		//flex-direction: row;
 	}
 }
 
@@ -250,28 +281,40 @@ p.LCD {
 	}
 }
 
-#ListWrapper {
-	height: 6rem;
+#DotGraph {
+	height: 100%; width: 100%;
 	border: 1px solid black;
 	overflow: hidden;
+	//scale: calc(10 + var(--sequence-item-count) / .25);
 	transition: ease-in .3s 0.4s;
 	ul.scroller {
+		height: 100%;
+		width: 100%;
 		display: flex;
 		flex-direction: row;
 		position: relative;
 		transition: ease-in .3s 0.4s;
 		//top: var(--scroll-distance);
-		left: calc(var(--item-count) * -4em);
-		flex-grow: 0; flex-shrink: 0;
-		max-width: 90vw;
+		//left: calc(var(--sequence-item-count) * -4em);
+		max-width: unset;
 		li {
-			height: 4rem;
+			position: absolute;
+			height: 100%;
 			width: auto;
-			max-height: 2rem;
-			min-height: 2rem;
-			flex-grow: 10;
-			flex-shrink: 10;
+			flex-grow: 0;
+			flex-shrink: 0;
 			transition: ease-in .3s 0.4s;
+		}
+	}
+}
+
+#DotGraph {
+	ul {
+		width: 100%;
+		bprder: 1px solid white;
+		background-color: $clr_boxBG;
+		li {
+			display: inline-block;
 		}
 	}
 }

@@ -13,69 +13,184 @@ import {IRecordingSession, IButton, ISound, ISequence, IStroopMode} from './Type
 
 let override = true
 
+let RecordingTimer: NodeJS.Timer
+let elapsedTime: number = 0
+let planck: number = 10
+let delta: number = 0
+
 export function TransportControls(props: {
-	TransportState: string
-	TransportChange: (requestedState: string) => void
+	TransportChange: (requestedState: string) => Function
 }) {
 
-	const TransportControlsRef: Ref<HTMLDivElement> = useRef(null)
-	const TransportControlsDiv = TransportControlsRef.current
+	const [count, setCount]: [number, Function] = useState(0)
+	const [isPlaying, setIsPlaying]: [boolean, Function] = useState(false)
+	const [isRecording, setIsRecording]: [boolean, Function] = useState(false)
+	const [RecordingStart, setRecordingStart]: [number, Function] = useState(0)
+	const [RecordingStop, setRecordingStop]: [number, Function] = useState(Date.now())
+	const [clickTime, setClickTime]: [number, Function] = useState(0)
+	const [tally, setTally]: [IButton[], Function] = useState([])
+	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
+	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState([  {SessionData: [] } , {Sequences:[] } , Function ] )
+	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
+
+	const startRecordingTimer = () => {
+		if (!isRecording) {
+			setClickTime(Date.now())
+			setRecordingStart(Date.now())
+			RecordingTimer = setInterval(() => {
+				elapsedTime = Date.now() - RecordingStart
+			}, planck)
+			setIsRecording(true)
+		}
+		return elapsedTime
+	}
+
+	function stopRecordingTimer() {
+		if (isRecording) {
+			setIsRecording(false)
+			setRecordingStop(Date.now())
+			elapsedTime = Date.now() - RecordingStart
+			clearInterval(RecordingTimer)
+			//  pinch off session?
+		} else {
+			setIsRecording(false)
+		}
+		return elapsedTime
+	}
+
+	function resetRecordingTimer() {
+		setIsRecording(false)
+		elapsedTime = 0
+		setCount(0)
+		//  delete session
+		clearInterval(RecordingTimer)
+		setTally([])
+		setRecordingSession(
+			[
+				{SessionData: [{RecStart: RecordingStart}]},
+				{
+					Sequences: [
+						// [...tally, button],
+						// [...tally, button],
+						// [...tally, button]
+					]
+				}
+			]
+		)
+	}
+
+	const buttonTally: Ref<any> = useRef(null)
+	useEffect(() => {
+		if ((buttonTally).current) {
+			buttonTally.current.className = 'hot'
+		}
+	}, [count])
+
+	const recordClockRef: Ref<HTMLDivElement> = useRef(null)
+	const recordClockDiv = recordClockRef.current
 
 	useEffect(() => {
-			if (TransportControlsDiv != null) {
-				if (props.TransportState === 'playing') {
-					TransportControlsDiv.classList.add('playing')
-				} else {
-					TransportControlsDiv.classList.remove('playing')
-				}
+		if (recordClockDiv) {
+			if (isRecording) {
+				recordClockDiv!.classList.add('recording')
+				recordClockDiv!.classList.remove('playing')
+			} else {
+				recordClockDiv!.classList.remove('recording')
 			}
-		},
-		[props.TransportState])
-
-	const StartRecordingRef: Ref<HTMLDivElement> = useRef(null)
-	const StartRecordingBtn = StartRecordingRef.current
-
-	useEffect(() => {
-			if (StartRecordingBtn != null) {
-				if (props.TransportState === 'recording') {
-					StartRecordingBtn.classList.add('recording')
-				} else {
-					StartRecordingBtn.classList.remove('recording')
-				}
+			if (isPlaying) {
+				recordClockDiv!.classList.add('playing')
+				recordClockDiv!.classList.remove('recording')
+			} else {
+				recordClockDiv!.classList.remove('playing')
 			}
-		},
-		[props.TransportState])
+		}
+	}, [isRecording, recordClockDiv, isPlaying])
+
+	const DoTheButton = (button: IButton) => {
+		if (!isRecording) {
+			startRecordingTimer()
+		}
+		let thisButton = Object.assign({}, button)
+		if (count === 0) {
+			thisButton.begin = 1
+		} else {
+			thisButton.begin = Date.now() - RecordingStart
+		}
+		delta = thisButton.begin - RecordingStart + Date.now()
+
+		setButton(thisButton)
+
+		function stop(thisButton: IButton) {
+			thisButton.end = Date.now() - RecordingStart
+		}
+
+		setClickTime(Date.now())
+
+		setCount((count: number) => count + 1)
+		setTally((prevTally: IButton[]) => [...prevTally, thisButton])
+
+		setRecordingSession(
+			[
+				{SessionData: [{RecStart: RecordingStart}]},
+				{
+					Sequences: [
+						[...tally, thisButton],
+						[...tally, thisButton]
+					]
+				}
+			]
+		)
+	}
 
 	return (
-		<div
-			className={'tintable'}
-			id={'TransportControls'}
-			ref={TransportControlsRef}
-		>
-			<button
-				value={'StartRecording'}
-				onClick={() => props.TransportChange("record")}
-				// disabled={props.TransportState === "playing" || props.TransportState === "recording"}
-			>{'Record'}</button>
+		<React.StrictMode>
+			<div
+				className={'pageLayout'}
+				id={'TransportControls'}
+			>
+				<div id={'TheClock'}
+				     ref={recordClockRef}
+				>
+					<button
+						value={'StartRecording'}
+						//  ToDoButNotToday: replace onClick with addEventListener()
+						onClick={() => startRecordingTimer()}
+						disabled={isRecording}
+					>{'Record'}</button>
 
-			<button
-				value={'StopRecording'}
-				onClick={() => props.TransportChange("stop")}
-				// disabled={props.TransportState != "recording"}
-			>{'stop'}</button>
+					<p className={'LCD'}>
+						time since<br/>last click: {delta}
+						<br/>
+						session time: {Date.now() - RecordingStart}
+						<br/>
+						total clicks: {count}
+					</p>
 
-			<button
-				key={'playback'}
-				value={'playback'}
-				// disabled={props.TransportState === "empty" || props.TransportState !== "playing"}
-				onClick={() => props.TransportChange("play")}
-			>{'play'}</button>
+					<button
+						// className={playbackTimer ? 'playing' : 'stopped'}
+						// ref={playbackButtons}
+						key={'playback'}
+						value={'playback'}
+						onClick={() => props.TransportChange("play")}
+					>{'play'}</button>
 
-			<button
-				value={'reset'}
-				onClick={() => props.TransportChange("reset")}
-				// disabled={props.TransportState === "empty" || props.TransportState === "recording"}
-			>{'reset'}</button>
-		</div>
+					<button
+						value={'StopRecording'}
+						//  ToDoButNotToday: replace onClick with addEventListener()
+						onClick={() => stopRecordingTimer()}
+						disabled={!isRecording}
+					>{'stop'}</button>
+
+					<button
+						value={'reset'}
+						//  ToDoButNotToday: replace onClick with addEventListener()
+						onClick={() => resetRecordingTimer()}
+						disabled={isRecording || elapsedTime === 0}
+					>{'reset'}</button>
+
+				</div>
+			</div>
+
+		</React.StrictMode>
 	)
 }
