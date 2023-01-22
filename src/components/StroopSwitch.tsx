@@ -1,69 +1,53 @@
 import React, {Context, Ref, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {IRecordingSession, IButton, ISound, SoundType, ISequence, IStroopMode} from './Types'
-import {RecordingContext, stroopContext, voiceContext} from "./SoundBoard";
+import {soundContext, stroopContext, voiceContext} from "./SoundBoard";
 import './SoundBoard.css'
-import {VoiceChoice} from "./VoiceChoice";
 
 export function StroopSwitch(props: {
 	StroopMode: IStroopMode,
-	StroopUpdater: Function,
-	setCurrentVoice: Function,
-	HotPanel: string
+	StroopUpdater: Function
 }) {
 
 	let StroopMode: IStroopMode = useContext(stroopContext)
+
+	const [counter, setCounter]: [number, Function] = useState(0)
+
 	const setStroopMode: Function = props.StroopUpdater
-	let isHot: boolean = (props.HotPanel.toString() === "StroopSwitch" || props.HotPanel.toString() === "unsure")
+
+	console.log('StroopMode', StroopMode.toString())
 
 	return (
-		<div
-			id={'stroopSwitch'}
-			className={isHot ? 'box HOT' : 'box COLD'}
-		>
-			<div id={'stroopButtons'}>
+		<React.StrictMode>
+			<div
+				className={'box'}
+				id={'stroopSwitch'}
+			>
 				<button
 					// ToDoButNotToday: enumerate IStroopMode
-					className={'unsure'}
 					onClick={() => setStroopMode('unsure')}
 				>unsure
 				</button>
 				<button
-					className={'text'}
 					onClick={() => setStroopMode('text')}
 				>text
 				</button>
 				<button
-					className={'speech'}
 					onClick={() => setStroopMode('speech')}
 				>speech
 				</button>
 				<button
-					className={'color'}
 					onClick={() => setStroopMode('color')}
 				>color
 				</button>
 				<button
-					className={'shape'}
-					onClick={() => setStroopMode('shape')}
-				>color
-				</button>
-				<button
-					className={'sound'}
 					onClick={() => setStroopMode('sound')}
 				>sound
 				</button>
 				<button
-					className={'tone'}
 					onClick={() => setStroopMode('tone')}
 				>tone
 				</button>
 			</div>
-
-			<VoiceChoice
-				CurrentVoice={voiceContext}
-				VoiceUpdater={props.setCurrentVoice}
-			/>
-
-		</div>
+		</React.StrictMode>
 	)
 }
