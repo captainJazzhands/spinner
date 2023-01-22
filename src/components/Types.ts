@@ -263,7 +263,7 @@ export class ISound {
 }
 
 export class IButton {
-	sound: ISound;
+	sound?: ISound;
 	color?: string | string[];
 	begin?: number;
 	end?: number;
@@ -271,7 +271,7 @@ export class IButton {
 	order?: number;
 
 	constructor(
-		sound: ISound,
+		sound?: ISound,
 		color?: string,
 		begin?: number,
 		end?: number,

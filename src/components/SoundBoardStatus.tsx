@@ -170,7 +170,7 @@ export function SoundBoardStatus(props: { Sequence: IButton[] }) {
 				<ul className={'LCD scroller'}>
 					{
 						rs.map((button, index, sequence) => {
-								root.style.setProperty('--item-count', index.toString());
+								root.style.setProperty('--sequence-item-count', index.toString());
 								// root.style.setProperty('--scroll-distance', index * -2 + 'rem');
 								return (<li
 									className={'LCD ' + button.color}

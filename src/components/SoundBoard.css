@@ -476,14 +476,12 @@ button:disabled {
 }
 
 #SoundBoardStatus,
-#CurrentButton {
-  flex-direction: column;
+#Playback {
+  flex-direction: row;
 }
-@media (min-width: 640px) {
-  #SoundBoardStatus,
-  #CurrentButton {
-    flex-direction: row;
-  }
+#Playback {
+  flex-grow: 10;
+  height: 200% !important;
 }
 
 #TheButtons {

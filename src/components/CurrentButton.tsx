@@ -1,17 +1,13 @@
-import React, {Ref, useEffect, useRef, useState} from 'react'
-import {IRecordingSession, IButton, ISound, SoundType, ISequence} from './Types'
+import React, {useEffect, useRef, useState} from 'react'
+import {IButton, ISound, SoundType} from './Types'
 import './SoundBoard.css'
 
-export function CurrentButton(props: { CurrentButton: IButton }) {
+export function CurrentButton(props: { thisButtonCurrent: IButton }) {
 
-	const button: IButton = props.CurrentButton ? props.CurrentButton : new IButton(new ISound())
-	const sound: ISound = props.CurrentButton.sound ? props.CurrentButton.sound : new ISound()
-
-	// console.log(button.color, button.status, button.sound, button.order)
+	const button: IButton = props.thisButtonCurrent ? props.thisButtonCurrent : new IButton(new ISound()) // call it a lazy null check?
 
 	return (
-		<div className={'box ' + button.color} id={'CurrentButton'}>
-			{/*<label>Current Button:</label>*/}
+		<div className={' ' + button.color} id={'CurrentButton'}>
 			<ul className={'LCD'}>
 				{
 					Object.keys(button).map((item, i, thing) => {
@@ -28,26 +24,15 @@ export function CurrentButton(props: { CurrentButton: IButton }) {
 							<span className={'meta'}>
 								{thing[i].toString()}
 							</span>
-						</li>
-					})
-				}
-			</ul>
-			<ul className={'LCD'}>
-				{
-					Object.keys(sound).map((item, i, thing) => {
-						return <li
-							className={'CurrentButton'}
-							key={i}
-						>
 							<span className={'meta'}>
-								{thing[i].toString()}
+								{button.sound ? button.sound!.pronunciation : ""}
 							</span>
 							<span className={'meta'}>
-								{sound.pronunciation}
+								{button.begin}
 							</span>
-							{/*<span className={'meta'}>*/}
-							{/*	{sound.begin}*/}
-							{/*</span>*/}
+							<span className={'meta'}>
+								{button.end}
+							</span>
 						</li>
 					})
 				}

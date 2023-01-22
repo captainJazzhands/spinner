@@ -15,7 +15,7 @@ import {SoundBoardStatus} from './SoundBoardStatus'
 import './SoundBoard.css'
 import {IRecordingSession, IButton, ISound, IStroopMode} from './Types';
 import {RecordingSessions} from './RecordingSessions';
-import {CurrentButton} from './CurrentButton';
+import {Playback} from './Playback';
 import {StroopSwitch} from "./StroopSwitch";
 // import {AST} from 'eslint'
 // import Token = AST.Token
@@ -301,13 +301,14 @@ export function TheSoundBoard(this: any) {
 			thisButton.begin = Date.now() - RecordingStart
 		}
 		delta = thisButton.begin - RecordingStart + Date.now()
-
-		for (let i = 0; i < voices.length; i++) {
-			if (voices[i].name === CurrentVoice.displayName) {
-				if (override) {
-					thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
-				} else {
-					thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+		if (thisButton.sound) {
+			for (let i = 0; i < voices.length; i++) {
+				if (voices[i].name === CurrentVoice.displayName) {
+					if (override) {
+						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+					} else {
+						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+					}
 				}
 			}
 		}
@@ -341,7 +342,10 @@ export function TheSoundBoard(this: any) {
 			Speak(thisButton.sound)
 		}
 
-		if (stroopContext.Provider.toString() === 'tone' && thisButton.sound) {
+		if (  //  Hmm, how to sort this one…
+			thisButton.end && thisButton.begin ||
+			stroopContext.Provider.toString() === 'tone' && thisButton.sound
+		) {
 			let duration = thisButton.end! - thisButton.begin
 			MakeNoise(thisButton.sound, duration)
 		}
@@ -365,11 +369,11 @@ export function TheSoundBoard(this: any) {
 							VoiceUpdater={HandleVoiceChange}
 						/>
 
-						<SoundBoardStatus
-							Sequence={tally}
-						/>
-
 						<soundContext.Provider value={RecordingSession}>
+
+							<Playback
+								Sequence={tally}
+							/>
 
 							<div
 								className={'box'}
@@ -427,15 +431,15 @@ export function TheSoundBoard(this: any) {
 								</div>
 							</div>
 
+							<SoundBoardStatus
+								Sequence={tally}
+							/>
+
 							{/*<RecordingSessions*/}
 							{/*	RSP={RecordingSession}*/}
 							{/*	UpdaterFunction={HandleRecordChange}*/}
 							{/*/>*/}
 						</soundContext.Provider>
-
-						<CurrentButton
-							CurrentButton={button}
-						/>
 
 					</voiceContext.Provider>
 				</stroopContext.Provider>
