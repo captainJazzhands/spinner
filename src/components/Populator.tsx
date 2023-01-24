@@ -4,7 +4,7 @@ import React, {
 	Ref,
 	useRef
 } from 'react'
-import axios, {RawAxiosRequestConfig} from "axios"
+import axios from "axios"
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
 import {IButton, ISound, IStroopMode} from './Types';
@@ -87,151 +87,32 @@ let soundList: IButton[] = [
 
 //</editor-fold>
 
-export function Populator(props:
-	                          {
-		                          handlePopulation: Function,
-		                          setWordContext: Function,
-		                          HotPanel: string
-	                          }) {
+export function Populator(handleSelection: any) {
 
-	//  display available APIs
-	//    select an API
-	//  display selected API’s response
-	//    select mulitple responses
-	//    setContext(selection)
+	const [foods, setFoods]: [any, Function] = useState([])
 
-	const [Words, setWords]: [any, Function] = useState([])
-	const [SpeechPart, setSpeechPart]: [any, Function] = useState([])
-	const [WhichData, setWhichData]: [any, Function] = useState([])
-
-	const APIlist = [
-		{
-			url: "http://world.openWordfacts.org/api/v0/product/737628064502.json",
-			shortName: "food facts",
-			longName: "Food Facts from Open World Facts, who conveniently offers a free API for people like us to play with."
-		}, {
-			url: "https://localhost:7000/api/Words",
-			shortName: "words",
-			longName: "English words, served by an API on localhost that I put together in .Net to play with because CORS, am I right?"
-		}
-	]
-
-	const fetchWords = async () => {
+	const fetchFood = async () => {
 		try {
-			const DataSource = await axios(
-				APIlist[1].url.toString()
+			const foodList = await axios(
+				"https://localhost:7000/api/Swatches"
+				// "http://world.openfoodfacts.org/api/v0/product/737628064502.json"
 			)
-			setWords(DataSource.data)
+			setFoods(foodList.data)
 		} catch (err) {
 			console.error(err)
 		}
 	}
-
-	const fetchData = async (WhichDataAxios: RawAxiosRequestConfig<string>) => {
-		try {
-			const DataSource = await axios(
-				WhichDataAxios
-			)
-			setWords(DataSource.data)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-
-	const uniqueParts: any[] = [];
-	Words.map((PoS: { part: string; }, idx: number) => {
-		if (uniqueParts.indexOf(Words[idx].partOfSpeech) === -1) {
-			uniqueParts.push(Words[idx].partOfSpeech)
-		}
-	})
-
 	useEffect(() => {
-		fetchData(WhichData)
-	}, [WhichData])
-
-	let isHot: boolean = (props.HotPanel.toString() === 'DataSelector')
-	const filteredWords = Words.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
-		return theWord.partOfSpeech == SpeechPart
-	})
-
-	const truncatedFilteredWords = filteredWords.slice(0, 8)
-
-	truncatedFilteredWords.sort((a: number, b: number) => {
-		a > b
-	})
-
-	// truncatedFilteredWords.sort(function compareFn(a: string, b: any) {
-	// 	a === "a"
-	// })
-
-	function randomSort() {
-		return 0.5 - Math.random()
-	}
+		fetchFood()
+	}, [])
 
 	return (
 		<div
-			className={isHot ? 'box HOT' : 'box COLD'}
-			id={'DataSelectorDiv'}
+			className={'box'}
+			id={'DataSelection'}
 		>
-			<ul
-				className={'buttonTile tintable'}
-			>{
-				Object.keys(APIlist).map((item, i, thing) => {
-					return <li
-						className={'dataSource'}
-						key={i}
-					>
-						<div className={'shortName'}
-						     onClick={() => setWhichData(APIlist[i])}
-						>
-							{APIlist[i].shortName}
-						</div>
-						<p className={'longName'}>
-							{APIlist[i].longName}
-						</p>
-					</li>
-				})
-			}
-			</ul>
-
-			<ul
-				className={'DataSelectorList tintable'}
-				id={'PartsOfSpeechList'}
-			>{
-				uniqueParts.map((item, r, thing) => {
-					return <li
-						className={''}
-						key={r}
-					>
-							<span
-								className={'meta'}
-								onClick={() => setSpeechPart(uniqueParts[r])}
-							>
-								{uniqueParts[r]}
-							</span>
-					</li>
-				})
-			}
-			</ul>
-
-			<ul
-				className={'DataSelectorList'}
-			>{
-				Object.keys(truncatedFilteredWords).map((item, i, thing) => {
-					return <li
-						className={''}
-						key={i}
-					>
-							<span className={'meta'}>
-								{truncatedFilteredWords[i].theWord}
-							</span>
-					</li>
-				})
-			}
-			</ul>
-			<div className={'tintable'}>
-				<button onClick={() => props.setWordContext(truncatedFilteredWords)}>Use These Words</button>
-			</div>
+			<p>Foods: {foods.data}</p>
+			<button onClick={fetchFood}>get food</button>
 		</div>
 	)
 
