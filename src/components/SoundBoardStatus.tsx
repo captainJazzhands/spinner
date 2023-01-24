@@ -12,76 +12,71 @@ import {TransportControls} from "./TransportControls";
 
 let root = document.documentElement
 
-let scaleMagic = 5
-
 export function SoundBoardStatus(props: {
 	Sequence: IButton[],
 	TransportState: string,
 	TransportStateChangeHandler: (requestedState: string) => Function
 }) {
 	const [user, setUser]: [number, Function] = useState(8675309)
-	const [isPlaying, setIsPlaying] = useState(false)
-	// const [tally, setTally]: [IButton[], Function] = useState([])
-	// const [RecordingSession, setRecordingSession]: [IRecordingSession | IRecordingSession[], Function] = useState([])
-	const [isRecording, setIsRecording] = useState(false)
 	const stroopMode = useContext(stroopContext)
+	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 
 	let rs: IButton[] = props.Sequence
+	let begin = 0
+	let duration = 0
 
-	const playbackButtons: Ref<any> = useRef(null)
-	useEffect(() => {
-			if (playbackButtons != null) {
-				if (playbackButtons.current != null) {
-					if (isPlaying) {
-						playbackButtons.current.classList.add('playing')
-					} else {
-						playbackButtons.current.classList.remove('playing')
-					}
-				}
-			}
-		},
-		[isPlaying])
+	if (button.end && button.begin) {
+		duration = button.end - button.begin
+	}
 
 	return (
-		<React.StrictMode>
-			<div className={'box'} id={'SoundBoardStatus'}>
-				<div
-					className={'wrapper'}
-					id={'DotGraph'}
-				>
-					<ul className={' scroller'}>
-						{
-							rs.map((button, index, sequence) => {
-									let scaleCurrent = Math.abs(scaleMagic - index * 5)
-									root.style.setProperty('--sequence-item-count', index.toString());
-									return (<li
-										className={' ' + button.color}
-										style={{
-											left: Math.round((button.begin ? button.begin : 0) / 100).toString() + 'px',
-											width: Math.round((button.end ? button.end : 1920 - (button.begin ? button.begin : 1080)) / 10).toString() + 'px',
-											// width: Math.round((button.end ? button.end : 1 - (button.begin ? button.begin : 1)) * scaleCurrent).toString() + 'px',
-											// height: Math.round((button.end ? button.end : 1 - (button.begin ? button.begin : 1)) * scaleCurrent).toString() + 'px'
-										}}
-										key={index}
-										// onClick={props.HandleRecordChange}
-									>)
-										<span className={'meta'}>
+		<div className={'box'} id={'SoundBoardStatus'}>
+			<p>TransportState
+				<span className={'LCD'}>
+				{props.TransportState.toString()}
+			</span>
+			</p>
+
+			<TransportControls
+				TransportChange={props.TransportStateChangeHandler}
+				TransportState={props.TransportState}/>
+			<div
+				className={'wrapper'}
+				id={'DotGraph'}
+			>
+				<ul>
+					{
+						rs.map((button, index, sequence) => {
+								root.style.setProperty('--sequence-item-count', index.toString())
+								if (button.end && button.begin) {
+									duration = (button.end - button.begin) / 10
+									begin = button.begin / 25
+								}
+								console.log(duration)
+								return (<li
+									className={' ' + button.color}
+									key={index}
+									style={{
+										left: begin + "px",
+										width: duration + "px",
+										height: duration + "px",
+										borderRadius: duration + "px"
+									}}
+									// onClick={props.HandleRecordChange}
+								>)
+									<span className={'meta'}>
 								{button.sound!.toString()}
 							</span>
-										<span className={'meta'}>
+									<span className={'meta'}>
 								{button.sound!.pitch!.toString()}
 							</span>
-									</li>)
-								}
-							)
-						}
-					</ul>
-				</div>
-				<TransportControls
-					TransportChange={props.TransportStateChangeHandler}
-				/>
+								</li>)
+							}
+						)
+					}
+				</ul>
 			</div>
-		</React.StrictMode>
+		</div>
 	)
 }
 
