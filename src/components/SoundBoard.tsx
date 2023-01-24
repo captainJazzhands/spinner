@@ -15,6 +15,7 @@ import './SoundBoard.css'
 import {IRecordingSession, IButton, ISound, IStroopMode, ISequence} from './Types';
 import {RecordingSessions} from './RecordingSessions';
 import {StroopSwitch} from "./StroopSwitch";
+import {Populator} from "./Populator";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -115,7 +116,7 @@ downTimerOn = false
 const voices = window.speechSynthesis.getVoices()
 export const voiceContext: React.Context<any> = React.createContext(voices[0].name)
 // export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
-export const soundContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
+export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
 
 export function TheSoundBoard(this: any) {
@@ -222,24 +223,27 @@ export function TheSoundBoard(this: any) {
 		setIsPlaying(true)
 		setIsRecording(false)
 		let delta: number = 0
-		const Sequence: ISequence | null = RequestedSequence
+		let localSeq
 		// const Sequence: ISequence = RequestedSequence ? RequestedSequence : new ISequence([new IButton(new ISound())]) as ISequence
 
-		if (Sequence && typeof (Sequence) !== 'undefined') {
-			// @ts-ignore
-			Sequence[0].reduce(function (p: Promise<any>, button: IButton, i, ray) {
+		if (RequestedSequence) {
+			if (typeof (RequestedSequence) !== 'undefined') {
+				localSeq = Object.assign(RequestedSequence)
+			}
+			if (RequestedSequence.Sequence) {
+				localSeq = Object.assign(RequestedSequence.Sequence)
+			}
+			localSeq.reduce(function (p: Promise<any>, button: IButton, i: number, ray: { begin: any }[]) {
 				return p.then(async () => {
-					if (button.sound) {
+					if (button.sound && button.begin) {
 						let x = i > 0 ? i - 1 : 0 as number
-						delta = button.begin! - ray[x].begin!
-						// console.log(delta, JSON.stringify(button))
+						delta = button.begin - ray[x].begin
 						return await PlayButton(button).then(await delay.bind(null, delta)).then();
-						// return delay.bind(null, button.begin).then(PlayButton(button));
 					} else {
 						console.log('giving up')
 						return null
 					}
-				});
+				})
 			}, Promise.resolve()).then(() => {
 				setIsPlaying(false)
 				setUser(8675309)
@@ -260,10 +264,12 @@ export function TheSoundBoard(this: any) {
 			StopEverything()
 		}
 		if (requestedState === 'record') {
+			startRecordingTimer()
 		}
 	}
 
 	async function PlayButton(button: IButton) {
+		setIsPlaying(true)
 		if (StroopMode === 'speech') {
 			Speak(button.sound)
 		}
@@ -274,7 +280,7 @@ export function TheSoundBoard(this: any) {
 
 	function startPlaybackTimer() {
 		downTimerOn = true
-		RecStart = Date.now()
+		setIsPlaying(true)
 		playbackTimer = setInterval(() => {
 			elapsedTime = Date.now() - RecStart
 		}, planck)
@@ -282,6 +288,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function stopPlaybackTimer() {
+		setIsPlaying(false)
 		let result: number = playbackTimer ? 0 : Date.now() - RecStart
 		playbackTimerOn = false
 		clearInterval(playbackTimer)
@@ -298,6 +305,7 @@ export function TheSoundBoard(this: any) {
 		speechSynthesis.cancel()
 		stopCountdown()
 		stopPlaybackTimer()
+		stopRecordingTimer()
 		clearInterval(downTimer)
 		clearInterval(playbackTimer)
 		playbackTimerOn = false
@@ -374,7 +382,7 @@ export function TheSoundBoard(this: any) {
 	useEffect(() => {
 			if (buttonBoardDiv != null) {
 				if (isPlaying) {
-					buttonBoardDiv.style.opacity = "0.5"
+					buttonBoardDiv.style.opacity = "0.75"
 					buttonBoardDiv.style.pointerEvents = "none"
 				} else {
 					buttonBoardDiv.style.opacity = "1"
@@ -382,11 +390,10 @@ export function TheSoundBoard(this: any) {
 				}
 			}
 		},
-		[StroopMode])
+		[isPlaying, isRecording])
 
 	const pageLayoutRef: Ref<HTMLDivElement> = useRef(null)
 	const pageLayoutDiv = pageLayoutRef.current
-
 
 	useEffect(() => {
 			if (pageLayoutDiv != null) {
@@ -483,9 +490,9 @@ export function TheSoundBoard(this: any) {
 				[
 					{SessionData: [{RecStart: RecordingStart}]},
 					{
-						Sequences: [
+						Sequences:
 							[...tally, completedButton]
-						]
+
 					}
 				]
 			)
@@ -496,63 +503,73 @@ export function TheSoundBoard(this: any) {
 		return thisButton
 	}
 
+	let TransportState = "empty"
+	if (isPlaying) {
+		TransportState = "playing"
+	}
+	if (isRecording) {
+		TransportState = "recording"
+	}
+
 	return (
-		<React.StrictMode>
-			<div
-				id={'pageLayout'}
-				ref={pageLayoutRef}
-			>
-				<stroopContext.Provider value={StroopMode}>
-					<voiceContext.Provider value={CurrentVoice}>
+		<div
+			id={'pageLayout'}
+			ref={pageLayoutRef}
+		>
+			<stroopContext.Provider value={StroopMode}>
+				<voiceContext.Provider value={CurrentVoice}>
+					<RecordingContext.Provider value={RecordingSession}>
+
+						<SoundBoardStatus
+							Sequence={tally}
+							TransportState={TransportState}
+							// @ts-ignore
+							TransportStateChangeHandler={HandleTransportChange}
+						/>
+
+						<Populator
+							handleSelection={undefined}
+						/>
 
 						<StroopSwitch
 							StroopMode={StroopMode}
 							StroopUpdater={HandleStroopChange}
 						/>
 
-						<soundContext.Provider value={RecordingSession}>
+						<RecordingSessions
+							Sessions={RecordingSession}
+							SessionChangeHandler={HandleRecordChange}
+						/>
 
+						<div
+							className={'box'}
+							id='buttonBoard'
+							ref={buttonBoardRef}
+						>
 							<div
-								className={'box'}
-								id='buttonBoard'
-								ref={buttonBoardRef}
-							>
-
-								<div className={'' + button.color} id={'TheButtons'}>
-									{soundList.map(function (oneButton: IButton, i: React.Key) {
-										return <button
-											key={i}
-											name={oneButton.sound!.name}
-											value={oneButton.sound!.name}
-											className={oneButton.color ? oneButton.color.toString() : ''}
-											//  ToDoButNotToday: replace onClick with addEventListener()
-											onMouseDown={() => handleButtonPress(oneButton, "down")}
-											onMouseUp={() => handleButtonPress(oneButton, "up")}
-										>{oneButton.sound!.name}</button>
-									})}
-								</div>
+								// className={'' + button.color}
+								id={'TheButtons'}>
+								{soundList.map(function (oneButton: IButton, i: React.Key) {
+									return <button
+										key={i}
+										name={oneButton.sound!.name}
+										value={oneButton.sound!.name}
+										className={oneButton.color ? oneButton.color.toString() : ''}
+										//  ToDoButNotToday: replace onClick with addEventListener()
+										onMouseDown={() => handleButtonPress(oneButton, "down")}
+										onMouseUp={() => handleButtonPress(oneButton, "up")}
+									>{oneButton.sound!.name}</button>
+								})}
 							</div>
+						</div>
 
-							<SoundBoardStatus
-								Sequence={tally}
-								TransportState={""}
-								// @ts-ignore
-								TransportStateChangeHandler={HandleTransportChange}
-							/>
+					</RecordingContext.Provider>
 
-							{/*<RecordingSessions*/}
-							{/*	RSP={RecordingSession}*/}
-							{/*	UpdaterFunction={HandleRecordChange}*/}
-							{/*/>*/}
+				</voiceContext.Provider>
+			</stroopContext.Provider>
 
-						</soundContext.Provider>
+		</div>
 
-					</voiceContext.Provider>
-				</stroopContext.Provider>
-
-			</div>
-
-		</React.StrictMode>
 	)
 }
 
