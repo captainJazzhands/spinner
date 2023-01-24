@@ -14,24 +14,19 @@ let root = document.documentElement
 
 export function RecordingSessions(props: {
 	Sessions: IRecordingSession,
-	SessionChangeHandler: any,
-	HotPanel: string
+	SessionChangeHandler: any
 }) {
 
 	let seqs
-
+	
 	if (props.Sessions && props.Sessions.Sequences) {
 		seqs = props.Sessions.Sequences
 	} else {
 		seqs = [new IButton()]
 	}
-	let isHot: boolean = (props.HotPanel === "RecordingSessions")
 
 	return (
-		<div
-			className={isHot ? 'box HOT' : 'box COLD'}
-			id={'RecordingSessions'}
-		>
+		<div className={'box'} id={'RecordingSessions'}>
 			<p>
 				You have <span className={'LCD'}>{seqs.length}</span> recordings.
 			</p>
@@ -40,25 +35,25 @@ export function RecordingSessions(props: {
 				className={'wrapper'}
 				id={'DotGraph'}
 			>
-				<ul>
-					{
-						seqs.map((session, index, sequence) => {
-								return (<li
-									className={'sequence-length-' + session.toString()}
-									key={index}
-									// onClick={props.SessionChangeHandler(Event.target)}
-								>)
-									<span className={'meta'}>
-								{index}
-							</span>
-									<span className={'meta'}>
-								{}
-							</span>
-								</li>)
-							}
-						)
-					}
-				</ul>
+				{/*<ul>*/}
+				{/*	{*/}
+				{/*		sessions.map((session, index, sequence) => {*/}
+				{/*				return (<li*/}
+				{/*					className={'sequence-length-' + session.Sequence.length}*/}
+				{/*					key={index}*/}
+				{/*					// onClick={props.SessionChangeHandler(Event.target)}*/}
+				{/*				>)*/}
+				{/*					<span className={'meta'}>*/}
+				{/*				{index}*/}
+				{/*			</span>*/}
+				{/*					<span className={'meta'}>*/}
+				{/*				{}*/}
+				{/*			</span>*/}
+				{/*				</li>)*/}
+				{/*			}*/}
+				{/*		)*/}
+				{/*	}*/}
+				{/*</ul>*/}
 			</div>
 
 		</div>
