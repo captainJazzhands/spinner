@@ -1,6 +1,6 @@
 import React, {Context, Ref, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {IRecordingSession, IButton, ISound, SoundType, ISequence, IStroopMode} from './Types'
-import {soundContext, stroopContext, voiceContext} from "./SoundBoard";
+import {RecordingContext, stroopContext, voiceContext} from "./SoundBoard";
 import './SoundBoard.css'
 
 export function StroopSwitch(props: {
@@ -12,7 +12,6 @@ export function StroopSwitch(props: {
 	const setStroopMode: Function = props.StroopUpdater
 
 	return (
-		<React.StrictMode>
 			<div
 				className={'box'}
 				id={'stroopSwitch'}
@@ -54,6 +53,5 @@ export function StroopSwitch(props: {
 				>tone
 				</button>
 			</div>
-		</React.StrictMode>
 	)
 }
