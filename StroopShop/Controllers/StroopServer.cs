@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using StroopShop.Controllers;
-using static StroopShop.Controllers.LocalFiles;
 
 namespace StroopShop.Controllers;
 
@@ -15,62 +14,17 @@ namespace StroopShop.Controllers;
 public class WordsController : Controller
 {
 	private readonly List<Word> _words = new List<Word>();
-	private readonly List<string> _partslist = new List<string>();
-	public static string _part_of_speech = "";
-	public string[] _fileContents;
 
 	[HttpGet]
 	public ActionResult<List<Word>> Index()
 	{
-		_partslist.Add("noun");
-		_partslist.Add("verb");
-		_partslist.Add("adverb");
-		_partslist.Add("adjective");
-		_partslist.Add("pronoun");
-		_partslist.Add("preposition");
-
-		foreach (var speechpart in _partslist)
-		{
-			_fileContents = Main(speechpart);
-			if (_fileContents.Length > 0)
-			{
-				foreach (var w in _fileContents)
-				{
-					_words.Add(new Word()
-					{
-						TheWord = w,
-						PartOfSpeech = speechpart
-					});
-				}
-			}
-		}
-
-		return _words; //returns all words as… ?
+		return _words; //returns all Swatches.
 	}
 
 	[HttpGet("{PartOfSpeech}")]
-	public ActionResult<List<Word>> GetByResult(string PartOfSpeech)
+	public ActionResult<Word> GetByResult(string partOfSpeech)
 	{
-		//	is unsafe user content!
-		_part_of_speech = PartOfSpeech.ToString();
-		_fileContents = Main(_part_of_speech);
-
-		if (_fileContents.Length > 0)
-		{
-			for (int i = 0; i < _fileContents.Length; i++)
-			{
-				_words.Add(new Word()
-				{
-					TheWord = _fileContents[i],
-					PartOfSpeech = _part_of_speech
-				});
-			}
-
-			Console.WriteLine(_words.Count + _part_of_speech);
-		}
-
-		return _words;
-		// return Ok(_words.FirstOrDefault(u => u.PartOfSpeech == _part_of_speech));
+		return Ok(_words.FirstOrDefault(u => u.PartOfSpeech == partOfSpeech));
 	}
 
 	[HttpPost]
@@ -78,6 +32,32 @@ public class WordsController : Controller
 	{
 		_words.Add(word);
 		return word;
+	}
+
+	private readonly ArrayList _fileContents = LocalFiles.Main();
+
+	public WordsController()
+	{
+		_words.Add(new Word()
+		{
+			TheWord = "0",
+			PartOfSpeech = _fileContents.ToString()
+		});
+
+		_words.Add(new Word()
+		{
+			TheWord = "count",
+			PartOfSpeech = _fileContents.Count.ToString()
+		});
+
+		if (_fileContents.Count > 0)
+		{
+			_words.Add(new Word()
+			{
+				TheWord = "0",
+				PartOfSpeech = _fileContents[0].ToString()
+			});
+		}
 	}
 }
 
