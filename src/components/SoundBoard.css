@@ -361,18 +361,17 @@ button {
   font-size: 12pt;
   transition: ease-in 0.3s 0.4s;
   background-color: #6c6ce0;
+  opacity: 0.5;
   box-shadow: inset rgba(0, 0, 0, 0.8) 0.2rem 0.2rem 0.6rem;
-}
-
-button:active {
-  box-shadow: red 0.15rem 0.15rem 0.6rem;
 }
 
 button:focus {
   box-shadow: yellow 0.1rem 0.1rem 0.4rem;
 }
 
-button:hover {
+button:hover,
+button.selected {
+  opacity: 1;
   box-shadow: white 0.01rem 0.01rem 1rem;
 }
 
@@ -406,7 +405,7 @@ button:disabled {
   transition: ease-in 0.3s 0.4s;
   text-align: center;
   flex-grow: 0;
-  flex-shrink: 1;
+  flex-shrink: 0;
   overflow: hidden;
   white-space: nowrap;
   color: hsl(0deg, 0%, 85%);
@@ -428,15 +427,6 @@ button:disabled {
   padding: 0.5rem;
   width: 100%;
   border-radius: 2rem 2rem 0 0;
-}
-
-#buttonBoard {
-  flex-direction: column;
-}
-@media (min-width: 640px) {
-  #buttonBoard {
-    flex-direction: column;
-  }
 }
 
 #stroopSwitch {
@@ -515,9 +505,8 @@ button:disabled {
 #TheButtons {
   border-radius: 0;
   width: 100%;
-  height: auto;
-  flex-shrink: 5;
-  flex-grow: 10;
+  height: 100%;
+  flex-direction: column;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: auto;
@@ -577,23 +566,16 @@ p.LCD {
   width: 100%;
   border: 1px solid black;
   overflow: hidden;
+  perspective-origin: -1500px 500px;
   transition: ease-in 0.3s 0.4s;
 }
-#DotGraph ul.scroller {
+#DotGraph ul {
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  transition: ease-in 0.3s 0.4s;
-  max-width: unset;
+  overflow: hidden;
 }
-#DotGraph ul.scroller li {
+#DotGraph ul li {
   position: absolute;
-  height: 100%;
-  width: auto;
-  flex-grow: 0;
-  flex-shrink: 0;
   transition: ease-in 0.3s 0.4s;
 }
 
@@ -624,11 +606,13 @@ p.LCD {
 
 .recording {
   transition: ease-in 0.3s 0.4s;
+  border: 4px dotted red;
   background-color: red !important;
 }
 
 .playing {
   transition: ease-in 0.3s 0.4s;
+  border: 4px dotted green;
   background-color: green !important;
 }
 
