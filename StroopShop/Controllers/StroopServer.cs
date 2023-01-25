@@ -14,25 +14,49 @@ namespace StroopShop.Controllers;
 public class WordsController : Controller
 {
 	private readonly List<Word> _words = new List<Word>();
+	public static string _part_of_speech = "";
 
 	[HttpGet]
 	public ActionResult<List<Word>> Index()
 	{
+		if (_fileContents.Length > 0)
+		{
+			for (int i = 0; i < _fileContents.Length; i++)
+			{
+				_words.Add(new Word()
+				{
+					TheWord = _fileContents[i],
+					PartOfSpeech = _part_of_speech
+				});
+			}
+
+			Console.WriteLine(_words.Count + _part_of_speech);
+		}
+
 		return _words; //returns all words as… ?
 	}
 
 	[HttpGet("{PartOfSpeech}")]
-	public ActionResult<Word> GetByResult(string partOfSpeech)
+	public ActionResult<List<Word>> GetByResult(string PartOfSpeech)
 	{
-		return Ok(_words.All(u => u.PartOfSpeech == partOfSpeech));
-		// return Ok(_words.FirstOrDefault(u => u.PartOfSpeech == partOfSpeech));
-	}
+		_part_of_speech = PartOfSpeech.ToString();
 
-	[HttpGet("{Quantity}")]
-	public ActionResult<Word> GetByResult(int quantity)
-	{
-		private string[] words_All = _words.All();
-		return Ok(_words.All(u => u.Quantity = quantity));
+		if (_fileContents.Length > 0)
+		{
+			for (int i = 0; i < _fileContents.Length; i++)
+			{
+				_words.Add(new Word()
+				{
+					TheWord = _fileContents[i],
+					PartOfSpeech = _part_of_speech
+				});
+			}
+
+			Console.WriteLine(_words.Count + _part_of_speech);
+		}
+
+		return _words;
+		// return Ok(_words.FirstOrDefault(u => u.PartOfSpeech == _part_of_speech));
 	}
 
 	[HttpPost]
@@ -42,20 +66,10 @@ public class WordsController : Controller
 		return word;
 	}
 
-	private string[] ActualFileContents = LocalFiles.Main("pronoun");
+	private string[] _fileContents = LocalFiles.Main(_part_of_speech);
 
 	public WordsController()
 	{
-		if (ActualFileContents.Length > 0)
-		{
-			for (int i = 0; i < ActualFileContents.Length; i++)
-			{
-				_words.Add(new Word()
-				{
-					TheWord = ActualFileContents[i].ToString()
-				});
-			}
-		}
 	}
 }
 
