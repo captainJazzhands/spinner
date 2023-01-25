@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using StroopShop.Controllers;
+using static StroopShop.Controllers.LocalFiles;
 
 namespace StroopShop.Controllers;
 
@@ -14,23 +15,34 @@ namespace StroopShop.Controllers;
 public class WordsController : Controller
 {
 	private readonly List<Word> _words = new List<Word>();
+	private readonly List<string> _partslist = new List<string>();
 	public static string _part_of_speech = "";
+	public string[] _fileContents;
 
 	[HttpGet]
 	public ActionResult<List<Word>> Index()
 	{
-		if (_fileContents.Length > 0)
-		{
-			for (int i = 0; i < _fileContents.Length; i++)
-			{
-				_words.Add(new Word()
-				{
-					TheWord = _fileContents[i],
-					PartOfSpeech = _part_of_speech
-				});
-			}
+		_partslist.Add("noun");
+		_partslist.Add("verb");
+		_partslist.Add("adverb");
+		_partslist.Add("adjective");
+		_partslist.Add("pronoun");
+		_partslist.Add("preposition");
 
-			Console.WriteLine(_words.Count + _part_of_speech);
+		foreach (var speechpart in _partslist)
+		{
+			_fileContents = Main(speechpart);
+			if (_fileContents.Length > 0)
+			{
+				foreach (var w in _fileContents)
+				{
+					_words.Add(new Word()
+					{
+						TheWord = w,
+						PartOfSpeech = speechpart
+					});
+				}
+			}
 		}
 
 		return _words; //returns all words as… ?
@@ -39,7 +51,9 @@ public class WordsController : Controller
 	[HttpGet("{PartOfSpeech}")]
 	public ActionResult<List<Word>> GetByResult(string PartOfSpeech)
 	{
+		//	is unsafe user content!
 		_part_of_speech = PartOfSpeech.ToString();
+		_fileContents = Main(_part_of_speech);
 
 		if (_fileContents.Length > 0)
 		{
@@ -64,12 +78,6 @@ public class WordsController : Controller
 	{
 		_words.Add(word);
 		return word;
-	}
-
-	private string[] _fileContents = LocalFiles.Main(_part_of_speech);
-
-	public WordsController()
-	{
 	}
 }
 
