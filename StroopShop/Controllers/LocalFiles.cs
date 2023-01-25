@@ -10,11 +10,11 @@ public static class LocalFiles
 {
 	public static string[] tempResult = Array.Empty<string>();
 
-	public static string[] Main(string ArgPart)
+	public static string[] Main(string PartOfSpeech)
 	{
 		var appDataDir = Environment.CurrentDirectory;
 		var dataDir = Path.Combine(appDataDir, "data");
-		var wordsPath = Path.Combine(dataDir, ArgPart + "s.txt");
+		var wordsPath = Path.Combine(dataDir, PartOfSpeech + "s.txt");
 		if (File.Exists(wordsPath))
 		{
 			string[] readLines = File.ReadAllLines(wordsPath);
@@ -22,11 +22,6 @@ public static class LocalFiles
 			{
 				tempResult = readLines;
 			}
-		}
-		else
-		{
-			tempResult = Array.Empty<string>();
-			return tempResult;
 		}
 
 		return tempResult;

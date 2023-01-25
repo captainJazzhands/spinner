@@ -18,13 +18,21 @@ public class WordsController : Controller
 	[HttpGet]
 	public ActionResult<List<Word>> Index()
 	{
-		return _words; //returns all Swatches.
+		return _words; //returns all words as… ?
 	}
 
 	[HttpGet("{PartOfSpeech}")]
 	public ActionResult<Word> GetByResult(string partOfSpeech)
 	{
-		return Ok(_words.FirstOrDefault(u => u.PartOfSpeech == partOfSpeech));
+		return Ok(_words.All(u => u.PartOfSpeech == partOfSpeech));
+		// return Ok(_words.FirstOrDefault(u => u.PartOfSpeech == partOfSpeech));
+	}
+
+	[HttpGet("{Quantity}")]
+	public ActionResult<Word> GetByResult(int quantity)
+	{
+		private string[] words_All = _words.All();
+		return Ok(_words.All(u => u.Quantity = quantity));
 	}
 
 	[HttpPost]
@@ -34,29 +42,19 @@ public class WordsController : Controller
 		return word;
 	}
 
-	private readonly ArrayList _fileContents = LocalFiles.Main();
+	private string[] ActualFileContents = LocalFiles.Main("pronoun");
 
 	public WordsController()
 	{
-		_words.Add(new Word()
+		if (ActualFileContents.Length > 0)
 		{
-			TheWord = "0",
-			PartOfSpeech = _fileContents.ToString()
-		});
-
-		_words.Add(new Word()
-		{
-			TheWord = "count",
-			PartOfSpeech = _fileContents.Count.ToString()
-		});
-
-		if (_fileContents.Count > 0)
-		{
-			_words.Add(new Word()
+			for (int i = 0; i < ActualFileContents.Length; i++)
 			{
-				TheWord = "0",
-				PartOfSpeech = _fileContents[0].ToString()
-			});
+				_words.Add(new Word()
+				{
+					TheWord = ActualFileContents[i].ToString()
+				});
+			}
 		}
 	}
 }
