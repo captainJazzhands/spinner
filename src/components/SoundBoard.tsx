@@ -116,8 +116,8 @@ playbackTimerOn = false
 downTimerOn = false
 
 const voices = window.speechSynthesis.getVoices()
-export const voiceContext: React.Context<any> = React.createContext(voices[0].name)
-// export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
+export const voiceContext: React.Context<any> = React.createContext(voices[0])
+// export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(new SpeechSynthesisVoice())
 export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
 export let dataSourceContext: React.Context<any> = React.createContext("")
@@ -132,15 +132,12 @@ export function TheSoundBoard(this: any) {
 	const [clickTime, setClickTime]: [number, Function] = useState(0)
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState([  {SessionData: [] } , {Sequences:[] } , Function ] )
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
 	const [HotPanel, setHotPanel]: [string, Function] = useState('DataSelector')
 	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
 
 	const [user, setUser]: [number, Function] = useState(8675309)
-	// const [sessionID, setSessionID]: [number, Function] = useState(0)
-	// const [sessionStart, setSessionStart]: [number, Function] = useState(0)
 	const [Comparison, setComparison]: [[], Function] = useState([])
 
 	// const session = useSession()
@@ -198,10 +195,10 @@ export function TheSoundBoard(this: any) {
 		setHotPanel("DataSelector")
 	}
 
-	function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
-		console.log('current:', CurrentVoice.displayName, 'new:', NewVoice.name)
-		setCurrentVoice(NewVoice)
-	}
+	// function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
+	// 	console.log('current:', CurrentVoice.displayName, 'new:', NewVoice.name)
+	// 	setCurrentVoice(NewVoice)
+	// }
 
 	// let color: string = button.color ? button.color!.toString() : ''
 
@@ -446,11 +443,13 @@ export function TheSoundBoard(this: any) {
 		}
 
 		for (let i = 0; i < voices.length; i++) {
-			if (voices[i].name === CurrentVoice.displayName) {
-				if (override && thisButton.sound) {
-					thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
-				} else if (thisButton.sound) {
-					thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+			if (CurrentVoice.displayName) {
+				if (voices[i].name === CurrentVoice.displayName) {
+					if (override && thisButton.sound) {
+						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+					} else if (thisButton.sound) {
+						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
+					}
 				}
 			}
 		}

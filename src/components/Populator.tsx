@@ -136,6 +136,13 @@ export function Populator(props:
 		}
 	}
 
+	const uniqueParts: any[] = [];
+	Words.map((PoS: { part: string; }, idx:number) => {
+		if (uniqueParts.indexOf(Words[idx].partOfSpeech) === -1) {
+			uniqueParts.push(Words[idx].partOfSpeech)
+		}
+	})
+
 	useEffect(() => {
 		fetchData(WhichData)
 	}, [WhichData])
@@ -147,17 +154,6 @@ export function Populator(props:
 	})
 	const partsOfSpeech = Words.filter(function (partOfSpeech: { partOfSpeech: string; }) {
 		return partOfSpeech.partOfSpeech == partString
-	})
-	// const uniqueParts = Words.filter(function (partOfSpeech: { partOfSpeech: string; }) {
-	// 	return partOfSpeech.partOfSpeech == partString
-	// })
-	// const uniqueParts = partsOfSpeech.filter((PartOfSpeech: string, idx: number) => partsOfSpeech.indexOf(PartOfSpeech) === idx)
-
-	const uniqueParts: any[] = [];
-	partsOfSpeech.map((PoS: { part: any; }) => {
-		if (partsOfSpeech.indexOf(PoS.part) === -1) {
-			uniqueParts.push(partsOfSpeech.part)
-		}
 	})
 
 	return (
@@ -189,19 +185,19 @@ export function Populator(props:
 			}
 			</ul>
 
-			{/*<ul>{*/}
-			{/*	uniqueParts.map((item, r, thing) => {*/}
-			{/*		return <li*/}
-			{/*			className={''}*/}
-			{/*			key={r}*/}
-			{/*		>*/}
-			{/*				<span className={'meta'}>*/}
-			{/*					{uniqueParts[r].shortName}*/}
-			{/*				</span>*/}
-			{/*		</li>*/}
-			{/*	})*/}
-			{/*}*/}
-			{/*</ul>*/}
+			<ul>{
+				uniqueParts.map((item, r, thing) => {
+					return <li
+						className={''}
+						key={r}
+					>
+							<span className={'meta'}>
+								{uniqueParts[r]}
+							</span>
+					</li>
+				})
+			}
+			</ul>
 
 			<ul>{
 				Object.keys(filteredWords).map((item, i, thing) => {
