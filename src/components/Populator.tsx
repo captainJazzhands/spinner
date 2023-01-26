@@ -87,32 +87,88 @@ let soundList: IButton[] = [
 
 //</editor-fold>
 
-export function Populator(handleSelection: any) {
+export function Populator(props:
+	                          {
+		                          handleSelection: Function,
+		                          HotPanel: string
+	                          }) {
 
-	const [foods, setFoods]: [any, Function] = useState([])
+	//  display available APIs
+	//    select an API
+	//  display selected API’s response
+	//    select mulitple responses
+	//    setContext(selection)
 
-	const fetchFood = async () => {
+	const [Words, setWords]: [any, Function] = useState([])
+
+	const APIlist = [
+		{
+			url: "http://world.openWordfacts.org/api/v0/product/737628064502.json",
+			shortName: "food facts",
+			longName: "Food Facts from Open World Facts, who conveniently offers a free API for people like us to play with."
+		}, {
+			url: "https://localhost:7000/api/Words",
+			shortName: "words",
+			longName: "English words, served by an API on localhost that I put together in .Net to play with because CORS, am I right?"
+		}
+	]
+
+	const fetchWords = async () => {
 		try {
-			const foodList = await axios(
-				"https://localhost:7000/api/Words/pronoun"
-				// "http://world.openfoodfacts.org/api/v0/product/737628064502.json"
+			const DataSource = await axios(
+				APIlist[1].url.toString()
 			)
-			setFoods(foodList.data)
+			setWords(DataSource.data)
 		} catch (err) {
 			console.error(err)
 		}
 	}
 	useEffect(() => {
-		fetchFood()
+		fetchWords()
 	}, [])
+
+	let isHot: boolean = (props.HotPanel.toString() === "DataSelector")
 
 	return (
 		<div
-			className={'box'}
-			id={'DataSelection'}
+			className={isHot ? 'box HOT' : 'box NOT'}
+			id={'DataSelector'}
 		>
-			<p>Foods: {foods.data}</p>
-			<button onClick={fetchFood}>get food</button>
+			{/*<button onClick={fetchWords}>get Word</button>*/}
+
+			<ul>{
+				Object.keys(APIlist).map((item, i, thing) => {
+					return <li
+						className={''}
+						key={i}
+					>
+							<span className={'meta'}>
+								{APIlist[i].shortName}
+							</span>
+						<span className={'meta'}>
+								{APIlist[i].longName}
+							</span>
+					</li>
+				})
+			}
+			</ul>
+
+			<ul>{
+				Object.keys(Words).map((item, i, thing) => {
+					return <li
+						className={''}
+						key={i}
+					>
+							<span className={'meta'}>
+								{Words[i].theWord}
+							</span>
+						<span className={'meta'}>
+								{Words[i].partOfSpeech}
+							</span>
+					</li>
+				})
+			}
+			</ul>
 		</div>
 	)
 

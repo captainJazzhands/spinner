@@ -5,7 +5,7 @@ import React, {
 	useEffect,
 	Reducer,
 	useContext,
-	createContext, Ref, useRef
+	createContext, Ref, useRef, ComponentRef
 } from 'react'
 import * as Types from './Types'
 import {Speak, MakeNoise} from './AudioCode'
@@ -16,6 +16,8 @@ import {IRecordingSession, IButton, ISound, IStroopMode, ISequence} from './Type
 import {RecordingSessions} from './RecordingSessions';
 import {StroopSwitch} from "./StroopSwitch";
 import {Populator} from "./Populator";
+import {TheButtons} from "./TheButtons";
+import * as url from "url";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -118,6 +120,7 @@ export const voiceContext: React.Context<any> = React.createContext(voices[0].na
 // export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
 export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
+export let dataSourceContext: React.Context<any> = React.createContext("")
 
 export function TheSoundBoard(this: any) {
 
@@ -132,6 +135,7 @@ export function TheSoundBoard(this: any) {
 	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState([  {SessionData: [] } , {Sequences:[] } , Function ] )
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
+	const [HotPanel, setHotPanel]: [string, Function] = useState('SoundBoardStatus')
 	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
 
 	const [user, setUser]: [number, Function] = useState(8675309)
@@ -185,12 +189,13 @@ export function TheSoundBoard(this: any) {
 
 	function HandleRecordChange(sesh: IRecordingSession) {
 		// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-		console.log('HRC', typeof sesh)
+		setHotPanel("SoundBoardStatus")
 		setRecordingSession(sesh)
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
+		setHotPanel("DataSelector")
 	}
 
 	function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
@@ -216,6 +221,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const PlayButtStream = (RequestedSequence: ISequence | null) => {
+		setHotPanel("SoundBoardStatus")
 		setUser(0)
 		StopEverything()
 		resetCountdown()
@@ -255,6 +261,13 @@ export function TheSoundBoard(this: any) {
 		}
 	}
 
+	function HandleDataSelection(requestedSource: string) {
+		if (requestedSource) {  //  perhaps some type checking?
+			dataSourceContext = requestedSource as unknown as Context<URL>
+		}
+		setHotPanel("SoundBoardStatus")
+	}
+
 	async function HandleTransportChange(requestedState: string) {
 		if (requestedState === 'play') {
 			// @ts-ignore
@@ -265,6 +278,9 @@ export function TheSoundBoard(this: any) {
 		}
 		if (requestedState === 'record') {
 			startRecordingTimer()
+		}
+		if (requestedState === 'reset') {
+			resetRecordingTimer()
 		}
 	}
 
@@ -325,6 +341,7 @@ export function TheSoundBoard(this: any) {
 
 	const startRecordingTimer = () => {
 		if (!isRecording) {
+			setHotPanel("ButtonBoard")
 			setClickTime(Date.now())
 			setRecordingStart(Date.now())
 			RecordingTimer = setInterval(() => {
@@ -368,13 +385,6 @@ export function TheSoundBoard(this: any) {
 			]
 		)
 	}
-
-	const buttonTally: Ref<any> = useRef(null)
-	useEffect(() => {
-		if ((buttonTally).current) {
-			buttonTally.current.className = 'hot'
-		}
-	}, [count])
 
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
 	const buttonBoardDiv = buttonBoardRef.current
@@ -511,61 +521,71 @@ export function TheSoundBoard(this: any) {
 		TransportState = "recording"
 	}
 
+
 	return (
 		<div
 			id={'pageLayout'}
 			ref={pageLayoutRef}
 		>
-			<stroopContext.Provider value={StroopMode}>
-				<voiceContext.Provider value={CurrentVoice}>
-					<RecordingContext.Provider value={RecordingSession}>
+			<stroopContext.Provider value={HotPanel}>
+				<stroopContext.Provider value={StroopMode}>
+					<voiceContext.Provider value={CurrentVoice}>
+						<RecordingContext.Provider value={RecordingSession}>
 
-						<SoundBoardStatus
-							Sequence={tally}
-							TransportState={TransportState}
-							// @ts-ignore
-							TransportStateChangeHandler={HandleTransportChange}
-						/>
+							<SoundBoardStatus
+								Sequence={tally}
+								TransportState={TransportState}
+								HotPanel={HotPanel}
+								// @ts-ignore
+								TransportStateChangeHandler={HandleTransportChange}
+							/>
 
-						<Populator
-							handleSelection={undefined}
-						/>
+							<Populator
+								handleSelection={HandleDataSelection}
+								HotPanel={HotPanel}
+							/>
 
-						<StroopSwitch
-							StroopMode={StroopMode}
-							StroopUpdater={HandleStroopChange}
-						/>
+							<StroopSwitch
+								StroopMode={StroopMode}
+								StroopUpdater={HandleStroopChange}
+								HotPanel={HotPanel}
+							/>
 
-						<RecordingSessions
-							Sessions={RecordingSession}
-							SessionChangeHandler={HandleRecordChange}
-						/>
+							<RecordingSessions
+								Sessions={RecordingSession}
+								SessionChangeHandler={HandleRecordChange}
+								HotPanel={HotPanel}
+							/>
 
-						<div
-							className={'box'}
-							id='buttonBoard'
-							ref={buttonBoardRef}
-						>
-							<div
-								// className={'' + button.color}
-								id={'TheButtons'}>
-								{soundList.map(function (oneButton: IButton, i: React.Key) {
-									return <button
-										key={i}
-										name={oneButton.sound!.name}
-										value={oneButton.sound!.name}
-										className={oneButton.color ? oneButton.color.toString() : ''}
-										//  ToDoButNotToday: replace onClick with addEventListener()
-										onMouseDown={() => handleButtonPress(oneButton, "down")}
-										onMouseUp={() => handleButtonPress(oneButton, "up")}
-									>{oneButton.sound!.name}</button>
-								})}
-							</div>
-						</div>
+							{/*<TheButtons*/}
+							{/*	handleButtonPress={handleButtonPress(button,"")}*/}
+							{/*/>*/}
 
-					</RecordingContext.Provider>
+							{/*<div*/}
+							{/*	className={'box'}*/}
+							{/*	id='buttonBoard'*/}
+							{/*	ref={buttonBoardRef}*/}
+							{/*>*/}
+							{/*	<div*/}
+							{/*		// className={'' + button.color}*/}
+							{/*		id={'TheButtons'}>*/}
+							{/*		{soundList.map(function (oneButton: IButton, i: React.Key) {*/}
+							{/*			return <button*/}
+							{/*				key={i}*/}
+							{/*				name={oneButton.sound!.name}*/}
+							{/*				value={oneButton.sound!.name}*/}
+							{/*				className={oneButton.color ? oneButton.color.toString() : ''}*/}
+							{/*				//  ToDoButNotToday: replace onClick with addEventListener()*/}
+							{/*				onMouseDown={() => handleButtonPress(oneButton, "down")}*/}
+							{/*				onMouseUp={() => handleButtonPress(oneButton, "up")}*/}
+							{/*			>{oneButton.sound!.name}</button>*/}
+							{/*		})}*/}
+							{/*	</div>*/}
+							{/*</div>*/}
 
-				</voiceContext.Provider>
+						</RecordingContext.Provider>
+					</voiceContext.Provider>
+				</stroopContext.Provider>
 			</stroopContext.Provider>
 
 		</div>

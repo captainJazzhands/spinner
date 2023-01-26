@@ -14,6 +14,7 @@ let root = document.documentElement
 
 export function SoundBoardStatus(props: {
 	Sequence: IButton[],
+	HotPanel: string,
 	TransportState: string,
 	TransportStateChangeHandler: (requestedState: string) => Function
 }) {
@@ -29,8 +30,14 @@ export function SoundBoardStatus(props: {
 		duration = button.end - button.begin
 	}
 
+	
+	let isHot:boolean = (props.HotPanel.toString() === "SoundBoardStatus")
+		
 	return (
-		<div className={'box'} id={'SoundBoardStatus'}>
+		<div
+			className={isHot ? 'box HOT' : 'box NOT'}
+			id={'SoundBoardStatus'}
+		>
 			<p>TransportState
 				<span className={'LCD'}>
 				{props.TransportState.toString()}

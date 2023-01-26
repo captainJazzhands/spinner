@@ -14,19 +14,24 @@ let root = document.documentElement
 
 export function RecordingSessions(props: {
 	Sessions: IRecordingSession,
-	SessionChangeHandler: any
+	SessionChangeHandler: any,
+	HotPanel: string
 }) {
 
 	let seqs
-	
+
 	if (props.Sessions && props.Sessions.Sequences) {
 		seqs = props.Sessions.Sequences
 	} else {
 		seqs = [new IButton()]
 	}
+	let isHot: boolean = (props.HotPanel === "RecordingSessions")
 
 	return (
-		<div className={'box'} id={'RecordingSessions'}>
+		<div
+			className={isHot ? 'box HOT' : 'box NOT'}
+			id={'RecordingSessions'}
+		>
 			<p>
 				You have <span className={'LCD'}>{seqs.length}</span> recordings.
 			</p>
