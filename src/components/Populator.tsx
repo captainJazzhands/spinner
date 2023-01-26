@@ -4,7 +4,7 @@ import React, {
 	Ref,
 	useRef
 } from 'react'
-import axios from "axios"
+import axios, {RawAxiosRequestConfig} from "axios"
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
 import {IButton, ISound, IStroopMode} from './Types';
@@ -89,7 +89,7 @@ let soundList: IButton[] = [
 
 export function Populator(props:
 	                          {
-		                          handleSelection: Function,
+		                          handlePopulation(RequestedSource: any): Function,
 		                          HotPanel: string
 	                          }) {
 
@@ -100,6 +100,7 @@ export function Populator(props:
 	//    setContext(selection)
 
 	const [Words, setWords]: [any, Function] = useState([])
+	const [WhichData, setWhichData]: [any, Function] = useState([])
 
 	const APIlist = [
 		{
@@ -123,52 +124,102 @@ export function Populator(props:
 			console.error(err)
 		}
 	}
-	useEffect(() => {
-		fetchWords()
-	}, [])
 
-	let isHot: boolean = (props.HotPanel.toString() === "DataSelector")
+	const fetchData = async (WhichDataAxios: RawAxiosRequestConfig<string>) => {
+		try {
+			const DataSource = await axios(
+				WhichDataAxios
+			)
+			setWords(DataSource.data)
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
+	useEffect(() => {
+		fetchData(WhichData)
+	}, [WhichData])
+	let filterString = 'pronoun'
+	let partString = 'verb'
+	let isHot: boolean = (props.HotPanel.toString() === 'DataSelector')
+	const filteredWords = Words.filter(function (theWord: { partOfSpeech: string; }) {
+		return theWord.partOfSpeech == filterString
+	})
+	const partsOfSpeech = Words.filter(function (partOfSpeech: { partOfSpeech: string; }) {
+		return partOfSpeech.partOfSpeech == partString
+	})
+	// const uniqueParts = Words.filter(function (partOfSpeech: { partOfSpeech: string; }) {
+	// 	return partOfSpeech.partOfSpeech == partString
+	// })
+	// const uniqueParts = partsOfSpeech.filter((PartOfSpeech: string, idx: number) => partsOfSpeech.indexOf(PartOfSpeech) === idx)
+
+	const uniqueParts: any[] = [];
+	partsOfSpeech.map((PoS: { part: any; }) => {
+		if (partsOfSpeech.indexOf(PoS.part) === -1) {
+			uniqueParts.push(partsOfSpeech.part)
+		}
+	})
 
 	return (
 		<div
 			className={isHot ? 'box HOT' : 'box NOT'}
-			id={'DataSelector'}
+			id={'DataSelectorDiv'}
 		>
 			{/*<button onClick={fetchWords}>get Word</button>*/}
 
-			<ul>{
+			<ul
+				className={'buttonTile'}
+				id={'DataSelectorList'}
+			>{
 				Object.keys(APIlist).map((item, i, thing) => {
+					return <li
+						className={'dataSource'}
+						key={i}
+					>
+						<div className={'shortName'}
+						     onClick={() => setWhichData(APIlist[i])}
+						>
+							{APIlist[i].shortName}
+						</div>
+						<p className={'longName'}>
+							{APIlist[i].longName}
+						</p>
+					</li>
+				})
+			}
+			</ul>
+
+			{/*<ul>{*/}
+			{/*	uniqueParts.map((item, r, thing) => {*/}
+			{/*		return <li*/}
+			{/*			className={''}*/}
+			{/*			key={r}*/}
+			{/*		>*/}
+			{/*				<span className={'meta'}>*/}
+			{/*					{uniqueParts[r].shortName}*/}
+			{/*				</span>*/}
+			{/*		</li>*/}
+			{/*	})*/}
+			{/*}*/}
+			{/*</ul>*/}
+
+			<ul>{
+				Object.keys(filteredWords).map((item, i, thing) => {
 					return <li
 						className={''}
 						key={i}
 					>
 							<span className={'meta'}>
-								{APIlist[i].shortName}
+								{filteredWords[i].theWord}
 							</span>
 						<span className={'meta'}>
-								{APIlist[i].longName}
+								{filteredWords[i].partOfSpeech}
 							</span>
 					</li>
 				})
 			}
 			</ul>
 
-			<ul>{
-				Object.keys(Words).map((item, i, thing) => {
-					return <li
-						className={''}
-						key={i}
-					>
-							<span className={'meta'}>
-								{Words[i].theWord}
-							</span>
-						<span className={'meta'}>
-								{Words[i].partOfSpeech}
-							</span>
-					</li>
-				})
-			}
-			</ul>
 		</div>
 	)
 

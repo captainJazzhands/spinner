@@ -135,7 +135,7 @@ export function TheSoundBoard(this: any) {
 	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState([  {SessionData: [] } , {Sequences:[] } , Function ] )
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
-	const [HotPanel, setHotPanel]: [string, Function] = useState('SoundBoardStatus')
+	const [HotPanel, setHotPanel]: [string, Function] = useState('DataSelector')
 	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
 
 	const [user, setUser]: [number, Function] = useState(8675309)
@@ -261,11 +261,10 @@ export function TheSoundBoard(this: any) {
 		}
 	}
 
-	function HandleDataSelection(requestedSource: string) {
+	function HandlePopulation(requestedSource: string) {
 		if (requestedSource) {  //  perhaps some type checking?
 			dataSourceContext = requestedSource as unknown as Context<URL>
 		}
-		setHotPanel("SoundBoardStatus")
 	}
 
 	async function HandleTransportChange(requestedState: string) {
@@ -541,7 +540,8 @@ export function TheSoundBoard(this: any) {
 							/>
 
 							<Populator
-								handleSelection={HandleDataSelection}
+								// @ts-ignore
+								handlePopulation={HandlePopulation}
 								HotPanel={HotPanel}
 							/>
 

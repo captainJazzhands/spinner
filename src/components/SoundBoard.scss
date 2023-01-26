@@ -136,9 +136,41 @@ button:disabled {
 		border-radius: 2rem 2rem 0 0;
 	}
 }
-#DataSelector {
-	flex-direction: column;
+
+ul.buttonTile {
+	list-style-type: none;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 20%;
+	li {
+		align-self: center;
+		flex-direction: column;
+		border: 1px solid white;
+		.shortName {
+			font-size: 12pt;
+		}
+		.longName {
+			font-size: 9pt;
+			max-width: 12em !important;
+		}
+	}
 }
+
+#DataSelectorDiv {
+	display: flex;
+	flex-direction: column;
+	overflow: scroll;
+}
+#DataSelectorList {
+	display: flex;
+	flex-direction: row;
+	overflow: scroll;
+	li {
+		border: 1px solid white;
+	}
+}
+
 
 #stroopSwitch {
 	flex-direction: row;

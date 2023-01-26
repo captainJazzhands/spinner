@@ -431,8 +431,39 @@ button:disabled {
   border-radius: 2rem 2rem 0 0;
 }
 
-#DataSelector {
+ul.buttonTile {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 20%;
+}
+ul.buttonTile li {
+  align-self: center;
   flex-direction: column;
+  border: 1px solid white;
+}
+ul.buttonTile li .shortName {
+  font-size: 12pt;
+}
+ul.buttonTile li .longName {
+  font-size: 9pt;
+  max-width: 12em !important;
+}
+
+#DataSelectorDiv {
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+}
+
+#DataSelectorList {
+  display: flex;
+  flex-direction: row;
+  overflow: scroll;
+}
+#DataSelectorList li {
+  border: 1px solid white;
 }
 
 #stroopSwitch {
