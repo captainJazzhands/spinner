@@ -437,6 +437,7 @@ ul.buttonTile {
   flex-direction: row;
   width: 100%;
   height: 20%;
+  overflow: hidden;
 }
 ul.buttonTile li {
   align-self: center;
@@ -454,16 +455,19 @@ ul.buttonTile li .longName {
 #DataSelectorDiv {
   display: flex;
   flex-direction: column;
-  overflow: scroll;
 }
 
-#DataSelectorList {
-  display: flex;
-  flex-direction: row;
-  overflow: scroll;
+.DataSelectorList {
+  display: grid;
+  grid-template-columns: repeat(5, 0.1fr);
+  grid-template-rows: repeat(5, 0.1fr);
+  align-content: stretch;
+  padding-left: 0;
 }
-#DataSelectorList li {
-  border: 1px solid white;
+.DataSelectorList li {
+  list-style: none;
+  font-size: 12pt;
+  padding: 10pt 2pt;
 }
 
 #stroopSwitch {

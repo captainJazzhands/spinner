@@ -100,6 +100,7 @@ export function Populator(props:
 	//    setContext(selection)
 
 	const [Words, setWords]: [any, Function] = useState([])
+	const [SpeechPart, setSpeechPart]: [any, Function] = useState([])
 	const [WhichData, setWhichData]: [any, Function] = useState([])
 
 	const APIlist = [
@@ -137,7 +138,7 @@ export function Populator(props:
 	}
 
 	const uniqueParts: any[] = [];
-	Words.map((PoS: { part: string; }, idx:number) => {
+	Words.map((PoS: { part: string; }, idx: number) => {
 		if (uniqueParts.indexOf(Words[idx].partOfSpeech) === -1) {
 			uniqueParts.push(Words[idx].partOfSpeech)
 		}
@@ -146,17 +147,29 @@ export function Populator(props:
 	useEffect(() => {
 		fetchData(WhichData)
 	}, [WhichData])
-	let filterString = 'pronoun'
-	let partString = 'verb'
+
 	let isHot: boolean = (props.HotPanel.toString() === 'DataSelector')
-	const filteredWords = Words.filter(function (theWord: { partOfSpeech: string; }) {
-		return theWord.partOfSpeech == filterString
-	})
-	const partsOfSpeech = Words.filter(function (partOfSpeech: { partOfSpeech: string; }) {
-		return partOfSpeech.partOfSpeech == partString
+	const filteredWords = Words.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
+		return theWord.partOfSpeech == SpeechPart
 	})
 
-	return (
+	const truncatedFilteredWords = filteredWords.slice(0, 25)
+
+	truncatedFilteredWords.sort((a: number, b: number) => {
+		a > b
+	})
+
+	truncatedFilteredWords.sort(function compareFn(a: string, b: any) {
+		a === "a"
+	})
+
+// let randomizedWords = truncatedFilteredWords.sort(randomSort)
+
+function randomSort() {  
+  return 0.5 - Math.random()
+}  
+
+return (
 		<div
 			className={isHot ? 'box HOT' : 'box NOT'}
 			id={'DataSelectorDiv'}
@@ -165,7 +178,6 @@ export function Populator(props:
 
 			<ul
 				className={'buttonTile'}
-				id={'DataSelectorList'}
 			>{
 				Object.keys(APIlist).map((item, i, thing) => {
 					return <li
@@ -185,13 +197,18 @@ export function Populator(props:
 			}
 			</ul>
 
-			<ul>{
+			<ul
+				className={'DataSelectorList'}
+			>{
 				uniqueParts.map((item, r, thing) => {
 					return <li
 						className={''}
 						key={r}
 					>
-							<span className={'meta'}>
+							<span
+								className={'meta'}
+								onClick={() => setSpeechPart(uniqueParts[r])}
+							>
 								{uniqueParts[r]}
 							</span>
 					</li>
@@ -199,17 +216,16 @@ export function Populator(props:
 			}
 			</ul>
 
-			<ul>{
-				Object.keys(filteredWords).map((item, i, thing) => {
+			<ul
+				className={'DataSelectorList'}
+			>{
+				Object.keys(truncatedFilteredWords).map((item, i, thing) => {
 					return <li
 						className={''}
 						key={i}
 					>
 							<span className={'meta'}>
-								{filteredWords[i].theWord}
-							</span>
-						<span className={'meta'}>
-								{filteredWords[i].partOfSpeech}
+								{truncatedFilteredWords[i].theWord}
 							</span>
 					</li>
 				})
