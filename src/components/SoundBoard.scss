@@ -165,8 +165,8 @@ ul.buttonTile {
 
 .DataSelectorList {
 	display: grid;
-	grid-template-columns: repeat(5, .1fr);
-	grid-template-rows: repeat(5, .1fr);
+	grid-template-columns: repeat(4, .1fr);
+	grid-template-rows: repeat(2, .1fr);
 	align-content: stretch;
 	padding-left: 0;
 	li {
@@ -175,6 +175,10 @@ ul.buttonTile {
 		font-size: 12pt;
 		padding: 10pt 2pt;
 	}
+}
+#PartsOfSpeechList {
+	grid-template-columns: repeat(6, .1fr);
+	grid-template-rows: none;
 }
 
 #stroopSwitch {

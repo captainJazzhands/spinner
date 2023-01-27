@@ -153,17 +153,15 @@ export function Populator(props:
 		return theWord.partOfSpeech == SpeechPart
 	})
 
-	const truncatedFilteredWords = filteredWords.slice(0, 25)
+	const truncatedFilteredWords = filteredWords.slice(0, 8)
 
 	truncatedFilteredWords.sort((a: number, b: number) => {
 		a > b
 	})
 
-	truncatedFilteredWords.sort(function compareFn(a: string, b: any) {
-		a === "a"
-	})
-
-// let randomizedWords = truncatedFilteredWords.sort(randomSort)
+	// truncatedFilteredWords.sort(function compareFn(a: string, b: any) {
+	// 	a === "a"
+	// })
 
 function randomSort() {  
   return 0.5 - Math.random()
@@ -199,6 +197,7 @@ return (
 
 			<ul
 				className={'DataSelectorList'}
+				id={'PartsOfSpeechList'}
 			>{
 				uniqueParts.map((item, r, thing) => {
 					return <li
