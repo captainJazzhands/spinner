@@ -11,12 +11,12 @@ export function StroopSwitch(props: {
 
 	let StroopMode: IStroopMode = useContext(stroopContext)
 	const setStroopMode: Function = props.StroopUpdater
-	let isHot: boolean = (props.HotPanel.toString() === "StroopSwitch")
+	let isHot: boolean = (props.HotPanel.toString() === "StroopSwitch" || props.HotPanel.toString() === "unsure")
 
 	return (
 		<div
 			id={'stroopSwitch'}
-			className={isHot ? 'box HOT' : 'box NOT'}
+			className={isHot ? 'box HOT' : 'box COLD'}
 		>
 			<button
 				// ToDoButNotToday: enumerate IStroopMode

@@ -1,7 +1,7 @@
 @import "GameShow";
 
-$sz_buttonBoardWidth: 40rem;
-$sz_buttonBoardHeight: $sz_buttonBoardWidth * .75;
+//$sz_buttonBoardWidth: 40rem;
+//$sz_buttonBoardHeight: $sz_buttonBoardWidth * .75;
 
 $clr_stroop-unsure: black;
 $clr_stroop-text: blue;
@@ -57,10 +57,16 @@ button {
 	text-transform: uppercase;
 	font-weight: 900;
 	font-size: 12pt;
-	transition: ease-in .3s 0.4s;
+	transition: ease-in .3s 0.14s;
 	background-color: $clr_formBG;
-	opacity: 0.5;
+	opacity: 0.75;
 	box-shadow: inset $clr_formShadow .2rem .2rem .6rem;
+}
+
+.tintable button {
+	padding: 6pt;
+	border: 1px solid white;
+	border-radius: 6pt;
 }
 
 button:focus {
@@ -87,17 +93,18 @@ button:disabled {
 }
 
 .box {
-	margin: 1rem;
+	margin: 2.5vw;
 	//padding: 1rem;
 	display: flex;
 	align-items: center;
 	align-content: center;
-	width: 100%;
-	height: 100%;
+	width: 90vw;
 	max-width: 90vw;
-	max-height: calc(100vh - 10vw);
+	height: 100%;
+	//height: calc(100vh - 10vw);
+	//max-height: calc(100vh - 10vw);
 	overflow: hidden;
-	background-color: $clr_boxBG_alpha;
+	background-color: $clr_boxBG;
 	border-radius: 1rem;
 	border: 1px solid white;
 	transition: ease-in .3s 0.07s;
@@ -161,6 +168,11 @@ ul.buttonTile {
 #DataSelectorDiv {
 	display: flex;
 	flex-direction: column;
+	flex-basis: content-box;
+	button {
+		width: 80%;
+		max-height: 6rem;
+	}
 }
 
 .DataSelectorList {
@@ -176,6 +188,7 @@ ul.buttonTile {
 		padding: 10pt 2pt;
 	}
 }
+
 #PartsOfSpeechList {
 	grid-template-columns: repeat(6, .1fr);
 	grid-template-rows: none;
@@ -183,16 +196,12 @@ ul.buttonTile {
 
 #stroopSwitch {
 	flex-direction: row;
-	background-color: $clr_heroTextBG_alpha;
-	border: none;
 	width: 100%;
-	height: max-content;
-	flex-grow: 1;
-	flex-shrink: 0;
 	@media (min-width: 640px) {
 		//flex-direction: row;
 	}
 	button {
+		writing-mode: vertical-lr;
 		font-size: 3.5vw;
 		padding: 1rem;
 	}
@@ -217,11 +226,15 @@ ul.buttonTile {
 }
 
 .HOT {
-	height: 60vh !important;
+	flex-grow: 5;
+	flex-shrink: 1;
+	transition: ease-in .85s 0.001s;
 }
 
-.NOT {
-	height: 10vh !important;
+.COLD {
+	flex-grow: 1;
+	flex-shrink: 2;
+	transition: ease-out .4s 0.3s;
 }
 
 .unsure,
@@ -233,19 +246,26 @@ ul.buttonTile {
 .tone { transition: ease-in .25s 0.01s;
 }
 
-.unsure {background-color: $clr_stroop-unsure;}
+.unsure,
+.unsure .tintable button {background-color: $clr_stroop-unsure;}
 
-.text {background-color: $clr_stroop-text;}
+.text,
+.text .tintable button {background-color: $clr_stroop-text;}
 
-.speech {background-color: $clr_stroop-speech;}
+.speech,
+.speech .tintable button {background-color: $clr_stroop-speech;}
 
-.color {background-color: $clr_stroop-color;}
+.color,
+.color .tintable button {background-color: $clr_stroop-color;}
 
-.shape {background-color: $clr_stroop-shape;}
+.shape,
+.shape .tintable button {background-color: $clr_stroop-shape;}
 
-.sound {background-color: $clr_stroop-sound;}
+.sound,
+.sound .tintable button {background-color: $clr_stroop-sound;}
 
-.tone {background-color: $clr_stroop-tone;}
+.tone,
+.tone .tintable button {background-color: $clr_stroop-tone;}
 
 #SoundBoardStatus,
 #CurrentButton {

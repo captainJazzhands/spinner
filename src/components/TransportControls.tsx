@@ -15,7 +15,7 @@ let override = true
 
 export function TransportControls(props: {
 	TransportState: string
-	TransportChange: (requestedState: string) => Function
+	TransportChange: (requestedState: string) => void
 }) {
 
 	const TransportControlsRef: Ref<HTMLDivElement> = useRef(null)
@@ -48,34 +48,34 @@ export function TransportControls(props: {
 
 	return (
 		<div
-			className={'pageLayout'}
+			className={'tintable'}
 			id={'TransportControls'}
 			ref={TransportControlsRef}
 		>
-				<button
-					value={'StartRecording'}
-					onClick={() => props.TransportChange("record")}
-					// disabled={props.TransportState === "playing" || props.TransportState === "recording"}
-				>{'Record'}</button>
+			<button
+				value={'StartRecording'}
+				onClick={() => props.TransportChange("record")}
+				// disabled={props.TransportState === "playing" || props.TransportState === "recording"}
+			>{'Record'}</button>
 
-				<button
-					value={'StopRecording'}
-					onClick={() => props.TransportChange("stop")}
-					// disabled={props.TransportState != "recording"}
-				>{'stop'}</button>
+			<button
+				value={'StopRecording'}
+				onClick={() => props.TransportChange("stop")}
+				// disabled={props.TransportState != "recording"}
+			>{'stop'}</button>
 
-				<button
-					key={'playback'}
-					value={'playback'}
-					// disabled={props.TransportState === "empty" || props.TransportState !== "playing"}
-					onClick={() => props.TransportChange("play")}
-				>{'play'}</button>
+			<button
+				key={'playback'}
+				value={'playback'}
+				// disabled={props.TransportState === "empty" || props.TransportState !== "playing"}
+				onClick={() => props.TransportChange("play")}
+			>{'play'}</button>
 
-				<button
-					value={'reset'}
-					onClick={() => props.TransportChange("reset")}
-					// disabled={props.TransportState === "empty" || props.TransportState === "recording"}
-				>{'reset'}</button>
+			<button
+				value={'reset'}
+				onClick={() => props.TransportChange("reset")}
+				// disabled={props.TransportState === "empty" || props.TransportState === "recording"}
+			>{'reset'}</button>
 		</div>
 	)
 }

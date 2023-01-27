@@ -164,17 +164,17 @@ export function Populator(props:
 	// 	a === "a"
 	// })
 
-function randomSort() {  
-  return 0.5 - Math.random()
-}  
+	function randomSort() {
+		return 0.5 - Math.random()
+	}
 
-return (
+	return (
 		<div
-			className={isHot ? 'box HOT' : 'box NOT'}
+			className={isHot ? 'box HOT' : 'box COLD'}
 			id={'DataSelectorDiv'}
 		>
 			<ul
-				className={'buttonTile'}
+				className={'buttonTile tintable'}
 			>{
 				Object.keys(APIlist).map((item, i, thing) => {
 					return <li
@@ -195,7 +195,7 @@ return (
 			</ul>
 
 			<ul
-				className={'DataSelectorList'}
+				className={'DataSelectorList tintable'}
 				id={'PartsOfSpeechList'}
 			>{
 				uniqueParts.map((item, r, thing) => {
@@ -229,9 +229,9 @@ return (
 				})
 			}
 			</ul>
-
-			<button onClick={() => props.setWordContext(truncatedFilteredWords)}>Use These Words</button>
-
+			<div className={'tintable'}>
+				<button onClick={() => props.setWordContext(truncatedFilteredWords)}>Use These Words</button>
+			</div>
 		</div>
 	)
 

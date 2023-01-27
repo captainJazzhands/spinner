@@ -188,8 +188,8 @@ export function TheSoundBoard(this: any) {
 
 	function HandleRecordChange(sesh: IRecordingSession) {
 		// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-		setHotPanel("SoundBoardStatus")
 		setRecordingSession(sesh)
+		setHotPanel("SoundBoardStatus")
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
@@ -199,6 +199,7 @@ export function TheSoundBoard(this: any) {
 
 	function HandleWordContext(WordList: any) {
 		setWordList(WordList)
+		setHotPanel("TheButtons")
 	}
 
 	function HandlePopulation(requestedSource: string) {
@@ -207,7 +208,7 @@ export function TheSoundBoard(this: any) {
 		}
 	}
 
-	async function HandleTransportChange(requestedState: string) {
+	function HandleTransportChange(requestedState: string): void {
 		if (requestedState === 'play') {
 			// @ts-ignore
 			PlayButtStream(RecordingSession[1].Sequences)
@@ -342,8 +343,8 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const startRecordingTimer = () => {
+		setHotPanel("ButtonBoard")
 		if (!isRecording) {
-			setHotPanel("ButtonBoard")
 			setClickTime(Date.now())
 			setRecordingStart(Date.now())
 			RecordingTimer = setInterval(() => {
@@ -355,6 +356,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function stopRecordingTimer() {
+		setHotPanel("ButtonBoardStatus")
 		if (isRecording) {
 			setIsRecording(false)
 			setRecordingStop(Date.now())
@@ -482,10 +484,9 @@ export function TheSoundBoard(this: any) {
 			let duration = thisButton.end ? thisButton.end - thisButton.begin! : 1
 			MakeNoise(thisButton.sound, duration)
 		}
-
 	}
 
-	const handleButtonPress = (oneButton: IButton, direction: string) => {
+	const HandleButtonPress = (oneButton: IButton, direction: string) => {
 		let thisButton = Object.assign({}, oneButton)
 		if (direction === "down") {
 			if (count === 0) {
@@ -525,7 +526,6 @@ export function TheSoundBoard(this: any) {
 		TransportState = "recording"
 	}
 
-
 	return (
 		<div
 			id={'pageLayout'}
@@ -541,12 +541,10 @@ export function TheSoundBoard(this: any) {
 									Sequence={tally}
 									TransportState={TransportState}
 									HotPanel={HotPanel}
-									// @ts-ignore
 									TransportStateChangeHandler={HandleTransportChange}
 								/>
 
 								<Populator
-									// @ts-ignore
 									handlePopulation={HandlePopulation}
 									HotPanel={HotPanel}
 									setWordContext={HandleWordContext}
@@ -558,37 +556,16 @@ export function TheSoundBoard(this: any) {
 									HotPanel={HotPanel}
 								/>
 
-								<RecordingSessions
-									Sessions={RecordingSession}
-									SessionChangeHandler={HandleRecordChange}
-									HotPanel={HotPanel}
-								/>
-
-								{/*<TheButtons*/}
-								{/*	handleButtonPress={handleButtonPress(button,"")}*/}
+								{/*<RecordingSessions*/}
+								{/*	Sessions={RecordingSession}*/}
+								{/*	SessionChangeHandler={HandleRecordChange}*/}
+								{/*	HotPanel={HotPanel}*/}
 								{/*/>*/}
 
-								{/*<div*/}
-								{/*	className={'box'}*/}
-								{/*	id='buttonBoard'*/}
-								{/*	ref={buttonBoardRef}*/}
-								{/*>*/}
-								{/*	<div*/}
-								{/*		// className={'' + button.color}*/}
-								{/*		id={'TheButtons'}>*/}
-								{/*		{soundList.map(function (oneButton: IButton, i: React.Key) {*/}
-								{/*			return <button*/}
-								{/*				key={i}*/}
-								{/*				name={oneButton.sound!.name}*/}
-								{/*				value={oneButton.sound!.name}*/}
-								{/*				className={oneButton.color ? oneButton.color.toString() : ''}*/}
-								{/*				//  ToDoButNotToday: replace onClick with addEventListener()*/}
-								{/*				onMouseDown={() => handleButtonPress(oneButton, "down")}*/}
-								{/*				onMouseUp={() => handleButtonPress(oneButton, "up")}*/}
-								{/*			>{oneButton.sound!.name}</button>*/}
-								{/*		})}*/}
-								{/*	</div>*/}
-								{/*</div>*/}
+								<TheButtons
+									HandleButtonPress={HandleButtonPress}
+									HotPanel={HotPanel}
+								/>
 
 							</RecordingContext.Provider>
 						</voiceContext.Provider>

@@ -29,7 +29,7 @@ export function RecordingSessions(props: {
 
 	return (
 		<div
-			className={isHot ? 'box HOT' : 'box NOT'}
+			className={isHot ? 'box HOT' : 'box COLD'}
 			id={'RecordingSessions'}
 		>
 			<p>
@@ -40,25 +40,25 @@ export function RecordingSessions(props: {
 				className={'wrapper'}
 				id={'DotGraph'}
 			>
-				{/*<ul>*/}
-				{/*	{*/}
-				{/*		sessions.map((session, index, sequence) => {*/}
-				{/*				return (<li*/}
-				{/*					className={'sequence-length-' + session.Sequence.length}*/}
-				{/*					key={index}*/}
-				{/*					// onClick={props.SessionChangeHandler(Event.target)}*/}
-				{/*				>)*/}
-				{/*					<span className={'meta'}>*/}
-				{/*				{index}*/}
-				{/*			</span>*/}
-				{/*					<span className={'meta'}>*/}
-				{/*				{}*/}
-				{/*			</span>*/}
-				{/*				</li>)*/}
-				{/*			}*/}
-				{/*		)*/}
-				{/*	}*/}
-				{/*</ul>*/}
+				<ul>
+					{
+						seqs.map((session, index, sequence) => {
+								return (<li
+									className={'sequence-length-' + session.toString()}
+									key={index}
+									// onClick={props.SessionChangeHandler(Event.target)}
+								>)
+									<span className={'meta'}>
+								{index}
+							</span>
+									<span className={'meta'}>
+								{}
+							</span>
+								</li>)
+							}
+						)
+					}
+				</ul>
 			</div>
 
 		</div>

@@ -13,6 +13,7 @@ import {Speak, MakeNoise} from './AudioCode'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
 import {IRecordingSession, IButton, ISound, IStroopMode} from './Types';
+import {stroopContext, wordContext} from "./SoundBoard";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -94,17 +95,22 @@ let soundList: IButton[] = [
 
 let override = true
 
-// @ts-ignore
-export function TheButtons({handleButtonPress}) {
+export function TheButtons(props: {
+	HotPanel: string,
+	HandleButtonPress: Function
+}) {
 
+	const [wordList, setWordList] = useState(wordContext)
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
 	const buttonBoardDiv = buttonBoardRef.current
 
+	let isHot: boolean = (props.HotPanel.toString() === "TheButtons")
+
 	return (
 		<div
-			className={'box'}
+			className={isHot ? 'box HOT' : 'box COLD'}
 			id={'buttonBoard'}
 			ref={buttonBoardRef}
 		>
@@ -116,8 +122,8 @@ export function TheButtons({handleButtonPress}) {
 						value={oneButton.sound!.name}
 						className={oneButton.color ? oneButton.color.toString() : ''}
 						//  ToDo: replace onClicks with addEventListeners()
-						onMouseDown={() => handleButtonPress(oneButton, "down")}
-						onMouseUp={() => handleButtonPress(oneButton, "up")}
+						onMouseDown={() => props.HandleButtonPress(oneButton, "down")}
+						onMouseUp={() => props.HandleButtonPress(oneButton, "up")}
 					>{oneButton.sound!.name}</button>
 				})}
 			</div>
