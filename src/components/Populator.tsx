@@ -89,7 +89,8 @@ let soundList: IButton[] = [
 
 export function Populator(props:
 	                          {
-		                          handlePopulation(RequestedSource: any): Function,
+		                          handlePopulation: Function,
+		                          setWordContext: Function,
 		                          HotPanel: string
 	                          }) {
 
@@ -172,8 +173,6 @@ return (
 			className={isHot ? 'box HOT' : 'box NOT'}
 			id={'DataSelectorDiv'}
 		>
-			{/*<button onClick={fetchWords}>get Word</button>*/}
-
 			<ul
 				className={'buttonTile'}
 			>{
@@ -230,6 +229,8 @@ return (
 				})
 			}
 			</ul>
+
+			<button onClick={() => props.setWordContext(truncatedFilteredWords)}>Use These Words</button>
 
 		</div>
 	)

@@ -120,6 +120,7 @@ export const voiceContext: React.Context<any> = React.createContext(voices[0])
 // export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(new SpeechSynthesisVoice())
 export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
+export const wordContext: React.Context<any> = React.createContext([""])
 export let dataSourceContext: React.Context<any> = React.createContext("")
 
 export function TheSoundBoard(this: any) {
@@ -134,6 +135,7 @@ export function TheSoundBoard(this: any) {
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
+	const [WordList, setWordList]: [string[], Function] = useState([''])
 	const [HotPanel, setHotPanel]: [string, Function] = useState('DataSelector')
 	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
 
@@ -193,6 +195,32 @@ export function TheSoundBoard(this: any) {
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
 		setHotPanel("DataSelector")
+	}
+
+	function HandleWordContext(WordList: any) {
+		setWordList(WordList)
+	}
+
+	function HandlePopulation(requestedSource: string) {
+		if (requestedSource) {  //  perhaps some type checking?
+			dataSourceContext = requestedSource as unknown as Context<URL>
+		}
+	}
+
+	async function HandleTransportChange(requestedState: string) {
+		if (requestedState === 'play') {
+			// @ts-ignore
+			PlayButtStream(RecordingSession[1].Sequences)
+		}
+		if (requestedState === 'stop') {
+			StopEverything()
+		}
+		if (requestedState === 'record') {
+			startRecordingTimer()
+		}
+		if (requestedState === 'reset') {
+			resetRecordingTimer()
+		}
 	}
 
 	// function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
@@ -255,28 +283,6 @@ export function TheSoundBoard(this: any) {
 			});
 		} else {
 			console.log('shouldn’t have been undefined I guess')
-		}
-	}
-
-	function HandlePopulation(requestedSource: string) {
-		if (requestedSource) {  //  perhaps some type checking?
-			dataSourceContext = requestedSource as unknown as Context<URL>
-		}
-	}
-
-	async function HandleTransportChange(requestedState: string) {
-		if (requestedState === 'play') {
-			// @ts-ignore
-			PlayButtStream(RecordingSession[1].Sequences)
-		}
-		if (requestedState === 'stop') {
-			StopEverything()
-		}
-		if (requestedState === 'record') {
-			startRecordingTimer()
-		}
-		if (requestedState === 'reset') {
-			resetRecordingTimer()
 		}
 	}
 
@@ -527,63 +533,66 @@ export function TheSoundBoard(this: any) {
 		>
 			<stroopContext.Provider value={HotPanel}>
 				<stroopContext.Provider value={StroopMode}>
-					<voiceContext.Provider value={CurrentVoice}>
-						<RecordingContext.Provider value={RecordingSession}>
+					<wordContext.Provider value={WordList}>
+						<voiceContext.Provider value={CurrentVoice}>
+							<RecordingContext.Provider value={RecordingSession}>
 
-							<SoundBoardStatus
-								Sequence={tally}
-								TransportState={TransportState}
-								HotPanel={HotPanel}
-								// @ts-ignore
-								TransportStateChangeHandler={HandleTransportChange}
-							/>
+								<SoundBoardStatus
+									Sequence={tally}
+									TransportState={TransportState}
+									HotPanel={HotPanel}
+									// @ts-ignore
+									TransportStateChangeHandler={HandleTransportChange}
+								/>
 
-							<Populator
-								// @ts-ignore
-								handlePopulation={HandlePopulation}
-								HotPanel={HotPanel}
-							/>
+								<Populator
+									// @ts-ignore
+									handlePopulation={HandlePopulation}
+									HotPanel={HotPanel}
+									setWordContext={HandleWordContext}
+								/>
 
-							<StroopSwitch
-								StroopMode={StroopMode}
-								StroopUpdater={HandleStroopChange}
-								HotPanel={HotPanel}
-							/>
+								<StroopSwitch
+									StroopMode={StroopMode}
+									StroopUpdater={HandleStroopChange}
+									HotPanel={HotPanel}
+								/>
 
-							<RecordingSessions
-								Sessions={RecordingSession}
-								SessionChangeHandler={HandleRecordChange}
-								HotPanel={HotPanel}
-							/>
+								<RecordingSessions
+									Sessions={RecordingSession}
+									SessionChangeHandler={HandleRecordChange}
+									HotPanel={HotPanel}
+								/>
 
-							{/*<TheButtons*/}
-							{/*	handleButtonPress={handleButtonPress(button,"")}*/}
-							{/*/>*/}
+								{/*<TheButtons*/}
+								{/*	handleButtonPress={handleButtonPress(button,"")}*/}
+								{/*/>*/}
 
-							{/*<div*/}
-							{/*	className={'box'}*/}
-							{/*	id='buttonBoard'*/}
-							{/*	ref={buttonBoardRef}*/}
-							{/*>*/}
-							{/*	<div*/}
-							{/*		// className={'' + button.color}*/}
-							{/*		id={'TheButtons'}>*/}
-							{/*		{soundList.map(function (oneButton: IButton, i: React.Key) {*/}
-							{/*			return <button*/}
-							{/*				key={i}*/}
-							{/*				name={oneButton.sound!.name}*/}
-							{/*				value={oneButton.sound!.name}*/}
-							{/*				className={oneButton.color ? oneButton.color.toString() : ''}*/}
-							{/*				//  ToDoButNotToday: replace onClick with addEventListener()*/}
-							{/*				onMouseDown={() => handleButtonPress(oneButton, "down")}*/}
-							{/*				onMouseUp={() => handleButtonPress(oneButton, "up")}*/}
-							{/*			>{oneButton.sound!.name}</button>*/}
-							{/*		})}*/}
-							{/*	</div>*/}
-							{/*</div>*/}
+								{/*<div*/}
+								{/*	className={'box'}*/}
+								{/*	id='buttonBoard'*/}
+								{/*	ref={buttonBoardRef}*/}
+								{/*>*/}
+								{/*	<div*/}
+								{/*		// className={'' + button.color}*/}
+								{/*		id={'TheButtons'}>*/}
+								{/*		{soundList.map(function (oneButton: IButton, i: React.Key) {*/}
+								{/*			return <button*/}
+								{/*				key={i}*/}
+								{/*				name={oneButton.sound!.name}*/}
+								{/*				value={oneButton.sound!.name}*/}
+								{/*				className={oneButton.color ? oneButton.color.toString() : ''}*/}
+								{/*				//  ToDoButNotToday: replace onClick with addEventListener()*/}
+								{/*				onMouseDown={() => handleButtonPress(oneButton, "down")}*/}
+								{/*				onMouseUp={() => handleButtonPress(oneButton, "up")}*/}
+								{/*			>{oneButton.sound!.name}</button>*/}
+								{/*		})}*/}
+								{/*	</div>*/}
+								{/*</div>*/}
 
-						</RecordingContext.Provider>
-					</voiceContext.Provider>
+							</RecordingContext.Provider>
+						</voiceContext.Provider>
+					</wordContext.Provider>
 				</stroopContext.Provider>
 			</stroopContext.Provider>
 
