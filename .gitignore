@@ -26,6 +26,11 @@ yarn-error.log*
 *.mp4
 *.mov
 *.webm
-#*.jpg
-#*.jpeg
-#*.png
+*.jpg
+*.jpeg
+*.png
+
+#generated files
+*.js
+*.css
+*.css.map

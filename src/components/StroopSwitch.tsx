@@ -20,7 +20,10 @@ export function StroopSwitch(props: {
 			id={'stroopSwitch'}
 			className={isHot ? 'box HOT' : 'box COLD'}
 		>
-			<div id={'stroopButtons'}>
+			<div
+				id={'stroopButtons'}
+				className={'DataSelectorList'}
+			>
 				<button
 					// ToDoButNotToday: enumerate IStroopMode
 					className={'unsure'}
