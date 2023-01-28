@@ -17,7 +17,6 @@ import {RecordingSessions} from './RecordingSessions';
 import {StroopSwitch} from "./StroopSwitch";
 import {Populator} from "./Populator";
 import {TheButtons} from "./TheButtons";
-import * as url from "url";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
