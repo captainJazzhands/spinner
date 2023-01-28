@@ -1,0 +1,433 @@
+@import "GameShow";
+
+//$sz_buttonBoardWidth: 40rem;
+//$sz_buttonBoardHeight: $sz_buttonBoardWidth * .75;
+
+$clr_stroop-unsure: black;
+$clr_stroop-text: blue;
+$clr_stroop-speech: red;
+$clr_stroop-color: yellow;
+$clr_stroop-shape: green;
+$clr_stroop-sound: orange;
+$clr_stroop-tone: purple;
+
+:root {
+	--scroll-distance: 2em;
+}
+
+@font-face {
+	font-family: "LCD Mono";
+	font-weight: 300;
+	//src: url("fonts/LCD-mono-Light.woff2") format("woff2"), /* Super Modern Browsers */
+	src: url("fonts/LCD-mono-Light.woff") format("woff"), /* Pretty Modern Browsers */
+	url("fonts/LCD-mono-Light.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+	font-family: "LCD Mono";
+	font-weight: 500;
+	//src: url("fonts/LCD-mono-Normal.woff2") format("woff2"), /* Super Modern Browsers */
+	src: url("fonts/LCD-mono-Normal.woff") format("woff"), /* Pretty Modern Browsers */
+	url("fonts/LCD-mono-Normal.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+	font-family: "LCD Mono";
+	font-weight: 700;
+	//src: url("fonts/LCD-mono-Ultra.woff2") format("woff2"), /* Super Modern Browsers */
+	src: url("fonts/LCD-mono-Ultra.woff") format("woff"), /* Pretty Modern Browsers */
+	url("fonts/LCD-mono-Ultra.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+h1, h2, h3, h4, h5, h6, button {
+	color: $clr_white;
+	text-shadow: black .1rem .1rem .2rem;
+	text-align: center;
+}
+
+button {
+	margin: 0;
+	padding: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	border: none;
+	border-radius: 0;
+	width: 100%; height: 100%;
+	min-width: 3em; min-height: 3rem;
+	text-transform: uppercase;
+	font-weight: 900;
+	font-size: 12pt;
+	transition: ease-in .3s 0.14s;
+	background-color: $clr_formBG;
+	opacity: 0.75;
+	box-shadow: inset $clr_formShadow .2rem .2rem .6rem;
+}
+
+.tintable button {
+	padding: 6pt;
+	border: 1px solid white;
+	border-radius: 6pt;
+}
+
+button:focus {
+	box-shadow: yellow .1rem .1rem .4rem;
+}
+
+button:hover,
+button.selected {
+	opacity: 1;
+	box-shadow: white .01rem .01rem 1rem;
+}
+
+button:disabled {
+	box-shadow: none;
+	opacity: 0.5;
+	//pointer-events: none;
+}
+
+#pageLayout {
+	width: 100vw; height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.box {
+	margin: 2.5vw;
+	//padding: 1rem;
+	display: flex;
+	align-items: center;
+	align-content: center;
+	width: 90vw;
+	max-width: 90vw;
+	height: 100%;
+	//height: calc(100vh - 10vw);
+	//max-height: calc(100vh - 10vw);
+	overflow: hidden;
+	background-color: $clr_boxBG;
+	border-radius: 1rem;
+	border: 1px solid white;
+	transition: ease-in .3s 0.07s;
+	ul, div {
+		transition: ease-in .3s 0.4s;
+		text-align: center;
+		flex-grow: 0;
+		flex-shrink: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		//background-color: $clr_primaryColor;
+		color: $clr_white;
+	}
+	div {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+		flex-wrap: nowrap;
+		//border: $soundBorder;
+		margin: .75rem;
+		//background-color: $clr_tileBG;
+		//border: 1px solid $clr_formBorder;
+		p {
+
+		}
+	}
+	h1 {
+		color: $clr_primaryColor;
+		-webkit-text-stroke: .025rem $clr_black;
+		text-shadow: $clr_formShadow .1rem .1rem .2rem;
+		top: 0;
+		margin-top: 0;
+		padding: .5rem;
+		width: 100%;
+		border-radius: 2rem 2rem 0 0;
+	}
+}
+
+ul.buttonTile {
+	list-style-type: none;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 20%;
+	overflow: hidden;
+	li {
+		align-self: center;
+		flex-direction: column;
+		border: 1px solid white;
+		.shortName {
+			font-size: 12pt;
+		}
+		.longName {
+			font-size: 9pt;
+			max-width: 12em !important;
+		}
+	}
+}
+
+#DataSelectorDiv {
+	display: flex;
+	flex-direction: column;
+	flex-basis: content-box;
+	button {
+		width: 80%;
+		max-height: 6rem;
+	}
+}
+
+.DataSelectorList {
+	display: grid;
+	grid-template-columns: repeat(4, .1fr);
+	grid-template-rows: repeat(2, .1fr);
+	align-content: stretch;
+	padding-left: 0;
+	li {
+		//border: 1px solid white;
+		list-style: none;
+		font-size: 12pt;
+		padding: 10pt 2pt;
+	}
+}
+
+#PartsOfSpeechList {
+	grid-template-columns: repeat(6, .1fr);
+	grid-template-rows: none;
+}
+
+#stroopSwitch {
+	flex-direction: row;
+	width: 100%;
+	@media (min-width: 640px) {
+		//flex-direction: row;
+	}
+	button {
+		writing-mode: vertical-lr;
+		font-size: 3.5vw;
+		padding: 1rem;
+	}
+	.voice,
+	.language {
+		width: 100%;
+		height: auto;
+		overflow: scroll;
+		@media (min-width: 640px) {
+		}
+		button {
+			height: auto;
+			width: auto;
+			flex-shrink: 0;
+			margin: 3pt 1pt;
+			padding: 3pt 1em;
+			line-height: 90%;
+			color: black;
+			text-shadow: none;
+		}
+	}
+}
+
+.HOT {
+	flex-grow: 5;
+	flex-shrink: 1;
+	transition: ease-in .85s 0.001s;
+}
+
+.COLD {
+	flex-grow: 1;
+	flex-shrink: 2;
+	transition: ease-out .4s 0.3s;
+}
+
+.unsure,
+.text,
+.speech,
+.color,
+.shape,
+.sound,
+.tone { transition: ease-in .25s 0.01s;
+}
+
+.unsure,
+.unsure .tintable button {background-color: $clr_stroop-unsure;}
+
+.text,
+.text .tintable button {background-color: $clr_stroop-text;}
+
+.speech,
+.speech .tintable button {background-color: $clr_stroop-speech;}
+
+.color,
+.color .tintable button {background-color: $clr_stroop-color;}
+
+.shape,
+.shape .tintable button {background-color: $clr_stroop-shape;}
+
+.sound,
+.sound .tintable button {background-color: $clr_stroop-sound;}
+
+.tone,
+.tone .tintable button {background-color: $clr_stroop-tone;}
+
+#SoundBoardStatus,
+#CurrentButton {
+	flex-direction: column;
+	@media (min-width: 640px) {
+		//flex-direction: row;
+	}
+}
+
+//background: none;
+//width: $sz_buttonBoardWidth;
+//height: $sz_buttonBoardHeight;
+//position: absolute;
+//left: calc((100vw - #{$sz_buttonBoardWidth}) / 2);
+//right: calc((100vw - #{$sz_buttonBoardWidth}) / 2);
+//top: calc((100vh - #{$sz_buttonBoardHeight}) / 2);
+//bottom: calc((100vh - #{$sz_buttonBoardHeight}) / 2);
+
+#TheButtons {
+	border-radius: 0;
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: auto;
+	button {
+		width: 100%; height: 100%;
+		margin: 0;
+		border: none;
+		border-radius: 0;
+		box-shadow: inset 3px 3px 5px $clr_formShadow;
+		:hover {
+			box-shadow: 7px 7px 10px $clr_formShadow;
+		}
+		:active {
+			box-shadow: inset 7px 7px 10px $clr_formShadow;
+		}
+	}
+}
+
+.LCD {
+	//min-width: 8em;
+	//border: 4px solid #1a231a;
+	background-color: #526652;
+	color: #1a231a;
+	overflow: hidden !important;
+	border-radius: .5rem;
+	padding: .5rem;
+	//clip-path: polygon(100% 0%, 0% 0%, 0% 100%, 100% 100%);
+	box-shadow: inset 0.1vh 0.1vh 1vw #1a231a;
+}
+
+p.LCD {
+	font-family: "LCD Mono", monospace;
+	line-height: 90%;
+	color: #1a231a;
+	//font-size: 4vw;
+	white-space: nowrap;
+	margin: 0;
+}
+
+.meta {
+	padding: 6pt;
+}
+
+.Countdown {
+	width: 100%;
+	border: 1px solid white;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	align-content: space-evenly;
+	button {
+		text-align: center;
+		word-spacing: .25em;
+		letter-spacing: .25em;
+	}
+}
+
+#DotGraph {
+	height: 100%; width: 100%;
+	border: 1px solid black;
+	overflow: hidden;
+	perspective-origin: -1500px 500px;
+	transition: ease-in .3s 0.4s;
+	ul {
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
+		//flex-direction: row;
+		//position: relative;
+		//display: grid;
+		//grid-template-columns: repeat(auto-fit, minmax(2px, 1px));
+		//scale: calc(1 + var(--sequence-item-count) * .5);
+		li {
+			position: absolute;
+			//height: 100px;
+			//width: auto;
+			//flex-grow: 0;
+			//flex-shrink: 0;
+			transition: ease-in .3s 0.4s;
+		}
+	}
+}
+
+#DotGraph {
+	ul {
+		width: 100%;
+		bprder: 1px solid white;
+		background-color: $clr_boxBG;
+		li {
+			display: inline-block;
+		}
+	}
+}
+
+[data-dg="1"] { --dg: 1; }
+
+.props {
+	--dg: 1;
+	width: calc(100px * var(--dg));
+	//width: calc(attr(data-gap) * .05px) !important;
+	max-width: unset !important;
+	min-width: unset !important;
+}
+
+.props::after {
+	content: attr(data-gap);
+	width: calc(attr(data-gap) * 1px) !important;
+}
+
+.recording {
+	transition: ease-in .3s 0.4s;
+	border: 4px dotted red;
+	background-color: red !important;
+}
+
+.playing {
+	transition: ease-in .3s 0.4s;
+	border: 4px dotted green;
+	background-color: green !important;
+}
+
+.stopped,
+.cold {
+	transition: ease-in .3s 0.4s;
+}
+
+
+.gray {background-color: gray;}
+
+.white {background-color: white;}
+
+.brown {background-color: brown;}
+
+.black {background-color: black;}
+
+.red {background-color: red;}
+
+.yellow {background-color: yellow;}
+
+.orange {background-color: orange;}
+
+.findme {border: 10px solid red !important;}
