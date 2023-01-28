@@ -1,7 +1,7 @@
 import {ISound} from './Types';
 import {useContext, useState} from 'react';
 import {CurrentButton} from "./CurrentButton";
-import {TheSoundBoard, soundContext, stroopContext, voiceContext} from "./SoundBoard";
+import {TheSoundBoard, RecordingContext, stroopContext, voiceContext} from "./SoundBoard";
 
 let override = true
 
@@ -36,7 +36,6 @@ osc.setPeriodicWave(wave)
 osc.connect(ac.destination)
 
 let CurrentVoice = voiceContext
-
 
 export const Speak: Function = (sound: ISound) => {
 	let synth = window.speechSynthesis

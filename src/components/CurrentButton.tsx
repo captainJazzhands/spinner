@@ -8,16 +8,13 @@ export function CurrentButton(props: { thisButtonCurrent: IButton }) {
 
 	return (
 		<div className={' ' + button.color} id={'CurrentButton'}>
-			<ul className={'LCD'}>
+			<ul className={''}>
 				{
 					Object.keys(button).map((item, i, thing) => {
 						return <li
-							className={'LCD'}
+							className={''}
 							key={i}
 						>
-							<span className={'meta'}>
-								{thing[i].valueOf()}
-							</span>
 							<span className={'meta'}>
 								{item}
 							</span>

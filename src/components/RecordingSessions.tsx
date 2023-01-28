@@ -1,141 +1,216 @@
-import React, {Context, useContext} from 'react'
-import {IRecordingSession, ISequence} from './Types'
+import React, {Ref, useContext, useEffect, useRef, useState} from 'react'
+import {
+	IRecordingSession,
+	IButton,
+	ISound,
+	ISequence
+} from './Types'
+import {Speak, MakeNoise} from './AudioCode';
 import './SoundBoard.css'
-import {soundContext} from './SoundBoard';
+import {stroopContext} from './SoundBoard';
+import {TransportControls} from "./TransportControls";
 
-export function RecordingSessions(props: { RSP: IRecordingSession, UpdaterFunction: Function }) {
-// export function RecordingSessions(props: { RecordingSession: IRecordingSession }) {
+let root = document.documentElement
 
-	// const [Sequences2, setSequences2]: [ISequence[], Function] = useState([])
-	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(props.RecordingSession)
+export function RecordingSessions(props: {
+	Sessions: IRecordingSession,
+	SessionChangeHandler: any,
+	HotPanel: string
+}) {
 
-	// function HandleRecordChange(sesh: IRecordingSession) {
-	// 	console.log('HRC()', typeof sesh)
-	// 	setRecordingSession(sesh)
-	// }
+	let seqs
 
-	const seesh: IRecordingSession = useContext(soundContext)
-	let seqs:[] = []
-	// sesh.Sequences.map(seqs.push([item]))
-	
-	// let seqs: ISequence[] = sesh.Sequences ?
-	// 	Array.from(sesh.Sequences) : Array.from(props.RSP.Sequences)
-
-	if (typeof (seqs) == 'undefined' || seqs.length < 1) {
-		// sqs = []
-		// return (<div className={'box LCD'} id={'TheSession'}>
-		// 	This plan failed.
-		// </div>)
+	if (props.Sessions && props.Sessions.Sequences) {
+		seqs = props.Sessions.Sequences
 	} else {
-		// seqs = seqs.filter((something: { Sequence: string | any[]; }) => something.Sequence.length > 0)
-		// let sqs = rsp.Sequences ? rsp.Sequences : []
+		seqs = [new IButton()]
 	}
+	let isHot: boolean = (props.HotPanel === "RecordingSessions")
 
-	if (typeof (seqs) == 'undefined') {
-		// sqs = new IRecordingSession().Sequences
-		// return (<div className={'box LCD'} id={'TheSession'}>
-		// 	The backup plan failed, too.
-		// </div>)
-	} else {
-		return <div className={'box'} id={'TheSession'}>
-			{
-				Object.keys(seqs).map((it, r, thing) => {
-						return (<li
-							className={'LCD'}
-							key={r}
-							// @ts-ignore
-							onClick={props.HandleRecordChange}
-						>)
-							<span className={'meta'}>
-								{/*{seqs[r].Sequence[r].color}*/}
+	return (
+		<div
+			className={isHot ? 'box HOT' : 'box COLD'}
+			id={'RecordingSessions'}
+		>
+			<p>
+				You have <span className={'LCD'}>{seqs.length}</span> recordings.
+			</p>
+
+			<div
+				className={'wrapper'}
+				id={'DotGraph'}
+			>
+				<ul>
+					{
+						seqs.map((session, index, sequence) => {
+								return (<li
+									className={'sequence-length-' + session.toString()}
+									key={index}
+									// onClick={props.SessionChangeHandler(Event.target)}
+								>)
+									<span className={'meta'}>
+								{index}
 							</span>
-							<span className={'meta'}>
-								{thing[r].toString()}
+									<span className={'meta'}>
+								{}
 							</span>
-							<span className={'meta'}>
-								{it[r][0].valueOf().toString()}
-							</span>
-						</li>)
+								</li>)
+							}
+						)
 					}
-				)
-			}
+				</ul>
+			</div>
+
 		</div>
-	}
-
-	const BuildDisplayList = () => {
-
-		let altSlate: Array<any> = []
-		const displayList = []
-
-		// const sqs: ISequence[] = props.RecordingSession.Sequences ? props.RecordingSession.Sequences : [new ISequence([new IButton(new ISound())])]
-		// const displayList: ISequence[] = [new ISequence([new IButton(new ISound())])]
-
-		debugger
-
-		let localSeqs = () => {
-			console.log('the other')
-			if (typeof (seqs) !== undefined) {
-				// seqs = Array.from(seqs)
-				console.log('one')
-			} else {
-				console.log('was undefined', seqs)
-				// seqs = Array.from(seqs)
-			}
-			return Array.from(seqs)
-		}
-
-		// const Sequences: ISequence[] =
-		// 	props.RecordingSession.Sequences ?
-		// 		props.RecordingSession.Sequences :
-		// 		RecordingSession.Sequences
-		// [new ISequence([new IButton()])]
-
-		if (localSeqs.length > 0) {
-			console.log('Sequences.length', localSeqs.length)
-			for (const k in localSeqs) {
-				displayList.push(k)
-			}
-			// localSeqs.map((oneSeq) => (
-			// 		displayList.push(oneSeq)
-			// 	)
-		} else {
-			console.log('Sequences.length', localSeqs.length)
-			altSlate.push(localSeqs)
-			// displayList.map((thing) => altSlate.push(thing.Sequence))
-			return Array.from(altSlate)
-		}
-		return displayList
-	}
-
-
-	return <div className={'box LCD'} id={'TheSession'}>
-		List of Recordings:
-
-		<ul className={'LCD'}>
-			{
-				Object.keys(BuildDisplayList()).map((it, r, thing) => {
-						return <li
-							className={'LCD'}
-							key={r}
-							// @ts-ignore
-							onClick={props.HandleRecordChange}
-						>)
-							<span className={'meta'}>
-								{'sqs[r].Sequence[r].color'}
-							</span>
-							<span className={'meta'}>
-								{it.toString()}
-							</span>
-							<span className={'meta'}>
-								{it[r][0].valueOf().toString()}
-							</span>
-						</li>
-					}
-				)}
-		</ul>
-
-	</div>
+	)
 }
-function item(item: any): (value: ISequence, index: number, array: ISequence[]) => unknown {
-    throw new Error('Function not implemented.');
-}
+
+// return await Promise.all(pt.map(PlayButton)).then(() => delay(pace))
+// delay(countdownTime).then(r => {return Promise.all(sequence.map(PlayButton))})
+//
+// Promise.resolve()
+// 	.then(() => buttStream.Sequence.map( async (oneButton: ISoundButton, i: React.Key) => {
+// 		await Promise.resolve()
+// 			// .then(() => speechSynthesis.cancel())
+// 			.then(() => PlayButton(oneButton))
+// 			.then(() => delay((pace - cumulative)))
+// 	}))
+// 	.then(() => setIsPlaying(false))
+// 	.then(() => console.log('setIsPlaying(false)')
+// 	)
+//
+// buttStream.Sequence.map(async (oneButton: ISoundButton, i: React.Key) => {
+// 		await Promise.resolve()
+// 		await delay((pace - cumulative))
+// 			// .then(() => speechSynthesis.cancel())
+// 			// .then(async () => await delay((pace - cumulative)))
+// 			.then(() => PlayButton(oneButton))
+// 			.then(() => setIsPlaying(false))
+// 			.then(() => console.log('setIsPlaying(false)'))
+// 	}
+// )
+//
+//
+// buttStream.Sequence.map(async (oneButton: ISoundButton, i: React.Key) => {
+// 		await Promise.resolve()
+// 		await delay((pace - cumulative))
+// 			// .then(() => speechSynthesis.cancel())
+// 			// .then(async () => await delay((pace - cumulative)))
+// 			.then(() => PlayButton(oneButton))
+// 			.then(() => setIsPlaying(false))
+// 			.then(() => console.log('setIsPlaying(false)'))
+// 	}
+// )
+//
+// function isDupe(): boolean {
+// 	return pt[pt.length - 1] === pt[pt.length - 2]
+// }
+//
+// let classTag = () => {
+// 	return isDupe() ? 'props dupe' : 'props'
+// }
+//
+// let implementation: number = 2
+// let soundTags = []
+// let soundClassTag = ''
+//
+// if (implementation === 1) {
+//
+//  type 1
+//  sound name, instance count, sound name…
+//    <div className='props sound data-reps='3'>Outside</div>
+//    <div className='props sound'>Hungry</div>
+//    <div className='props'>Pets</div>
+//
+// 	for (let i = 0 i < pt.length i++) {
+// 		if (i > 0 && pt[i][0] === pt[i - 1][0]) {
+// 			soundClassTag = 'props dupe'
+// 			soundTags.push(pt[i][0])
+// 		} else {
+// 			soundClassTag = 'props'
+// 			soundTags.push(pt[i][0])
+// 		}
+// 		console.log(soundTags[i])
+// 	}
+//
+// 	pt.map(function (button: any, i: React.Key) {
+// 		return <div
+// 			key={i}
+// 			className={'props'}
+// 		>
+// 			{button}
+// 		</div>
+// 	})
+// } else if (implementation === 2) {
+//
+//  type 2
+//  sound name, delay till next, sound name…
+//    <div className='props sound' data-gap='1270'>Outside</div>
+//    <div className='props sound' data-gap='315'>Outside</div>
+//    <div className='props sound' data-gap='626'>Outside</div>
+//    <div className='props sound' data-gap='427'>Hungry</div>
+//    <div className='props'>Pets</div>
+//
+// for (let i = 0 i < pt.length i++) {
+// 	if (i > 0 && pt[i][0] === pt[i - 1][0]) {
+// 		soundClassTag = 'props dupe'
+// 		soundTags.push(pt[i][0])
+// 	} else {
+// 		soundClassTag = 'props'
+// 		soundTags.push(pt[i][0])
+// 	}
+// 	console.log(soundTags[i])
+// }
+//
+// 	pt.map(function (button: any, i: React.Key) {
+// 		return <div
+// 			key={i}
+// 			className={'props'}
+// 		>
+// 			{button}
+// 		</div>
+// 	})
+// }
+//
+//
+//
+// const MagicDiv: Ref<any> = forwardRef((props, ref) => {
+// 	return <input {...props} ref={ref}/>
+// })
+//
+// function AutoFocusInput() {
+// 	const inputRef: Ref<any> = useRef(null)
+// 	// This effect runs only once after the component mounts (like componentDidMount)
+// 	useEffect(() => {
+// 		// ref on function component is forwarded to a regular DOM element, 
+// 		// so now the parent has access to the DOM node including its focus method.
+// 		// Note that the ref usage is the same as a regular 
+// 		// DOM element, like in example 1!
+// 		inputRef.current.focus()
+// 	}, [])
+// 	// @ts-ignore
+// 	return <MagicDiv ref={inputRef}/>
+// }
+//
+//
+//
+// const tallyRefOuter: Ref<any> = React.createRef()
+// const tallyRefForward: Ref<any> = React.forwardRef(tallyRefOuter)
+//
+// function ForwardTheRef(props:any, BackwardRef: Ref<undefined>) {
+// 	const forwarded: Ref<any> = React.createRef()
+// 	return {props, forwarded}
+// }
+//
+// const refDiv: Ref<any> = forwardRef((props, ref: Ref<any>) => {
+// 	return <div
+// 		className={classTag()}
+// 		ref={ref}
+// 		id='ThingsTheButtonsSayRightNow'
+// 		// onClick={() => DoTheButton(button.name, button.pronunciation)}
+// 	>
+// 		{props.button}
+// 	</div>
+// })
+//
+// ref={isDupe() ? ForwardTheRef : null}

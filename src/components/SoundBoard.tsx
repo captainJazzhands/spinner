@@ -3,22 +3,20 @@ import React, {
 	Context,
 	useState,
 	useEffect,
-	useReducer,
 	Reducer,
 	useContext,
-	createContext, Ref, useRef
+	createContext, Ref, useRef, ComponentRef
 } from 'react'
 import * as Types from './Types'
 import {Speak, MakeNoise} from './AudioCode'
 import {SoundBoardStatus} from './SoundBoardStatus'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
-import {IRecordingSession, IButton, ISound, IStroopMode} from './Types';
+import {IRecordingSession, IButton, ISound, IStroopMode, ISequence} from './Types';
 import {RecordingSessions} from './RecordingSessions';
-import {Playback} from './Playback';
 import {StroopSwitch} from "./StroopSwitch";
-// import {AST} from 'eslint'
-// import Token = AST.Token
+import {Populator} from "./Populator";
+import {TheButtons} from "./TheButtons";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -99,17 +97,30 @@ let soundList: IButton[] = [
 //</editor-fold>
 
 let override = true
+let realtime = true
+
+let planck: number = 10
+
+let playbackTimer: NodeJS.Timer
+let downTimer: NodeJS.Timer
+let downTimerOn: boolean = false
+let playbackTimerOn: boolean = false
+let elapsedTime: number = 0
+let RecStart: number = 0
+let duration: number = 0
 
 let RecordingTimer: NodeJS.Timer
-let elapsedTime: number = 0
-let planck: number = 10
-let delta: number = 0
+
+playbackTimerOn = false
+downTimerOn = false
 
 const voices = window.speechSynthesis.getVoices()
-export const voiceContext: React.Context<any> = React.createContext(voices[0].name)
-// export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
-export const soundContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
+export const voiceContext: React.Context<any> = React.createContext(voices[0])
+// export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(new SpeechSynthesisVoice())
+export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
+export const wordContext: React.Context<any> = React.createContext([""])
+export let dataSourceContext: React.Context<any> = React.createContext("")
 
 export function TheSoundBoard(this: any) {
 
@@ -119,19 +130,15 @@ export function TheSoundBoard(this: any) {
 	const [RecordingStart, setRecordingStart]: [number, Function] = useState(0)
 	const [RecordingStop, setRecordingStop]: [number, Function] = useState(Date.now())
 	const [clickTime, setClickTime]: [number, Function] = useState(0)
-	// let tally:IButton[] = []
-	// const tallyContext = React.createContext([])
-	// const setTally = useContext(tallyContext)
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-	// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState([  {SessionData: [] } , {Sequences:[] } , Function ] )
 	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
+	const [WordList, setWordList]: [string[], Function] = useState([''])
+	const [HotPanel, setHotPanel]: [string, Function] = useState('DataSelector')
 	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
 
-	const [userID, setUserID]: [number, Function] = useState(666)
-	const [sessionID, setSessionID]: [number, Function] = useState(0)
-	const [sessionStart, setSessionStart]: [number, Function] = useState(0)
+	const [user, setUser]: [number, Function] = useState(8675309)
 	const [Comparison, setComparison]: [[], Function] = useState([])
 
 	// const session = useSession()
@@ -180,20 +187,150 @@ export function TheSoundBoard(this: any) {
 
 	function HandleRecordChange(sesh: IRecordingSession) {
 		// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-		console.log('HRC', typeof sesh)
 		setRecordingSession(sesh)
+		setHotPanel("SoundBoardStatus")
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
+		setHotPanel("DataSelector")
 	}
 
-	function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
-		console.log('current:', CurrentVoice.displayName, 'new:', NewVoice.name)
-		setCurrentVoice(NewVoice)
+	function HandleWordContext(WordList: any) {
+		setWordList(WordList)
+		setHotPanel("TheButtons")
 	}
+
+	function HandlePopulation(requestedSource: string) {
+		if (requestedSource) {  //  perhaps some type checking?
+			dataSourceContext = requestedSource as unknown as Context<URL>
+		}
+	}
+
+	function HandleTransportChange(requestedState: string): void {
+		if (requestedState === 'play') {
+			// @ts-ignore
+			PlayButtStream(RecordingSession[1].Sequences)
+		}
+		if (requestedState === 'stop') {
+			StopEverything()
+		}
+		if (requestedState === 'record') {
+			startRecordingTimer()
+		}
+		if (requestedState === 'reset') {
+			resetRecordingTimer()
+		}
+	}
+
+	// function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
+	// 	console.log('current:', CurrentVoice.displayName, 'new:', NewVoice.name)
+	// 	setCurrentVoice(NewVoice)
+	// }
 
 	// let color: string = button.color ? button.color!.toString() : ''
+
+	const resetCountdown = () => {
+		if (!downTimerOn) {
+			elapsedTime = RecStart - Date.now()
+		}
+	}
+
+	const countdownTime: number = 2600
+	const pace: number = 3500
+
+	async function delay(duration: number | undefined, data: any) {
+		return new Promise(resolve => {
+			setTimeout(resolve.bind(null, data), duration);
+		});
+	}
+
+	const PlayButtStream = (RequestedSequence: ISequence | null) => {
+		setHotPanel("SoundBoardStatus")
+		setUser(0)
+		StopEverything()
+		resetCountdown()
+		startPlaybackTimer()
+		setIsPlaying(true)
+		setIsRecording(false)
+		let delta: number = 0
+		let localSeq
+		// const Sequence: ISequence = RequestedSequence ? RequestedSequence : new ISequence([new IButton(new ISound())]) as ISequence
+
+		if (RequestedSequence) {
+			if (typeof (RequestedSequence) !== 'undefined') {
+				localSeq = Object.assign(RequestedSequence)
+			}
+			if (RequestedSequence.Sequence) {
+				localSeq = Object.assign(RequestedSequence.Sequence)
+			}
+			localSeq.reduce(function (p: Promise<any>, button: IButton, i: number, ray: { begin: any }[]) {
+				return p.then(async () => {
+					if (button.sound && button.begin) {
+						let x = i > 0 ? i - 1 : 0 as number
+						delta = button.begin - ray[x].begin
+						return await PlayButton(button).then(await delay.bind(null, delta)).then();
+					} else {
+						console.log('giving up')
+						return null
+					}
+				})
+			}, Promise.resolve()).then(() => {
+				setIsPlaying(false)
+				setUser(8675309)
+			}).catch((err: { toString: () => any }) => {
+				console.log('error:', err.toString())
+			});
+		} else {
+			console.log('shouldn’t have been undefined I guess')
+		}
+	}
+
+	async function PlayButton(button: IButton) {
+		setIsPlaying(true)
+		if (StroopMode === 'speech') {
+			Speak(button.sound)
+		}
+		if (StroopMode === 'tone') {
+			MakeNoise(button.sound)
+		}
+	}
+
+	function startPlaybackTimer() {
+		downTimerOn = true
+		setIsPlaying(true)
+		playbackTimer = setInterval(() => {
+			elapsedTime = Date.now() - RecStart
+		}, planck)
+		return true
+	}
+
+	function stopPlaybackTimer() {
+		setIsPlaying(false)
+		let result: number = playbackTimer ? 0 : Date.now() - RecStart
+		playbackTimerOn = false
+		clearInterval(playbackTimer)
+		return result
+	}
+
+	const stopCountdown = () => {
+		clearInterval(downTimer)
+		downTimerOn = false
+	}
+
+	const StopEverything = () => {
+		speechSynthesis.pause()
+		speechSynthesis.cancel()
+		stopCountdown()
+		stopPlaybackTimer()
+		stopRecordingTimer()
+		clearInterval(downTimer)
+		clearInterval(playbackTimer)
+		playbackTimerOn = false
+		downTimerOn = false
+		setIsPlaying(false)
+		setIsRecording(false)
+	}
 
 	function compare(sequenceA: any[], sequenceB: any[]) {
 		setComparison(null)
@@ -205,6 +342,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const startRecordingTimer = () => {
+		setHotPanel("ButtonBoard")
 		if (!isRecording) {
 			setClickTime(Date.now())
 			setRecordingStart(Date.now())
@@ -217,6 +355,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function stopRecordingTimer() {
+		setHotPanel("ButtonBoardStatus")
 		if (isRecording) {
 			setIsRecording(false)
 			setRecordingStop(Date.now())
@@ -250,63 +389,72 @@ export function TheSoundBoard(this: any) {
 		)
 	}
 
-	// const buttonTally: Ref<any> = useRef(null)
-	// useEffect(() => {
-	// 	if ((buttonTally ?? null).current) {
-	// 		buttonTally.current.className = 'hot'
-	// 	}
-	// }, [count])	
-
-	const buttonTally: Ref<any> = useRef(null)
-	useEffect(() => {
-		if ((buttonTally).current) {
-			buttonTally.current.className = 'hot'
-		}
-	}, [count])
-
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
 	const buttonBoardDiv = buttonBoardRef.current
 
-	const stroopModeRef: Ref<HTMLDivElement> = useRef(null)
-	const stroopModeDiv = stroopModeRef.current
+	useEffect(() => {
+			if (buttonBoardDiv != null) {
+				if (isPlaying) {
+					buttonBoardDiv.style.opacity = "0.75"
+					buttonBoardDiv.style.pointerEvents = "none"
+				} else {
+					buttonBoardDiv.style.opacity = "1"
+					buttonBoardDiv.style.pointerEvents = "initial"
+				}
+			}
+		},
+		[isPlaying, isRecording])
+
+	const pageLayoutRef: Ref<HTMLDivElement> = useRef(null)
+	const pageLayoutDiv = pageLayoutRef.current
+
+	useEffect(() => {
+			if (pageLayoutDiv != null) {
+				pageLayoutDiv.className = StroopMode.toString()
+			}
+		},
+		[StroopMode])
 
 	const recordClockRef: Ref<HTMLDivElement> = useRef(null)
 	const recordClockDiv = recordClockRef.current
 
 	useEffect(() => {
-		if (recordClockDiv) {
+		if (recordClockDiv && recordClockDiv.classList) {
 			if (isRecording) {
-				recordClockDiv!.classList.add('recording')
-				recordClockDiv!.classList.remove('playing')
+				recordClockDiv.classList.add('recording')
+				recordClockDiv.classList.remove('playing')
 			} else {
-				recordClockDiv!.classList.remove('recording')
+				recordClockDiv.classList.remove('recording')
 			}
 			if (isPlaying) {
-				recordClockDiv!.classList.add('playing')
-				recordClockDiv!.classList.remove('recording')
+				recordClockDiv.classList.add('playing')
+				recordClockDiv.classList.remove('recording')
 			} else {
-				recordClockDiv!.classList.remove('playing')
+				recordClockDiv.classList.remove('playing')
 			}
 		}
 	}, [isRecording, recordClockDiv, isPlaying])
 
 	const DoTheButton = (button: IButton) => {
-		if (!isRecording) {
-			startRecordingTimer()
-		}
 		let thisButton = Object.assign({}, button)
-		if (count === 0) {
-			thisButton.begin = 1
+		if (user > 0) {
+			if (!isRecording) {
+				startRecordingTimer()
+			}
 		} else {
-			thisButton.begin = Date.now() - RecordingStart
+			if (count === 0) {
+				thisButton.begin = 1
+			} else {
+				thisButton.begin = Date.now() - RecordingStart
+			}
 		}
-		delta = thisButton.begin - RecordingStart + Date.now()
-		if (thisButton.sound) {
-			for (let i = 0; i < voices.length; i++) {
+
+		for (let i = 0; i < voices.length; i++) {
+			if (CurrentVoice.displayName) {
 				if (voices[i].name === CurrentVoice.displayName) {
-					if (override) {
+					if (override && thisButton.sound) {
 						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
-					} else {
+					} else if (thisButton.sound) {
 						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
 					}
 				}
@@ -319,22 +467,11 @@ export function TheSoundBoard(this: any) {
 			thisButton.end = Date.now() - RecordingStart
 		}
 
-		setClickTime(Date.now())
+		// setClickTime(Date.now())
 
 		setCount((count: number) => count + 1)
-		setTally((prevTally: IButton[]) => [...prevTally, thisButton])
-
-		setRecordingSession(
-			[
-				{SessionData: [{RecStart: RecordingStart}]},
-				{
-					Sequences: [
-						[...tally, thisButton],
-						[...tally, thisButton]
-					]
-				}
-			]
-		)
+		// shouldn’t hit tally until mouse up
+		// setTally((prevTally: IButton[]) => [...prevTally, thisButton])
 
 		if (stroopContext.Provider.toString() === 'speech' && thisButton.sound) {
 			// let what: SpeechSynthesisUtterance = new SpeechSynthesisUtterance()
@@ -342,115 +479,103 @@ export function TheSoundBoard(this: any) {
 			Speak(thisButton.sound)
 		}
 
-		if (  //  Hmm, how to sort this one…
-			thisButton.end && thisButton.begin ||
-			stroopContext.Provider.toString() === 'tone' && thisButton.sound
-		) {
-			let duration = thisButton.end! - thisButton.begin
+		if (stroopContext.Provider.toString() === 'tone' && thisButton.sound) {
+			let duration = thisButton.end ? thisButton.end - thisButton.begin! : 1
 			MakeNoise(thisButton.sound, duration)
 		}
-
 	}
 
+	const HandleButtonPress = (oneButton: IButton, direction: string) => {
+		let thisButton = Object.assign({}, oneButton)
+		if (direction === "down") {
+			if (count === 0) {
+				thisButton.begin = 1
+			} else {
+				thisButton.begin = Date.now() - RecordingStart
+			}
+			// setButton(thisButton)
+			setCount((count: number) => count + 1)
+		} else if (direction === "up") {
+			thisButton = button
+			thisButton.end = Date.now() - RecordingStart
+			let completedButton = thisButton
+			setTally((prevTally: IButton[]) => [...prevTally, completedButton])
+			setRecordingSession(
+				[
+					{SessionData: [{RecStart: RecordingStart}]},
+					{
+						Sequences:
+							[...tally, completedButton]
+
+					}
+				]
+			)
+		}
+		if (realtime) {
+			DoTheButton(thisButton)
+		}
+		return thisButton
+	}
+
+	let TransportState = "empty"
+	if (isPlaying) {
+		TransportState = "playing"
+	}
+	if (isRecording) {
+		TransportState = "recording"
+	}
 
 	return (
-		<React.StrictMode>
-			<div
-				className={'pageLayout'}
-			>
-
+		<div
+			id={'pageLayout'}
+			ref={pageLayoutRef}
+		>
+			<stroopContext.Provider value={HotPanel}>
 				<stroopContext.Provider value={StroopMode}>
-					<voiceContext.Provider value={CurrentVoice}>
+					<wordContext.Provider value={WordList}>
+						<voiceContext.Provider value={CurrentVoice}>
+							<RecordingContext.Provider value={RecordingSession}>
 
-						<StroopSwitch
-							StroopMode={StroopMode}
-							CurrentVoice={CurrentVoice}
-							StroopUpdater={HandleStroopChange}
-							VoiceUpdater={HandleVoiceChange}
-						/>
+								<SoundBoardStatus
+									Sequence={tally}
+									TransportState={TransportState}
+									HotPanel={HotPanel}
+									TransportStateChangeHandler={HandleTransportChange}
+								/>
 
-						<soundContext.Provider value={RecordingSession}>
+								<Populator
+									handlePopulation={HandlePopulation}
+									HotPanel={HotPanel}
+									setWordContext={HandleWordContext}
+								/>
 
-							<Playback
-								Sequence={tally}
-							/>
+								<StroopSwitch
+									StroopMode={StroopMode}
+									StroopUpdater={HandleStroopChange}
+									HotPanel={HotPanel}
+								/>
 
-							<div
-								className={'box'}
-								id='buttonBoard'
-								ref={buttonBoardRef}
-							>
+								{/*<RecordingSessions*/}
+								{/*	Sessions={RecordingSession}*/}
+								{/*	SessionChangeHandler={HandleRecordChange}*/}
+								{/*	HotPanel={HotPanel}*/}
+								{/*/>*/}
 
-								{/*<h1>Do your buttons!</h1>*/}
+								<TheButtons
+									HandleButtonPress={HandleButtonPress}
+									HotPanel={HotPanel}
+								/>
 
-								<div id={'TheClock'}
-								     ref={recordClockRef}
-								>
-									<button
-										value={'StartRecording'}
-										//  ToDoButNotToday: replace onClick with addEventListener()
-										onClick={() => startRecordingTimer()}
-										disabled={isRecording}
-									>{'Record'}</button>
-
-									<p className={'LCD'}>
-										time since<br/>last click: {delta}
-										<br/>
-										session time: {Date.now() - RecordingStart}
-										<br/>
-										total clicks: {count}
-									</p>
-
-									<button
-										value={'StopRecording'}
-										//  ToDoButNotToday: replace onClick with addEventListener()
-										onClick={() => stopRecordingTimer()}
-										disabled={!isRecording}
-									>{'stop'}</button>
-
-									<button
-										value={'reset'}
-										//  ToDoButNotToday: replace onClick with addEventListener()
-										onClick={() => resetRecordingTimer()}
-										disabled={isRecording || elapsedTime === 0}
-									>{'reset'}</button>
-
-								</div>
-
-								<div className={'' + button.color} id={'TheButtons'}>
-									{soundList.map(function (oneButton: IButton, i: React.Key) {
-										return <button
-											key={i}
-											name={oneButton.sound!.name}
-											value={oneButton.sound!.name}
-											className={oneButton.color ? oneButton.color.toString() : ''}
-											//  ToDoButNotToday: replace onClick with addEventListener()
-											onMouseDown={() => DoTheButton(oneButton)}
-										>{oneButton.sound!.name}</button>
-									})}
-								</div>
-							</div>
-
-							<SoundBoardStatus
-								Sequence={tally}
-							/>
-
-							{/*<RecordingSessions*/}
-							{/*	RSP={RecordingSession}*/}
-							{/*	UpdaterFunction={HandleRecordChange}*/}
-							{/*/>*/}
-						</soundContext.Provider>
-
-					</voiceContext.Provider>
+							</RecordingContext.Provider>
+						</voiceContext.Provider>
+					</wordContext.Provider>
 				</stroopContext.Provider>
+			</stroopContext.Provider>
 
+		</div>
 
-			</div>
-
-		</React.StrictMode>
 	)
 }
-
 
 // function compare(sequence:any[], challenge:any[]){
 //   setComparison(null)

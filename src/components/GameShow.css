@@ -299,7 +299,7 @@
 }
 #start :hover {
   letter-spacing: 2.5vh;
-  box-shadow: inset 5px 5px 20px rgba(29, 29, 48, 0), -4px -4px 25px rgba(29, 29, 48, 0);
+  box-shadow: inset 5px 5px 20px rgba(38, 48, 29, 0), -4px -4px 25px rgba(38, 48, 29, 0);
   transition: all ease-in 2160ms;
 }
 
