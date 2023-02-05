@@ -1,8 +1,6 @@
 import React, {
 	useState,
-	useEffect,
-	Ref,
-	useRef
+	useEffect
 } from 'react'
 import axios, {RawAxiosRequestConfig} from "axios"
 // import useSession, {UseSessionProvider} from 'react-session-hook'

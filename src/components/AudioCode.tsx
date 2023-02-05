@@ -1,7 +1,5 @@
 import {ISound} from './Types';
-import {useContext, useState} from 'react';
-import {CurrentButton} from "./CurrentButton";
-import {TheSoundBoard, RecordingContext, stroopContext, voiceContext} from "./SoundBoard";
+import {voiceContext} from "./SoundBoard";
 
 let override = true
 

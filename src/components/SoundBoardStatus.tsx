@@ -5,7 +5,6 @@ import {
 	ISound,
 	ISequence
 } from './Types'
-import {Speak, MakeNoise} from './AudioCode';
 import './SoundBoard.css'
 import {stroopContext} from './SoundBoard';
 import {TransportControls} from "./TransportControls";

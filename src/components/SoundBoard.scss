@@ -175,6 +175,25 @@ ul.buttonTile {
 	}
 }
 
+#stroopSwitch {
+	flex-direction: column;
+	width: 100%;
+}
+
+#stroopButtons {
+	flex-direction: row;
+	width: 100%;
+	@media (min-width: 640px) {
+		//flex-direction: row;
+	}
+	button {
+		//writing-mode: vertical-lr;
+		//transform: rotateZ(-90deg);
+		font-size: 3.5vw;
+		padding: 1rem;
+	}
+}
+
 .DataSelectorList {
 	display: grid;
 	grid-template-columns: repeat(4, .1fr);
@@ -189,51 +208,41 @@ ul.buttonTile {
 	}
 }
 
+#VoiceChoice {
+	flex-direction: column;
+	ul {
+		width: 55%;
+
+		grid-template-columns: repeat(8, .1fr);
+		grid-template-rows: repeat(3, .1fr);
+		li {
+			padding: 2pt 2pt;
+			button {
+				min-width: unset;
+				min-height: unset;
+				background: none;
+				border: 1px solid black;
+				border-radius: 5pt;
+			}
+		}
+	}
+}
+
 #PartsOfSpeechList {
 	grid-template-columns: repeat(6, .1fr);
 	grid-template-rows: none;
 }
 
-#stroopSwitch {
-	flex-direction: row;
-	width: 100%;
-	@media (min-width: 640px) {
-		//flex-direction: row;
-	}
-	button {
-		writing-mode: vertical-lr;
-		font-size: 3.5vw;
-		padding: 1rem;
-	}
-	.voice,
-	.language {
-		width: 100%;
-		height: auto;
-		overflow: scroll;
-		@media (min-width: 640px) {
-		}
-		button {
-			height: auto;
-			width: auto;
-			flex-shrink: 0;
-			margin: 3pt 1pt;
-			padding: 3pt 1em;
-			line-height: 90%;
-			color: black;
-			text-shadow: none;
-		}
-	}
-}
 
 .HOT {
-	flex-grow: 5;
+	flex-grow: 6;
 	flex-shrink: 1;
 	transition: ease-in .85s 0.001s;
 }
 
 .COLD {
 	flex-grow: 1;
-	flex-shrink: 2;
+	flex-shrink: 3;
 	transition: ease-out .4s 0.3s;
 }
 

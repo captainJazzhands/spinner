@@ -1,6 +1,5 @@
-import React, {Context, Ref, useContext, useEffect, useMemo, useRef, useState} from 'react'
-import {IRecordingSession, IButton, ISound, SoundType, ISequence, IStroopMode} from './Types'
-import {RecordingContext, stroopContext, voiceContext} from "./SoundBoard";
+import React, {useContext, useState} from 'react'
+import {voiceContext} from "./SoundBoard";
 import './SoundBoard.css'
 
 export function VoiceChoice(props: {
@@ -58,9 +57,9 @@ export function VoiceChoice(props: {
 	}
 	console.log('counter:', counter)
 
-	// if (speechSynthesis.onvoiceschanged !== undefined) {
-	// 	speechSynthesis.onvoiceschanged = PopulateVoiceList
-	// }
+	if (speechSynthesis.onvoiceschanged !== undefined) {
+		speechSynthesis.onvoiceschanged = PopulateVoiceList
+	}
 
 	function setVoiceLanguage(languageChoice: string) {
 		languageFilter = languageChoice as string
@@ -69,63 +68,47 @@ export function VoiceChoice(props: {
 		// console.log('language is now', languageFilter)
 	}
 
-	// const VoiceListButtons: Ref<any> = useRef(null)
-
-	// useEffect(() => {
-	// 		VoiceListButtons.
-	// 	},
-	// 	[VoiceList])
-
-	// function isAlready(theString: string, theArray: []) {
-// 	return theString in theArray;
-// }
-//
-// const LanguageFilter = useMemo(() => VoiceSelector.filter(isAlready), [VoiceSelector])
-
 	return (
 		<div
-			className={''}
 			id={'VoiceChoice'}
 		>
 			{/*<label>Mode:</label>*/}
 
-			<div className={'language'}>
+			<ul
+				className={'DataSelectorList'}
+			>
 				{LanguageList.map(function (whichLang, i) {
-					return <button
-						key={i}
-						onMouseDown={() => console.log(
-							languageFilter, 'becomes', whichLang
-						)}
-						onMouseUp={() => setVoiceLanguage(whichLang)
-						}>
-						{whichLang
-						}
-					</button>
-				})
-				}
-			</div>
+					return (
+						<li key={i}>
+							<button
+								key={i}
+								onMouseUp={() => setVoiceLanguage(whichLang)
+								}>
+								{whichLang
+								}
+							</button>
+						</li>
+					)
+				})}
+			</ul>
 
-			<div
-				className={'voice'}
+			<ul
+				className={'DataSelectorList'}
 			>
 				{
 					VoiceList.map(function (whichVoice, i) {
-						return <button
-							className={"LCD"}
-							key={i}
-							onMouseDown={() => console.log(
-								CurrentVoice.name, 'becomes', whichVoice.name
-								// CurrentVoice.name, 'becomes', whoseVoice.getAttribute('data-name')
-							)}
-							onMouseUp={() => setCurrentVoice(whichVoice)
-							}>
-							{whichVoice.name}
-						</button>
+						return (
+							<li key={i}>
+								<button
+									key={i}
+									onMouseUp={() => setCurrentVoice(whichVoice)
+									}>
+									{whichVoice.name}
+								</button>
+							</li>)
 					})
 				}
-
-			</div>
-
+			</ul>
 		</div>
 	)
 }

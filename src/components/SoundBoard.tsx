@@ -1,19 +1,9 @@
-import React, {
-	Component,
-	Context,
-	useState,
-	useEffect,
-	Reducer,
-	useContext,
-	createContext, Ref, useRef, ComponentRef
-} from 'react'
-import * as Types from './Types'
-import {Speak, MakeNoise} from './AudioCode'
+import React, {Context, Ref, useEffect, useRef, useState} from 'react'
+import {IButton, IRecordingSession, ISequence, ISound, IStroopMode} from './Types'
+import {MakeNoise, Speak} from './AudioCode'
 import {SoundBoardStatus} from './SoundBoardStatus'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
-import {IRecordingSession, IButton, ISound, IStroopMode, ISequence} from './Types';
-import {RecordingSessions} from './RecordingSessions';
 import {StroopSwitch} from "./StroopSwitch";
 import {Populator} from "./Populator";
 import {TheButtons} from "./TheButtons";
@@ -193,7 +183,11 @@ export function TheSoundBoard(this: any) {
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
-		setHotPanel("DataSelector")
+		if (StroopMode === "speech") {
+			setHotPanel("StroopSwitch")
+		} else {
+			setHotPanel("DataSelector")
+		}
 	}
 
 	function HandleWordContext(WordList: any) {
@@ -553,6 +547,7 @@ export function TheSoundBoard(this: any) {
 									StroopMode={StroopMode}
 									StroopUpdater={HandleStroopChange}
 									HotPanel={HotPanel}
+									setCurrentVoice={setCurrentVoice}
 								/>
 
 								{/*<RecordingSessions*/}

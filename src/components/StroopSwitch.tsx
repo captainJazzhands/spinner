@@ -1,6 +1,6 @@
 import React, {Context, Ref, useContext, useEffect, useMemo, useRef, useState} from 'react'
-import {IRecordingSession, IButton, ISound, SoundType, ISequence, IStroopMode} from './Types'
-import {RecordingContext, stroopContext, voiceContext} from "./SoundBoard";
+import {IStroopMode} from './Types'
+import {stroopContext, voiceContext} from "./SoundBoard";
 import './SoundBoard.css'
 import {VoiceChoice} from "./VoiceChoice";
 
@@ -48,7 +48,7 @@ export function StroopSwitch(props: {
 				<button
 					className={'shape'}
 					onClick={() => setStroopMode('shape')}
-				>color
+				>shape
 				</button>
 				<button
 					className={'sound'}
