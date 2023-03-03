@@ -4,9 +4,11 @@ import {MakeNoise, Speak} from './AudioCode'
 import {SoundBoardStatus} from './SoundBoardStatus'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
+import {Directions} from "./Directions";
 import {StroopSwitch} from "./StroopSwitch";
 import {Populator} from "./Populator";
 import {TheButtons} from "./TheButtons";
+import {VoiceChoice} from "./VoiceChoice";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -104,12 +106,12 @@ let RecordingTimer: NodeJS.Timer
 playbackTimerOn = false
 downTimerOn = false
 
-const voices = window.speechSynthesis.getVoices()
-export const voiceContext: React.Context<any> = React.createContext(voices[0])
+export const voices = window.speechSynthesis.getVoices()
+export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
 // export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(new SpeechSynthesisVoice())
 export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext("speech")
-export const wordContext: React.Context<any> = React.createContext([""])
+export const wordContext: React.Context<any> = React.createContext("")
 export let dataSourceContext: React.Context<any> = React.createContext("")
 
 export function TheSoundBoard(this: any) {
@@ -122,13 +124,13 @@ export function TheSoundBoard(this: any) {
 	const [clickTime, setClickTime]: [number, Function] = useState(0)
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-	const [button, setButton]: [IButton, Function] = useState(new IButton(new ISound()))
+	const [button, setButton]: [IButton, Function] = useState(new IButton)
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
-	const [WordList, setWordList]: [string[], Function] = useState([''])
-	const [HotPanel, setHotPanel]: [string, Function] = useState('DataSelector')
-	const [CurrentVoice, setCurrentVoice]: [Context<any>, Function] = useState(voiceContext)
+	const [WordList, setWordList]: [[], Function] = useState([])
+	const [HotPanel, setHotPanel]: [string, Function] = useState('Directions')
+	const [CurrentVoice, setCurrentVoice]: [SpeechSynthesisVoice, Function] = useState(voices[0])
 
-	const [user, setUser]: [number, Function] = useState(8675309)
+	const [user, setUser]: [number, Function] = useState(6668675309)
 	const [Comparison, setComparison]: [[], Function] = useState([])
 
 	// const session = useSession()
@@ -183,19 +185,38 @@ export function TheSoundBoard(this: any) {
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
-		if (StroopMode === "speech") {
-			setHotPanel("StroopSwitch")
-		} else {
-			setHotPanel("DataSelector")
+
+		switch (StroopMode) {
+			case "speech":
+				setHotPanel("VoiceChoice")
+				break;
+			case "text":
+				setHotPanel("DataSelector")
+				break;
+			case "color":
+				setHotPanel("StroopSwitch")
+				// setHotPanel("RoncoPocketColorPicker")
+				break;
+			case "shape":
+				setHotPanel("TheButtons")
+				// setHotPanel("Shapely")
+				break;
+			case "tone":
+				setHotPanel("TheButtons")
+				// setHotPanel("Toney")
+				break;
+			default:
+				setHotPanel("StroopSwitch")
 		}
 	}
 
-	function HandleWordContext(WordList: any) {
-		setWordList(WordList)
-		setHotPanel("TheButtons")
+	function HandleWordListChange(WordList: any) {
+		let localVar = WordList
+		setWordList(localVar)
+		console.log(JSON.stringify(localVar))
 	}
 
-	function HandlePopulation(requestedSource: string) {
+	function HandleDataSource(requestedSource: string) {
 		if (requestedSource) {  //  perhaps some type checking?
 			dataSourceContext = requestedSource as unknown as Context<URL>
 		}
@@ -263,7 +284,7 @@ export function TheSoundBoard(this: any) {
 					if (button.sound && button.begin) {
 						let x = i > 0 ? i - 1 : 0 as number
 						delta = button.begin - ray[x].begin
-						return await PlayButton(button).then(await delay.bind(null, delta)).then();
+						return await PlayButton(button).then(await delay.bind(null, delta)).then()
 					} else {
 						console.log('giving up')
 						return null
@@ -336,7 +357,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const startRecordingTimer = () => {
-		setHotPanel("ButtonBoard")
+		setHotPanel("TheButtons")
 		if (!isRecording) {
 			setClickTime(Date.now())
 			setRecordingStart(Date.now())
@@ -443,18 +464,6 @@ export function TheSoundBoard(this: any) {
 			}
 		}
 
-		for (let i = 0; i < voices.length; i++) {
-			if (CurrentVoice.displayName) {
-				if (voices[i].name === CurrentVoice.displayName) {
-					if (override && thisButton.sound) {
-						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
-					} else if (thisButton.sound) {
-						thisButton.sound.voice = voices[i] as SpeechSynthesisVoice
-					}
-				}
-			}
-		}
-
 		setButton(thisButton)
 
 		function stop(thisButton: IButton) {
@@ -530,24 +539,43 @@ export function TheSoundBoard(this: any) {
 						<voiceContext.Provider value={CurrentVoice}>
 							<RecordingContext.Provider value={RecordingSession}>
 
-								<SoundBoardStatus
-									Sequence={tally}
-									TransportState={TransportState}
+								<Directions
 									HotPanel={HotPanel}
-									TransportStateChangeHandler={HandleTransportChange}
-								/>
-
-								<Populator
-									handlePopulation={HandlePopulation}
-									HotPanel={HotPanel}
-									setWordContext={HandleWordContext}
+									HotPanelUpdater={setHotPanel}
+									Instructions={'How To Play'}
 								/>
 
 								<StroopSwitch
 									StroopMode={StroopMode}
 									StroopUpdater={HandleStroopChange}
 									HotPanel={HotPanel}
-									setCurrentVoice={setCurrentVoice}
+									HotPanelUpdater={setHotPanel}
+									Instructions={'Select A Mode'}
+								/>
+
+								<SoundBoardStatus
+									Sequence={tally}
+									TransportState={TransportState}
+									HotPanel={HotPanel}
+									HotPanelUpdater={setHotPanel}
+									TransportStateChangeHandler={HandleTransportChange}
+									Instructions={'Record A Few Seconds'}
+								/>
+
+								<Populator
+									handleDataSource={HandleDataSource}
+									HotPanel={HotPanel}
+									HotPanelUpdater={setHotPanel}
+									Instructions={'Choose Your Words'}
+									setWordList={HandleWordListChange}
+								/>
+
+								<VoiceChoice
+									CurrentVoice={voiceContext}
+									VoiceUpdater={setCurrentVoice}
+									HotPanel={HotPanel}
+									HotPanelUpdater={setHotPanel}
+									Instructions={'Pick A Voice'}
 								/>
 
 								{/*<RecordingSessions*/}
@@ -557,8 +585,11 @@ export function TheSoundBoard(this: any) {
 								{/*/>*/}
 
 								<TheButtons
+									WordList={WordList}
 									HandleButtonPress={HandleButtonPress}
 									HotPanel={HotPanel}
+									HotPanelUpdater={setHotPanel}
+									Instructions={'Get Rhythm'}
 								/>
 
 							</RecordingContext.Provider>

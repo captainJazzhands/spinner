@@ -5,7 +5,8 @@ import './SoundBoard.css'
 import {CurrentButton} from "./CurrentButton";
 
 export function Playback(props: {
-	Sequence: IButton[]
+	Sequence: IButton[],
+	Instructions: string
 }) {
 
 	let TheStream = props.Sequence ? props.Sequence : []
@@ -23,6 +24,9 @@ export function Playback(props: {
 			className={'box'}
 			id={'Playback'}
 		>
+
+			<article className={'instruction'}>{props.Instructions}</article>
+
 			<CurrentButton
 				thisButtonCurrent={typeof (props.Sequence) !== 'undefined' ? Object.assign(props.Sequence) : ""}
 			/>

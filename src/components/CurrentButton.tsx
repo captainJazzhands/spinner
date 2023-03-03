@@ -4,7 +4,12 @@ import './SoundBoard.css'
 
 export function CurrentButton(props: { thisButtonCurrent: IButton }) {
 
-	const button: IButton = props.thisButtonCurrent ? props.thisButtonCurrent : new IButton(new ISound()) // call it a lazy null check?
+	let button: IButton, setButton: (value: (((prevState: IButton) => IButton) | IButton)) => void;
+	if (props.thisButtonCurrent) {
+		[button, setButton] = useState<IButton>(props.thisButtonCurrent);
+	} else {
+		[button, setButton] = useState<IButton>(new IButton('dave'));
+	}
 
 	return (
 		<div className={' ' + button.color} id={'CurrentButton'}>

@@ -14,7 +14,7 @@ import {IRecordingSession, IButton, ISound, ISequence, IStroopMode} from './Type
 let override = true
 
 export function TransportControls(props: {
-	TransportState: string
+	TransportState: string,
 	TransportChange: (requestedState: string) => void
 }) {
 
@@ -48,15 +48,16 @@ export function TransportControls(props: {
 
 	return (
 		<div
-			className={'tintable'}
+			className={'always-visible'}
 			id={'TransportControls'}
 			ref={TransportControlsRef}
 		>
+
 			<button
 				value={'StartRecording'}
 				onClick={() => props.TransportChange("record")}
 				// disabled={props.TransportState === "playing" || props.TransportState === "recording"}
-			>{'Record'}</button>
+			>{'Rec.'}</button>
 
 			<button
 				value={'StopRecording'}
@@ -64,9 +65,15 @@ export function TransportControls(props: {
 				// disabled={props.TransportState != "recording"}
 			>{'stop'}</button>
 
+			<p className={'LCD'}>
+				{props.TransportState.toString()}
+			</p>
+
 			<button
 				key={'playback'}
 				value={'playback'}
+				className={'TransportButton'}
+				id={'PlayButton'}
 				// disabled={props.TransportState === "empty" || props.TransportState !== "playing"}
 				onClick={() => props.TransportChange("play")}
 			>{'play'}</button>

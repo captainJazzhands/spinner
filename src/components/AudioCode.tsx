@@ -1,5 +1,6 @@
 import {ISound} from './Types';
-import {voiceContext} from "./SoundBoard";
+import {voiceContext, voices} from "./SoundBoard";
+import React, {useContext} from "react";
 
 let override = true
 
@@ -33,22 +34,26 @@ const wave = ac.createPeriodicWave(real, imag)
 osc.setPeriodicWave(wave)
 osc.connect(ac.destination)
 
-let CurrentVoice = voiceContext
+const localVoices = window.speechSynthesis.getVoices()
+const CurrentVoice: SpeechSynthesisVoice = voiceContext ? useContext(voiceContext) : localVoices[0]
 
 export const Speak: Function = (sound: ISound) => {
+	let localVoice = CurrentVoice
 	let synth = window.speechSynthesis
-	let voices = synth.getVoices()
 	let what = new SpeechSynthesisUtterance('')
-	for (let i = 0; i < voices.length; i++) {
-		if (voices[i].name === CurrentVoice.displayName) {
-			if (override) {
-				what.voice = voices[i] as SpeechSynthesisVoice
-			} else {
-				what.voice = sound.voice as SpeechSynthesisVoice
-			}
-		}
-	}
-	what.text = sound.pronunciation
+	// for (let i = 0; i < voices.length; i++) {
+	// 	if (voices[i].name === CurrentVoice.name) {
+	// 		if (override) {
+	// 			what.voice = localVoice as SpeechSynthesisVoice
+	// 		} else {
+	// 			what.voice = sound.voice as SpeechSynthesisVoice
+	// 		}
+	// 	} else {
+	// 		what.voice = localVoice as SpeechSynthesisVoice
+	// 	}
+	// }
+	what.voice = localVoice as SpeechSynthesisVoice
+	what.text = sound.pronunciation ? sound.pronunciation : sound.name
 	what.volume = 1
 	what.pitch = sound.pitch as number
 	what.rate = 1

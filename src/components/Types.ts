@@ -48,11 +48,11 @@ export type ISequence = {
 // 		this.Sequence = Sequence
 // 	}
 // }
-//
+
 export class ISound {
 	name: string;
 	type: SoundType;
-	pronunciation: string;
+	pronunciation?: string;
 	instrument?: string;
 	voice?: SpeechSynthesisVoice;
 	key?: string;
@@ -77,7 +77,7 @@ export class ISound {
 	) {
 		this.name = name;
 		this.type = type;
-		this.pronunciation = "";
+		// this.pronunciation = "";
 		this.instrument = "";
 		this.voice = voice;
 		this.key = "";
@@ -90,6 +90,8 @@ export class ISound {
 }
 
 export class IButton {
+	name?: string;
+	type?: string;
 	sound?: ISound;
 	color?: string | string[];
 	begin?: number;
@@ -98,6 +100,7 @@ export class IButton {
 	order?: number;
 
 	constructor(
+		name?: string,
 		sound?: ISound,
 		color?: string,
 		begin?: number,
@@ -105,6 +108,7 @@ export class IButton {
 		status?: string,
 		order?: number
 	) {
+		this.name = name;
 		this.sound = sound;
 		this.color = color;
 		this.begin = 0;

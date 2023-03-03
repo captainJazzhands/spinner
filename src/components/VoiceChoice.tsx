@@ -1,13 +1,17 @@
 import React, {useContext, useState} from 'react'
-import {voiceContext} from "./SoundBoard";
+import {voiceContext, voices} from "./SoundBoard";
 import './SoundBoard.css'
+import {InstructionHeader} from "./InstructionHeader";
 
 export function VoiceChoice(props: {
 	CurrentVoice: any,
+	HotPanel: string,
+	HotPanelUpdater: Function,
+	Instructions: string,
 	VoiceUpdater: Function
 }) {
 
-	const voices = window.speechSynthesis.getVoices()
+	// const voices = window.speechSynthesis.getVoices()
 	let LanguageList: string[] = []
 
 	let CurrentVoice = useContext(voiceContext)
@@ -16,10 +20,6 @@ export function VoiceChoice(props: {
 	const [counter, setCounter]: [number, Function] = useState(0)
 
 	const setCurrentVoice: Function = props.VoiceUpdater
-
-	console.log('CurrentVoice', CurrentVoice.valueOf())
-
-	let languageFilter: string = ''
 
 	function PopulateLanguageList() {
 		let LanguageListUnfiltered: string[] = []
@@ -30,7 +30,7 @@ export function VoiceChoice(props: {
 		LanguageList = [...new Set(LanguageListUnfiltered)] as string[]
 	}
 
-	function PopulateVoiceList() {
+	function PopulateVoiceList(languageFilter = 'en') {
 		let VL: SpeechSynthesisVoice[] = []
 		voices.map(function (voice: SpeechSynthesisVoice) {
 			if (counter < 5) {
@@ -51,49 +51,58 @@ export function VoiceChoice(props: {
 		return VL
 	}
 
-	PopulateLanguageList()
-	if (counter < 5) {
-		setVoiceList(PopulateVoiceList())
-	}
-	console.log('counter:', counter)
-
 	if (speechSynthesis.onvoiceschanged !== undefined) {
-		speechSynthesis.onvoiceschanged = PopulateVoiceList
+		PopulateVoiceList();
+	}
+	PopulateLanguageList()
+
+	if (counter < 2.85) {
+		setVoiceList(PopulateVoiceList())
 	}
 
 	function setVoiceLanguage(languageChoice: string) {
-		languageFilter = languageChoice as string
+		let languageFilter = languageChoice as string
 		PopulateLanguageList()
-		PopulateVoiceList()
+		PopulateVoiceList(languageFilter)
 		// console.log('language is now', languageFilter)
 	}
+
+	console.log('CurrentVoice', CurrentVoice.valueOf())
+
+	const setHotPanel: Function = props.HotPanelUpdater
+	let isHot: boolean = (props.HotPanel.toLowerCase() === "voicechoice")
 
 	return (
 		<div
 			id={'VoiceChoice'}
+			className={isHot ? 'box MEDIUM' : 'box COLD'}
 		>
-			{/*<label>Mode:</label>*/}
+			<InstructionHeader
+				NavTarget={'VoiceChoice'}
+				HeaderText={props.Instructions}
+				HotPanelUpdater={setHotPanel}
+			/>
+
+			{/*<ul*/}
+			{/*	className={'DataSelectorList'}*/}
+			{/*>*/}
+			{/*	{LanguageList.map(function (whichLang, i) {*/}
+			{/*		return (*/}
+			{/*			<li key={i}>*/}
+			{/*				<button*/}
+			{/*					key={i}*/}
+			{/*					onMouseUp={() => setVoiceLanguage(whichLang)*/}
+			{/*					}>*/}
+			{/*					{whichLang*/}
+			{/*					}*/}
+			{/*				</button>*/}
+			{/*			</li>*/}
+			{/*		)*/}
+			{/*	})}*/}
+			{/*</ul>*/}
 
 			<ul
-				className={'DataSelectorList'}
-			>
-				{LanguageList.map(function (whichLang, i) {
-					return (
-						<li key={i}>
-							<button
-								key={i}
-								onMouseUp={() => setVoiceLanguage(whichLang)
-								}>
-								{whichLang
-								}
-							</button>
-						</li>
-					)
-				})}
-			</ul>
-
-			<ul
-				className={'DataSelectorList'}
+				className={'DataSelectorList tintable'}
 			>
 				{
 					VoiceList.map(function (whichVoice, i) {

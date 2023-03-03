@@ -5,14 +5,19 @@
 
 $clr_stroop-unsure: black;
 $clr_stroop-text: blue;
-$clr_stroop-speech: red;
-$clr_stroop-color: yellow;
-$clr_stroop-shape: green;
-$clr_stroop-sound: orange;
-$clr_stroop-tone: purple;
+$clr_stroop-speech: rebeccapurple;
+$clr_stroop-color: red;
+$clr_stroop-shape: purple;
+$clr_stroop-sound: green;
+$clr_stroop-tone: teal;
+
+$sz_COLD: 4vh;
+$sz_HOT: 75vh;
 
 :root {
 	--scroll-distance: 2em;
+	font-size: 18pt;
+	* { font-size: 12pt; }
 }
 
 @font-face {
@@ -52,28 +57,38 @@ button {
 	overflow: hidden;
 	border: none;
 	border-radius: 0;
-	width: 100%; height: 100%;
+	height: 100%;
 	min-width: 3em; min-height: 3rem;
 	text-transform: uppercase;
 	font-weight: 900;
-	font-size: 12pt;
+	//font-size: 12pt;
 	transition: ease-in .3s 0.14s;
 	background-color: $clr_formBG;
 	opacity: 0.75;
 	box-shadow: inset $clr_formShadow .2rem .2rem .6rem;
+	&.texty {
+		box-shadow: none !important;
+		background: none !important;
+		padding: 0 .25rem !important;
+		height: 3rem !important;
+		overflow: scroll;
+		scrollbar-width: thin;
+		text-transform: unset;
+		font-weight: unset;
+		white-space: unset;
+	}
 }
 
 .tintable button {
-	padding: 6pt;
-	border: 1px solid white;
-	border-radius: 6pt;
+	padding: 3pt 6pt;
+	//border: 1px solid white;
+	//border-radius: 6pt;
 }
 
 button:focus {
 	box-shadow: yellow .1rem .1rem .4rem;
 }
 
-button:hover,
 button.selected {
 	opacity: 1;
 	box-shadow: white .01rem .01rem 1rem;
@@ -86,30 +101,33 @@ button:disabled {
 }
 
 #pageLayout {
-	width: 100vw; height: 100vh;
+	width: 100vw; height: 99.9vh;
+	max-height: 99.9vh;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
 .box {
-	margin: 2.5vw;
-	//padding: 1rem;
+	margin: 2vw;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	align-content: center;
-	width: 90vw;
-	max-width: 90vw;
-	height: 100%;
+	align-content: stretch;
+	width: 100%;
+	max-width: 95vw;
+	//height: 100%;
 	//height: calc(100vh - 10vw);
-	//max-height: calc(100vh - 10vw);
-	overflow: hidden;
+	max-height: calc(100vh - 10vw);
 	background-color: $clr_boxBG;
+	overflow: hidden;
 	border-radius: 1rem;
 	border: 1px solid white;
-	transition: ease-in .3s 0.07s;
-	ul, div {
-		transition: ease-in .3s 0.4s;
+	transition: ease-in .3s 0.007s;
+	ul:nth-child(2),
+	div:nth-child(2),
+	section:nth-child(2) {
+		transition: ease-in .3s 0.004s;
 		text-align: center;
 		flex-grow: 0;
 		flex-shrink: 0;
@@ -118,20 +136,22 @@ button:disabled {
 		//background-color: $clr_primaryColor;
 		color: $clr_white;
 	}
-	div {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-around;
-		flex-wrap: nowrap;
-		//border: $soundBorder;
-		margin: .75rem;
-		//background-color: $clr_tileBG;
-		//border: 1px solid $clr_formBorder;
-		p {
 
-		}
-	}
+	////div {
+	////	display: flex;
+	////	flex-direction: row;
+	////	align-items: center;
+	////	justify-content: space-around;
+	////	flex-wrap: nowrap;
+	////	//border: $soundBorder;
+	////	margin: .75rem;
+	////	//background-color: $clr_tileBG;
+	////	//border: 1px solid $clr_formBorder;
+	////	p {
+	////
+	////	}
+	//}
+
 	h1 {
 		color: $clr_primaryColor;
 		-webkit-text-stroke: .025rem $clr_black;
@@ -144,77 +164,135 @@ button:disabled {
 	}
 }
 
-ul.buttonTile {
+
+.HOT {
+	height: $sz_HOT;
+	flex-grow: 5;
+	flex-shrink: 1;
+}
+
+.MEDIUM {
+	height: 25vh;
+	flex-grow: 2;
+	flex-shrink: 2;
+	button {
+		//height: 200%;
+	}
+}
+
+.COLD {
+	height: $sz_COLD;
+	flex-grow: 0;
+	flex-shrink: 0;
+	button {
+		height: 50%;
+	}
+	ul:nth-child(2),
+	div:nth-child(2),
+	section:nth-child(2) {
+		margin-top: -1.6rem;
+	}
+	.tintable {
+		opacity: 0.65;
+		filter: blur(1.5px);
+	}
+}
+
+.buttonTile {
 	list-style-type: none;
 	display: flex;
 	flex-direction: row;
+	height: auto;
+	max-height: 25vh;
 	width: 100%;
-	height: 20%;
-	overflow: hidden;
-	li {
-		align-self: center;
+	overflow: scroll;
+	button {
 		flex-direction: column;
-		border: 1px solid white;
+		border: 1px solid $clr_white;
+		color: $clr_black;
+		text-shadow: none;
+		background-color: $clr_white !important;
+		margin: 1rem;
+		padding: .5rem;
+		white-space: break-spaces;
+		height: fit-content;
+		overflow: scroll;
 		.shortName {
 			font-size: 12pt;
+			text-transform: capitalize;
 		}
 		.longName {
 			font-size: 9pt;
-			max-width: 12em !important;
+			width: 100%;
 		}
+	}
+	button:nth-child(1) {
+		border-radius: 1rem 0 0 0;
+	}
+	button:nth-last-child(1) {
+		border-radius: 0 1rem 0 0;
 	}
 }
 
-#DataSelectorDiv {
+#DataSelectorComponent {
 	display: flex;
 	flex-direction: column;
 	flex-basis: content-box;
-	button {
-		width: 80%;
-		max-height: 6rem;
-	}
+	//button {
+	//	width: 80%;
+	//	max-height: 6rem;
+	//}
 }
 
 #stroopSwitch {
-	flex-direction: column;
 	width: 100%;
-}
-
-#stroopButtons {
-	flex-direction: row;
-	width: 100%;
-	@media (min-width: 640px) {
-		//flex-direction: row;
-	}
 	button {
 		//writing-mode: vertical-lr;
 		//transform: rotateZ(-90deg);
-		font-size: 3.5vw;
-		padding: 1rem;
+		flex: 10 1 auto;
+		width: 31.5vw;
+		height: 100%;
+		font-size: 150%;
+		padding: .5rem;
+	}
+}
+
+#stroopSwitch.COLD {
+	flex-shrink: 0;
+	flex-grow: 0;
+	#stroopButtons {
+		height: 130%;
 	}
 }
 
 .DataSelectorList {
+	height: 100%;
 	display: grid;
 	grid-template-columns: repeat(4, .1fr);
 	grid-template-rows: repeat(2, .1fr);
 	align-content: stretch;
 	padding-left: 0;
 	li {
+		color: white;
 		//border: 1px solid white;
 		list-style: none;
 		font-size: 12pt;
 		padding: 10pt 2pt;
+		text-transform: capitalize;
+		text-align: center;
 	}
+}
+
+.HOT .DataSelectorList {
+	margin-top: -1rem;
 }
 
 #VoiceChoice {
 	flex-direction: column;
 	ul {
-		width: 55%;
-
-		grid-template-columns: repeat(8, .1fr);
-		grid-template-rows: repeat(3, .1fr);
+		width: 90%;
+		grid-template-columns: repeat(4, .1fr);
+		grid-template-rows: repeat(2, .1fr);
 		li {
 			padding: 2pt 2pt;
 			button {
@@ -229,21 +307,8 @@ ul.buttonTile {
 }
 
 #PartsOfSpeechList {
-	grid-template-columns: repeat(6, .1fr);
-	grid-template-rows: none;
-}
-
-
-.HOT {
-	flex-grow: 6;
-	flex-shrink: 1;
-	transition: ease-in .85s 0.001s;
-}
-
-.COLD {
-	flex-grow: 1;
-	flex-shrink: 3;
-	transition: ease-out .4s 0.3s;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: repeat(2, 1fr);
 }
 
 .unsure,
@@ -252,8 +317,7 @@ ul.buttonTile {
 .color,
 .shape,
 .sound,
-.tone { transition: ease-in .25s 0.01s;
-}
+.tone { transition: ease-in .25s 0.01s; }
 
 .unsure,
 .unsure .tintable button {background-color: $clr_stroop-unsure;}
@@ -276,6 +340,10 @@ ul.buttonTile {
 .tone,
 .tone .tintable button {background-color: $clr_stroop-tone;}
 
+#SoundBoardStatus {
+	flex-grow: 5;
+}
+
 #SoundBoardStatus,
 #CurrentButton {
 	flex-direction: column;
@@ -293,6 +361,11 @@ ul.buttonTile {
 //top: calc((100vh - #{$sz_buttonBoardHeight}) / 2);
 //bottom: calc((100vh - #{$sz_buttonBoardHeight}) / 2);
 
+#buttonBoard {
+	display: flex;
+	flex-direction: column;
+}
+
 #TheButtons {
 	border-radius: 0;
 	width: 100%;
@@ -302,17 +375,17 @@ ul.buttonTile {
 	grid-template-columns: repeat(4, 1fr);
 	grid-template-rows: auto;
 	button {
-		width: 100%; height: 100%;
+		height: 100%;
 		margin: 0;
 		border: none;
 		border-radius: 0;
 		box-shadow: inset 3px 3px 5px $clr_formShadow;
-		:hover {
-			box-shadow: 7px 7px 10px $clr_formShadow;
-		}
-		:active {
-			box-shadow: inset 7px 7px 10px $clr_formShadow;
-		}
+		//:hover {
+		//	box-shadow: 7px 7px 10px $clr_formShadow;
+		//}
+		//:active {
+		//	box-shadow: inset 7px 7px 10px $clr_formShadow;
+		//}
 	}
 }
 
@@ -330,9 +403,11 @@ ul.buttonTile {
 
 p.LCD {
 	font-family: "LCD Mono", monospace;
+	//font-size: 15pt;
 	line-height: 90%;
+	text-transform: uppercase;
 	color: #1a231a;
-	//font-size: 4vw;
+	display: inline;
 	white-space: nowrap;
 	margin: 0;
 }
@@ -357,38 +432,50 @@ p.LCD {
 
 #DotGraph {
 	height: 100%; width: 100%;
+	flex-grow: 5;
 	border: 1px solid black;
-	overflow: hidden;
 	perspective-origin: -1500px 500px;
 	transition: ease-in .3s 0.4s;
-	ul {
-		height: 100%;
-		width: 100%;
-		overflow: hidden;
-		//flex-direction: row;
-		//position: relative;
-		//display: grid;
-		//grid-template-columns: repeat(auto-fit, minmax(2px, 1px));
-		//scale: calc(1 + var(--sequence-item-count) * .5);
-		li {
-			position: absolute;
-			//height: 100px;
-			//width: auto;
-			//flex-grow: 0;
-			//flex-shrink: 0;
-			transition: ease-in .3s 0.4s;
-		}
+	padding: 0;
+	overflow: visible;
+	display: flex;
+	flex-direction: row;
+	background-color: $clr_boxBG;
+	scale: calc(var(--sequence-duration) / 20000);
+	.gap,
+	.press {
+		display: block;
+		height: 200%;
+		flex-grow: 0;
+		flex-shrink: 0;
+		transition: ease-in .3s 0.4s;
 	}
+	/* "Starts with" selector, meaning this would match "3" or anything starting with 3, like "3.14" */
+	[data-begin^="1"] { }
+	[data-duration^="1"] { }
+
 }
 
-#DotGraph {
-	ul {
-		width: 100%;
-		bprder: 1px solid white;
-		background-color: $clr_boxBG;
-		li {
-			display: inline-block;
-		}
+.COLD #DotGraph {
+	height: 20vh;
+	width: 100%;
+}
+
+.MEDIUM #DotGraph {
+	height: 50%;
+	width: 100%;
+}
+
+#Directions {
+
+}
+
+#DirectionsContent {
+	width: 80%;
+	p {
+		white-space: normal;
+		text-align: left;
+		font-size: 14pt;
 	}
 }
 
@@ -419,11 +506,29 @@ p.LCD {
 	background-color: green !important;
 }
 
-.stopped,
-.cold {
-	transition: ease-in .3s 0.4s;
+.stopped {
+	transition: ease-in .3s 0.004s;
 }
 
+.instruction {
+	position: relative;
+	top: 0;
+	font-size: 80%;
+	line-height: 80%;
+	font-weight: 900;
+	background-color: white;
+	padding: .25rem 1.25rem;
+	border-radius: 0 0 1rem 1rem;
+	//border: 1.5px solid white;
+	color: #242442;
+}
+
+.COLD .instruction {
+	opacity: 0.75;
+	width: 100%;
+	height: $sz_COLD;
+	margin-top: 0;
+}
 
 .gray {background-color: gray;}
 

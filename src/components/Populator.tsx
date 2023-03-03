@@ -6,6 +6,7 @@ import axios, {RawAxiosRequestConfig} from "axios"
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
 import {IButton, ISound, IStroopMode} from './Types';
+import {InstructionHeader} from "./InstructionHeader";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -87,9 +88,11 @@ let soundList: IButton[] = [
 
 export function Populator(props:
 	                          {
-		                          handlePopulation: Function,
-		                          setWordContext: Function,
-		                          HotPanel: string
+		                          handleDataSource: Function,
+		                          setWordList: Function,
+		                          Instructions: string,
+		                          HotPanel: string,
+		                          HotPanelUpdater: Function
 	                          }) {
 
 	//  display available APIs
@@ -98,7 +101,7 @@ export function Populator(props:
 	//    select mulitple responses
 	//    setContext(selection)
 
-	const [Words, setWords]: [any, Function] = useState([])
+	const [WordList, setWordList]: [any, Function] = useState(props.setWordList)
 	const [SpeechPart, setSpeechPart]: [any, Function] = useState([])
 	const [WhichData, setWhichData]: [any, Function] = useState([])
 
@@ -119,7 +122,7 @@ export function Populator(props:
 			const DataSource = await axios(
 				APIlist[1].url.toString()
 			)
-			setWords(DataSource.data)
+			setWordList(DataSource.data)
 		} catch (err) {
 			console.error(err)
 		}
@@ -130,27 +133,39 @@ export function Populator(props:
 			const DataSource = await axios(
 				WhichDataAxios
 			)
-			setWords(DataSource.data)
+			setWordList(DataSource.data)
 		} catch (err) {
 			console.error(err)
 		}
 	}
 
-	const uniqueParts: any[] = [];
-	Words.map((PoS: { part: string; }, idx: number) => {
-		if (uniqueParts.indexOf(Words[idx].partOfSpeech) === -1) {
-			uniqueParts.push(Words[idx].partOfSpeech)
-		}
-	})
-
+	const uniqueParts: any[] = []
+	if (WordList !== undefined) {
+		WordList.map((PoS: { part: string; }, idx: number) => {
+			if (uniqueParts.indexOf(WordList[idx].partOfSpeech) === -1) {
+				uniqueParts.push(WordList[idx].partOfSpeech)
+			}
+		})
+	}
 	useEffect(() => {
 		fetchData(WhichData)
 	}, [WhichData])
 
-	let isHot: boolean = (props.HotPanel.toString() === 'DataSelector')
-	const filteredWords = Words.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
-		return theWord.partOfSpeech == SpeechPart
-	})
+	const setHotPanel: Function = props.HotPanelUpdater
+	let isHot: boolean = (props.HotPanel.toString().toLowerCase() === 'populator')
+	const filteredWords = WordList && WordList.length > 1 ? WordList.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
+			return theWord.partOfSpeech == SpeechPart
+		}
+	) : ['nope']
+
+	const PopulateStuff = () => {
+		try {
+			setWordList(truncatedFilteredWords)
+			console.log(JSON.stringify(truncatedFilteredWords))
+		} catch (err) {
+			console.error(err)
+		}
+	}
 
 	const truncatedFilteredWords = filteredWords.slice(0, 8)
 
@@ -167,53 +182,60 @@ export function Populator(props:
 	}
 
 	return (
-		<div
-			className={isHot ? 'box HOT' : 'box COLD'}
-			id={'DataSelectorDiv'}
+		<section
+			className={isHot ? 'box MEDIUM' : 'box COLD'}
+			id={'VoiceChoice'}
 		>
-			<ul
+
+			<InstructionHeader
+				NavTarget={'VoiceChoice'}
+				HeaderText={props.Instructions}
+				HotPanelUpdater={setHotPanel}
+			/>
+
+			<section
 				className={'buttonTile tintable'}
 			>{
 				Object.keys(APIlist).map((item, i, thing) => {
-					return <li
-						className={'dataSource'}
+					return <button
+						onClick={() => setWhichData(APIlist[i])}
+						className={'dataSource texty'}
 						key={i}
 					>
-						<div className={'shortName'}
-						     onClick={() => setWhichData(APIlist[i])}
-						>
+						<title className={'shortName'}>
 							{APIlist[i].shortName}
-						</div>
+						</title>
 						<p className={'longName'}>
 							{APIlist[i].longName}
 						</p>
-					</li>
+					</button>
 				})
 			}
-			</ul>
+			</section>
 
-			<ul
+			<section
 				className={'DataSelectorList tintable'}
 				id={'PartsOfSpeechList'}
 			>{
 				uniqueParts.map((item, r, thing) => {
-					return <li
+					return <button
+						onClick={() => setSpeechPart(uniqueParts[r])}
 						className={''}
 						key={r}
 					>
 							<span
 								className={'meta'}
-								onClick={() => setSpeechPart(uniqueParts[r])}
 							>
 								{uniqueParts[r]}
 							</span>
-					</li>
+					</button>
 				})
 			}
-			</ul>
+			</section>
 
 			<ul
-				className={'DataSelectorList'}
+				className={'DataSelectorList tintable'}
+				id={'eightWords'}
 			>{
 				Object.keys(truncatedFilteredWords).map((item, i, thing) => {
 					return <li
@@ -228,9 +250,15 @@ export function Populator(props:
 			}
 			</ul>
 			<div className={'tintable'}>
-				<button onClick={() => props.setWordContext(truncatedFilteredWords)}>Use These Words</button>
+
+				<button
+					onClick={() => PopulateStuff()}
+					className={''}
+				>
+					use these
+				</button>
 			</div>
-		</div>
+		</section>
 	)
 
 }
