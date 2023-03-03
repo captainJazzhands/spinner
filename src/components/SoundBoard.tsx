@@ -303,11 +303,14 @@ export function TheSoundBoard(this: any) {
 
 	async function PlayButton(button: IButton) {
 		setIsPlaying(true)
+		if (button.end && button.begin) {
+			duration = button.end - button.begin
+		}
 		if (StroopMode === 'speech') {
-			Speak(button.sound)
+			Speak(button.sound, duration)
 		}
 		if (StroopMode === 'tone') {
-			MakeNoise(button.sound)
+			MakeNoise(button.sound, duration)
 		}
 	}
 

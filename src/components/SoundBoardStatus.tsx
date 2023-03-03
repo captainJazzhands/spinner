@@ -71,73 +71,73 @@ export function SoundBoardStatus(props: {
 				HotPanelUpdater={setHotPanel}
 			/>
 			<div
-				data-duration={sequenceDuration}
 				className={'always-visible'}
 				id={'DotGraph'}
 			>
-				{
-					rs.map((button, index, sequence) => {
-							root.style.setProperty('--sequence-item-count', index.toString())
-							if (button.end && button.begin) {
-								duration = (button.end - button.begin)
-								begin = button.begin - sequenceBegin
-								gap = rs[index - 1] ? button.begin - rs[index - 1].end! : 0
+				<div
+					className={'tablature'}
+					data-duration={sequenceDuration}
+				>
+					{
+						rs.map((button, index, sequence) => {
+								root.style.setProperty('--sequence-item-count', index.toString())
+								if (button.end && button.begin) {
+									duration = (button.end - button.begin)
+									begin = button.begin - sequenceBegin
+									gap = rs[index - 1] ? button.begin - rs[index - 1].end! : 0
+								}
+								sequenceDuration = begin + duration + 1
+								root.style.setProperty('--sequence-duration', sequenceDuration.toString())
+
+								duration = duration / 10
+								begin = begin / 10
+								gap = gap / 10
+
+								return (<>
+									<div
+										className={'gap'}
+										key={index}
+										style={{
+											width: gap + "px",
+										}}
+										data-gap={gap}
+									>
+										<span className={'meta'}>
+										{button.begin!.toString() + 'ms'}
+									</span>
+										<span className={'meta'}>
+										{button.sound!.name!.toString()}
+									</span>
+										<span className={'meta'}>
+										{duration.toString() + 'ms'}
+									</span>
+									</div>
+
+									<div
+										className={'press ' + button.color}
+										key={index}
+										style={{
+											width: duration + "px",
+										}}
+										data-begin={begin}
+										data-duration={sequenceDuration}
+										// onClick={props.HandleRecordChange}
+									>
+										<span className={'meta'}>
+										{button.begin!.toString() + 'ms'}
+									</span>
+										<span className={'meta'}>
+										{button.sound!.name!.toString()}
+									</span>
+										<span className={'meta'}>
+										{duration.toString() + 'ms'}
+									</span>
+									</div>
+								</>)
 							}
-							sequenceDuration = begin + duration + 1
-							root.style.setProperty('--sequence-duration', sequenceDuration.toString())
-
-							duration = duration / 10
-							begin = begin / 10
-							gap = gap / 10
-
-							return (<>
-								<div
-									className={'gap'}
-									key={index}
-									style={{
-										width: gap + "px",
-									}}
-									data-gap={gap}
-								>
-										<span className={'meta'}>
-										{button.begin!.toString() + 'ms'}
-									</span>
-									<span className={'meta'}>
-										{button.sound!.name!.toString()}
-									</span>
-									<span className={'meta'}>
-										{duration.toString() + 'ms'}
-									</span>
-								</div>
-
-								<div
-									className={'press ' + button.color}
-									key={index}
-									style={{
-										left: begin + "px",
-										width: duration + "px",
-										// height: duration + "px",
-										borderRadius: duration + "px"
-									}}
-									data-begin={begin}
-									data-duration={duration}
-									// onClick={props.HandleRecordChange}
-								>
-										<span className={'meta'}>
-										{button.begin!.toString() + 'ms'}
-									</span>
-									<span className={'meta'}>
-										{button.sound!.name!.toString()}
-									</span>
-									<span className={'meta'}>
-										{duration.toString() + 'ms'}
-									</span>
-								</div>
-							</>)
-						}
-					)
-				}
-
+						)
+					}
+				</div>
 			</div>
 
 			<TransportControls

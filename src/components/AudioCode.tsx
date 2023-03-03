@@ -73,7 +73,7 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 		audioCtx = new (window.webkitAudioContext)()
 	}
 
-	duration = .5
+	duration = duration / 100
 
 	const myArrayBuffer = audioCtx.createBuffer(
 		2,

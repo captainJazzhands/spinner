@@ -436,24 +436,29 @@ p.LCD {
 	border: 1px solid black;
 	perspective-origin: -1500px 500px;
 	transition: ease-in .3s 0.4s;
-	padding: 0;
-	overflow: visible;
-	display: flex;
-	flex-direction: row;
-	background-color: $clr_boxBG;
-	scale: calc(var(--sequence-duration) / 20000);
-	.gap,
-	.press {
-		display: block;
-		height: 200%;
-		flex-grow: 0;
-		flex-shrink: 0;
-		transition: ease-in .3s 0.4s;
+	.tablature {
+		padding: 0;
+		overflow-y: visible;
+		overflow-x: visible;
+		//display: flex;
+		//flex-direction: row;
+		transform-origin: 0 0;
+		background-color: $clr_boxBG;
+		.gap,
+		.press {
+			overflow: hidden;
+			display: inline-block;
+			height: calc(var(--sequence-duration) / 40 * 1vh);
+			transform-origin: center;
+			//flex-grow: 0;
+			//flex-shrink: 0;
+			//transition: ease-in .3s 0.4s;
+			scale: calc(10000 / var(--sequence-duration) + .5);
+		}
+		/* "Starts with" selector, meaning this would match "3" or anything starting with 3, like "3.14" */
+		[data-begin^="1"] { }
+		[data-duration^="1"] { }
 	}
-	/* "Starts with" selector, meaning this would match "3" or anything starting with 3, like "3.14" */
-	[data-begin^="1"] { }
-	[data-duration^="1"] { }
-
 }
 
 .COLD #DotGraph {
