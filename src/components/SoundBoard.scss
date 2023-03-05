@@ -190,7 +190,7 @@ button:disabled {
 	ul:nth-child(2),
 	div:nth-child(2),
 	section:nth-child(2) {
-		margin-top: -1.6rem;
+		//margin-top: -1.6rem;
 	}
 	.tintable {
 		opacity: 0.65;
@@ -437,6 +437,8 @@ p.LCD {
 	perspective-origin: -1500px 500px;
 	transition: ease-in .3s 0.4s;
 	.tablature {
+		position: relative;
+		left: 0; top: 0;
 		padding: 0;
 		overflow-y: visible;
 		overflow-x: visible;
@@ -444,16 +446,17 @@ p.LCD {
 		//flex-direction: row;
 		transform-origin: 0 0;
 		background-color: $clr_boxBG;
+		scale: calc(var(--zoom-level) / 100);
 		.gap,
 		.press {
 			overflow: hidden;
 			display: inline-block;
-			height: calc(var(--sequence-duration) / 40 * 1vh);
+			transition: none;
+			height: calc(var(--graph-height) * 1vh);
 			transform-origin: center;
 			//flex-grow: 0;
 			//flex-shrink: 0;
 			//transition: ease-in .3s 0.4s;
-			scale: calc(10000 / var(--sequence-duration) + .5);
 		}
 		/* "Starts with" selector, meaning this would match "3" or anything starting with 3, like "3.14" */
 		[data-begin^="1"] { }
@@ -469,6 +472,42 @@ p.LCD {
 .MEDIUM #DotGraph {
 	height: 50%;
 	width: 100%;
+}
+
+.control-group {
+	transform: scale(80%);
+	width: 125%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.range-slider {
+	width: 20vw;
+	height: 2.5rem;
+	overflow: visible;
+	input {
+		width: 20vw;
+	}
+	label {
+		display: none;
+		font-size: 10pt;
+		position: relative;
+		left: 0;
+		top: 0;
+		overflow: visible;
+	}
+	label:nth-child(2) {
+		color: red;
+		left: calc(20vw - 4em);
+	}
+	.slider-value {
+		display: block;
+		left: calc(10vw - .5em);
+		top: -.3rem;
+		font-size: 14pt;
+		font-weight: 500;
+	}
 }
 
 #Directions {

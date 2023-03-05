@@ -22,7 +22,23 @@ export function SoundBoardStatus(props: {
 }) {
 	const [user, setUser]: [number, Function] = useState(8675309)
 	const stroopMode = useContext(stroopContext)
+	const [[ZoomLower, ZoomLevel, ZoomUpper], setZoomLevel]: [number[], Function] = useState([1, 50, 100])
+	const [[GraphHeightLower, GraphHeight, GraphHeightUpper], setGraphHeight]: [number[], Function] = useState([1, 50, 100])
 	const [button, setButton]: [IButton, Function] = useState(new IButton())
+
+	function throttle(fn: Function, ms: number) {
+		let timeout: any
+
+		function exec() {
+			fn.call(fn, ms)
+		}
+
+		if (fn !== undefined && ms !== undefined) {
+			timeout = setTimeout(exec, ms)
+		} else {
+			console.error('callback function and the timeout must be supplied')
+		}
+	}
 
 	let rs: IButton[] = props.Sequence
 	let begin = 0
@@ -60,6 +76,41 @@ export function SoundBoardStatus(props: {
 
 	const setHotPanel: Function = props.HotPanelUpdater
 
+	function manageSliderValues(chosenValue: number, SliderLower: number, SliderUpper: number, min: number, max: number) {
+		let threshold: number = .85
+		let factor: number = 3.5
+		let newLower: number = SliderLower
+		let newUpper: number = SliderUpper
+
+		if (chosenValue > SliderLower && chosenValue < SliderUpper) {
+			if (
+				chosenValue < SliderLower + (SliderLower / (1 - threshold))
+			) {
+				newLower = (chosenValue / factor) > SliderLower ? (chosenValue / factor) : SliderLower
+				newUpper = (chosenValue * factor) < SliderUpper ? (chosenValue * factor) : SliderUpper
+			}
+			if (
+				chosenValue > (SliderUpper * threshold)
+			) {
+				newLower = (chosenValue / factor) > SliderLower ? (chosenValue / factor) : SliderLower
+				newUpper = (chosenValue * factor) < SliderUpper ? (chosenValue * factor) : SliderUpper
+			}
+		}
+		return [newLower, chosenValue, newUpper]
+	}
+
+	const changeZoomLevel = (event: React.ChangeEvent<HTMLInputElement>) => {
+		let chosenValue: number = event.target ? parseInt(event.target.value) : ZoomLevel
+		root.style.setProperty('--zoom-level', ZoomLevel.toString())
+		throttle(setZoomLevel(manageSliderValues(chosenValue, ZoomLower, ZoomUpper, 1, 750)), 900)
+	}
+
+	const changeGraphHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
+		let chosenValue: number = event.target ? parseInt(event.target.value) : GraphHeight
+		root.style.setProperty('--graph-height', GraphHeight.toString())
+		throttle(setGraphHeight(manageSliderValues(chosenValue, GraphHeightLower, GraphHeightUpper, 1, 1000)), 955)
+	}
+
 	return (
 		<div
 			className={'box ' + classes.slice()}
@@ -96,7 +147,7 @@ export function SoundBoardStatus(props: {
 								return (<>
 									<div
 										className={'gap'}
-										key={index}
+										key={index + '_gap'}
 										style={{
 											width: gap + "px",
 										}}
@@ -140,10 +191,57 @@ export function SoundBoardStatus(props: {
 				</div>
 			</div>
 
-			<TransportControls
-				TransportChange={props.TransportStateChangeHandler}
-				TransportState={props.TransportState}
-			/>
+			<div
+				id={''}
+				className={'control-group'}
+			>
+				<div
+					className={'range-slider'}
+					id={'ZoomLevelControl'}
+				>
+					<label>{Math.round(ZoomLower)}</label>
+					<label>{Math.round(ZoomUpper)}</label>
+					<input
+						type='range'
+						onChange={changeZoomLevel}
+						min={ZoomLower}
+						max={ZoomUpper}
+						step={1}
+						value={Math.round(ZoomLevel)}
+						className='custom-slider'>
+					</input>
+					<label className={'slider-value'}>
+						{Math.round(ZoomLevel * 100) / 100}
+					</label>
+				</div>
+
+				<TransportControls
+					TransportChange={props.TransportStateChangeHandler}
+					TransportState={props.TransportState}
+				/>
+
+				<div
+					className={'range-slider'}
+					id={'GraphHeightControl'}
+				>
+					<label>{Math.round(GraphHeightLower)}</label>
+					<label>{Math.round(GraphHeightUpper)}</label>
+					<input
+						type='range'
+						onChange={changeGraphHeight}
+						min={GraphHeightLower}
+						max={GraphHeightUpper}
+						step={1}
+						value={Math.round(GraphHeight)}
+						className='custom-slider'>
+					</input>
+					<label className={'slider-value'}>
+						{Math.round(GraphHeight * 100) / 100}
+					</label>
+				</div>
+
+
+			</div>
 
 		</div>
 	)

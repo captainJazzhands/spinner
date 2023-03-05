@@ -128,6 +128,7 @@ export function TheSoundBoard(this: any) {
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
 	const [WordList, setWordList]: [[], Function] = useState([])
 	const [HotPanel, setHotPanel]: [string, Function] = useState('Directions')
+	const [ZoomLevel, setZoomLevel]: [number, Function] = useState(0)
 	const [CurrentVoice, setCurrentVoice]: [SpeechSynthesisVoice, Function] = useState(voices[0])
 
 	const [user, setUser]: [number, Function] = useState(6668675309)
