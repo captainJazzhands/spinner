@@ -3,12 +3,19 @@ import {
 	IRecordingSession,
 	IButton,
 	ISound,
-	ISequence
+	ISequence,
+	ISlider
 } from './Types'
 import './SoundBoard.css'
-import {stroopContext} from './SoundBoard';
+import {
+	stroopContext,
+	voiceContext,
+	RecordingContext
+} from './SoundBoard';
 import {TransportControls} from "./TransportControls";
 import {InstructionHeader} from "./InstructionHeader";
+import * as timers from "timers";
+import {RecordingSessions} from "./RecordingSessions";
 
 let root = document.documentElement
 
@@ -17,14 +24,17 @@ export function SoundBoardStatus(props: {
 	HotPanel: string,
 	HotPanelUpdater: Function,
 	TransportState: string,
+	TransportTime: number,
 	Instructions: string,
-	TransportStateChangeHandler: (requestedState: string) => void
+	RecordingSession: IRecordingSession,
+	TransportStateChangeHandler: (requestedState: string) => void,
+	RecordingSessionChangeHandler: (sesh: IRecordingSession) => void
 }) {
-	const [user, setUser]: [number, Function] = useState(8675309)
 	const stroopMode = useContext(stroopContext)
 	const [[ZoomLower, ZoomLevel, ZoomUpper], setZoomLevel]: [number[], Function] = useState([1, 50, 100])
-	const [[GraphHeightLower, GraphHeight, GraphHeightUpper], setGraphHeight]: [number[], Function] = useState([1, 50, 100])
+	const [[GraphHeightLower, GraphHeight, GraphHeightUpper], setGraphHeight]: [number[], Function] = useState([-250, 50, 150])
 	const [button, setButton]: [IButton, Function] = useState(new IButton())
+
 
 	function throttle(fn: Function, ms: number) {
 		let timeout: any
@@ -55,14 +65,24 @@ export function SoundBoardStatus(props: {
 
 	let classes: string[] = []
 
+	// if (isHot) {
+	// 	classes.push('HOT')
+	// } else if (isRecording) {
+	// 	classes.push('MEDIUM')
+	// } else if (isPlaying) {
+	// 	classes.push('HOT')
+	// } else {
+	// 	classes.push('COLD')
+	// }
+
+	if (!isHot && isRecording) {
+		classes.push('MEDIUM')
+	}
+	if (!isHot && isPlaying) {
+		classes.push('MEDIUM')
+	}
 	if (isHot) {
 		classes.push('HOT')
-	} else if (isRecording) {
-		classes.push('MEDIUM')
-	} else if (isPlaying) {
-		classes.push('HOT')
-	} else {
-		classes.push('COLD')
 	}
 
 	let sequenceBegin: number
@@ -77,38 +97,44 @@ export function SoundBoardStatus(props: {
 	const setHotPanel: Function = props.HotPanelUpdater
 
 	function manageSliderValues(chosenValue: number, SliderLower: number, SliderUpper: number, min: number, max: number) {
-		let threshold: number = .85
-		let factor: number = 3.5
+		let threshold: number = .75
+		let factor: number = 1.5
 		let newLower: number = SliderLower
 		let newUpper: number = SliderUpper
 
-		if (chosenValue > SliderLower && chosenValue < SliderUpper) {
-			if (
-				chosenValue < SliderLower + (SliderLower / (1 - threshold))
-			) {
-				newLower = (chosenValue / factor) > SliderLower ? (chosenValue / factor) : SliderLower
-				newUpper = (chosenValue * factor) < SliderUpper ? (chosenValue * factor) : SliderUpper
+		if (chosenValue > min && chosenValue < max) {
+			if (chosenValue < SliderLower + (SliderLower * (1 - threshold))) {
+				newLower = Math.abs(chosenValue / factor) - factor - chosenValue
+				newUpper = chosenValue * factor + chosenValue
 			}
-			if (
-				chosenValue > (SliderUpper * threshold)
-			) {
-				newLower = (chosenValue / factor) > SliderLower ? (chosenValue / factor) : SliderLower
-				newUpper = (chosenValue * factor) < SliderUpper ? (chosenValue * factor) : SliderUpper
+			if (chosenValue > (SliderUpper * threshold)) {
+				newLower = Math.abs(chosenValue / factor) - factor - chosenValue
+				newUpper = chosenValue * factor + chosenValue
 			}
 		}
-		return [newLower, chosenValue, newUpper]
+		return [newLower > min ? newLower : min, chosenValue, newUpper > max ? newUpper : max]
 	}
 
-	const changeZoomLevel = (event: React.ChangeEvent<HTMLInputElement>) => {
+	let ScaleSlider = new ISlider(50)
+
+	root.style.setProperty('--zoom-level', ZoomLevel.toString())
+
+	function changeZoomLevel(event: React.ChangeEvent<HTMLInputElement>) {
 		let chosenValue: number = event.target ? parseInt(event.target.value) : ZoomLevel
 		root.style.setProperty('--zoom-level', ZoomLevel.toString())
-		throttle(setZoomLevel(manageSliderValues(chosenValue, ZoomLower, ZoomUpper, 1, 750)), 900)
+		setZoomLevel(manageSliderValues(chosenValue, ZoomLower, ZoomUpper, 1, 150))
 	}
 
-	const changeGraphHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
+	function changeGraphHeightUnthrottled(evt: React.ChangeEvent<HTMLInputElement>, fn: Function, ms: number) {
+		throttle(changeGraphHeight, ms)
+	}
+
+	root.style.setProperty('--graph-height', GraphHeight.toString())
+
+	function changeGraphHeight(event: React.ChangeEvent<HTMLInputElement>) {
 		let chosenValue: number = event.target ? parseInt(event.target.value) : GraphHeight
 		root.style.setProperty('--graph-height', GraphHeight.toString())
-		throttle(setGraphHeight(manageSliderValues(chosenValue, GraphHeightLower, GraphHeightUpper, 1, 1000)), 955)
+		setGraphHeight(manageSliderValues(chosenValue, GraphHeightLower, GraphHeightUpper, 1, 100))
 	}
 
 	return (
@@ -121,6 +147,12 @@ export function SoundBoardStatus(props: {
 				HeaderText={'Lay down a beat.'}
 				HotPanelUpdater={setHotPanel}
 			/>
+
+			<RecordingSessions
+				Sessions={props.RecordingSession}
+				SessionChangeHandler={props.RecordingSessionChangeHandler}
+			/>
+
 			<div
 				className={'always-visible'}
 				id={'DotGraph'}
@@ -139,34 +171,16 @@ export function SoundBoardStatus(props: {
 								}
 								sequenceDuration = begin + duration + 1
 								root.style.setProperty('--sequence-duration', sequenceDuration.toString())
-
 								duration = duration / 10
 								begin = begin / 10
 								gap = gap / 10
 
-								return (<>
-									<div
-										className={'gap'}
-										key={index + '_gap'}
-										style={{
-											width: gap + "px",
-										}}
-										data-gap={gap}
-									>
-										<span className={'meta'}>
-										{button.begin!.toString() + 'ms'}
-									</span>
-										<span className={'meta'}>
-										{button.sound!.name!.toString()}
-									</span>
-										<span className={'meta'}>
-										{duration.toString() + 'ms'}
-									</span>
-									</div>
-
+								return (<div
+									className={'press-gap-pair'}
+									key={begin}
+								>
 									<div
 										className={'press ' + button.color}
-										key={index}
 										style={{
 											width: duration + "px",
 										}}
@@ -184,7 +198,26 @@ export function SoundBoardStatus(props: {
 										{duration.toString() + 'ms'}
 									</span>
 									</div>
-								</>)
+
+									<div
+										className={'gap'}
+										style={{
+											width: gap + "px",
+										}}
+										data-gap={gap}
+									>
+										<span className={'meta'}>
+										{button.begin!.toString() + 'ms'}
+									</span>
+										<span className={'meta'}>
+										{button.sound!.name!.toString()}
+									</span>
+										<span className={'meta'}>
+										{duration.toString() + 'ms'}
+									</span>
+									</div>
+
+								</div>)
 							}
 						)
 					}
@@ -192,8 +225,8 @@ export function SoundBoardStatus(props: {
 			</div>
 
 			<div
-				id={''}
-				className={'control-group'}
+				id={'DotGraphScaling'}
+				className={'control-group floater'}
 			>
 				<div
 					className={'range-slider'}
@@ -203,7 +236,7 @@ export function SoundBoardStatus(props: {
 					<label>{Math.round(ZoomUpper)}</label>
 					<input
 						type='range'
-						onChange={changeZoomLevel}
+						onChange={(event) => changeZoomLevel(event)}
 						min={ZoomLower}
 						max={ZoomUpper}
 						step={1}
@@ -215,11 +248,6 @@ export function SoundBoardStatus(props: {
 					</label>
 				</div>
 
-				<TransportControls
-					TransportChange={props.TransportStateChangeHandler}
-					TransportState={props.TransportState}
-				/>
-
 				<div
 					className={'range-slider'}
 					id={'GraphHeightControl'}
@@ -228,7 +256,7 @@ export function SoundBoardStatus(props: {
 					<label>{Math.round(GraphHeightUpper)}</label>
 					<input
 						type='range'
-						onChange={changeGraphHeight}
+						onChange={(event) => changeGraphHeight(event)}
 						min={GraphHeightLower}
 						max={GraphHeightUpper}
 						step={1}
@@ -240,6 +268,21 @@ export function SoundBoardStatus(props: {
 					</label>
 				</div>
 
+			</div>
+
+			<div
+				id={'CurrentSessionStatus'}
+				className={'control-group'}
+			>
+
+				<p className={'LCD'}>
+					{props.TransportTime ? props.TransportTime : ''}
+				</p>
+
+				<TransportControls
+					TransportChange={props.TransportStateChangeHandler}
+					TransportState={props.TransportState}
+				/>
 
 			</div>
 

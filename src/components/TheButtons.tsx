@@ -110,8 +110,8 @@ export function TheButtons(props: {
 	HandleButtonPress: Function
 }) {
 
-	// const [WordList, setWordList] = useState(useContext(wordContext) !== undefined ? useContext(wordContext) : [])
-	const [CurrentVoice, setCurrentVoice] = useState(useContext(voiceContext) !== undefined ? useContext(voiceContext) : null)
+	const [WordList, setWordList] = useState(useContext(wordContext))
+	const [CurrentVoice, setCurrentVoice] = useState(useContext(voiceContext))
 
 	const buildButtonList = () => {
 		let newButton: IButton = new IButton('bob')

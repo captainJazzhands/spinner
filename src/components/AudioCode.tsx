@@ -34,11 +34,12 @@ const wave = ac.createPeriodicWave(real, imag)
 osc.setPeriodicWave(wave)
 osc.connect(ac.destination)
 
-const localVoices = window.speechSynthesis.getVoices()
-const CurrentVoice: SpeechSynthesisVoice = voiceContext ? useContext(voiceContext) : localVoices[0]
+// const localVoices = window.speechSynthesis.getVoices()
+// const CurrentVoice: SpeechSynthesisVoice = voiceContext ? useContext(voiceContext) : localVoices[0]
 
 export const Speak: Function = (sound: ISound) => {
-	let localVoice = CurrentVoice
+	let localVoice = new SpeechSynthesisVoice
+	// let localVoice = CurrentVoice
 	let synth = window.speechSynthesis
 	let what = new SpeechSynthesisUtterance('')
 	// for (let i = 0; i < voices.length; i++) {

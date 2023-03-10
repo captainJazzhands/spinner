@@ -169,9 +169,7 @@ export function Populator(props:
 
 	const truncatedFilteredWords = filteredWords.slice(0, 8)
 
-	truncatedFilteredWords.sort((a: number, b: number) => {
-		a > b
-	})
+	truncatedFilteredWords.sort((a: number, b: number) => a - b)
 
 	// truncatedFilteredWords.sort(function compareFn(a: string, b: any) {
 	// 	a === "a"
@@ -184,11 +182,11 @@ export function Populator(props:
 	return (
 		<section
 			className={isHot ? 'box MEDIUM' : 'box COLD'}
-			id={'VoiceChoice'}
+			id={'Populator'}
 		>
 
 			<InstructionHeader
-				NavTarget={'VoiceChoice'}
+				NavTarget={'Populator'}
 				HeaderText={props.Instructions}
 				HotPanelUpdater={setHotPanel}
 			/>

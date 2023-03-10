@@ -9,6 +9,7 @@ import {StroopSwitch} from "./StroopSwitch";
 import {Populator} from "./Populator";
 import {TheButtons} from "./TheButtons";
 import {VoiceChoice} from "./VoiceChoice";
+import {RecordingSessions} from "./RecordingSessions";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -119,11 +120,13 @@ export function TheSoundBoard(this: any) {
 	const [count, setCount]: [number, Function] = useState(0)
 	const [isPlaying, setIsPlaying]: [boolean, Function] = useState(false)
 	const [isRecording, setIsRecording]: [boolean, Function] = useState(false)
+	const [shouldWriteToDisk, setShouldWriteToDisk]: [boolean, Function] = useState(false)
 	const [RecordingStart, setRecordingStart]: [number, Function] = useState(0)
 	const [RecordingStop, setRecordingStop]: [number, Function] = useState(Date.now())
 	const [clickTime, setClickTime]: [number, Function] = useState(0)
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
+	const [ActiveSequence, setActiveSequence]: [ISequence, Function] = useState(new ISequence)
 	const [button, setButton]: [IButton, Function] = useState(new IButton)
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
 	const [WordList, setWordList]: [[], Function] = useState([])
@@ -178,10 +181,28 @@ export function TheSoundBoard(this: any) {
 	//    note end
 	//    note preroll
 
+	function getRecordingSessionFromDisk() {
+		if (typeof localStorage.getItem('RecordingSession') === 'string') {
+			// @ts-ignore
+			return JSON.parse(localStorage.getItem('RecordingSession'))
+		} else {
+			return ''
+		}
+	}
+
+	useEffect(() => {   //  onLoad()?
+		const rsArray = RecordingSession ? [...[RecordingSession]] : [[[[['']]]]]
+		if (shouldWriteToDisk) {
+			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
+		} else {
+			//  write anyway until I work out conditions
+			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
+		}
+		setShouldWriteToDisk(false)
+	}, [shouldWriteToDisk])
+
 	function HandleRecordChange(sesh: IRecordingSession) {
-		// const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
 		setRecordingSession(sesh)
-		setHotPanel("SoundBoardStatus")
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
@@ -226,7 +247,8 @@ export function TheSoundBoard(this: any) {
 	function HandleTransportChange(requestedState: string): void {
 		if (requestedState === 'play') {
 			// @ts-ignore
-			PlayButtStream(RecordingSession[1].Sequences)
+			// PlayButtStream(RecordingSession[1].Sequences)
+			PlayButtStream(ActiveSequence)
 		}
 		if (requestedState === 'stop') {
 			StopEverything()
@@ -245,6 +267,17 @@ export function TheSoundBoard(this: any) {
 	// }
 
 	// let color: string = button.color ? button.color!.toString() : ''
+
+
+	// // setter
+	// localStorage.setItem('myData', JSON.stringify(RecordingSession));
+	// // getter
+	// localStorage.getItem('myData');
+	// // remove
+	// localStorage.removeItem('myData');
+	// // remove all
+	// localStorage.clear();
+	//
 
 	const resetCountdown = () => {
 		if (!downTimerOn) {
@@ -351,7 +384,7 @@ export function TheSoundBoard(this: any) {
 		setIsRecording(false)
 	}
 
-	function compare(sequenceA: any[], sequenceB: any[]) {
+	function compare(sequenceA: ISequence, sequenceB: ISequence) {
 		setComparison(null)
 		for (let note in sequenceA) {
 			// if (challenge.length >= sequence.length)
@@ -360,8 +393,21 @@ export function TheSoundBoard(this: any) {
 		} //  or maybe should be map()  TODO
 	}
 
-	const startRecordingTimer = () => {
+	function startRecordingTimer() {
+
+		// we’re not touching a RecordingSession yet
+
+		setTally([])
+
+		// setRecordingSession(
+		// 	[
+		// 		{SessionData: [{RecStart}] ? [{RecStart}] : [{RecStart: RecordingStart}]},
+		// 		{Sequences: RecordingSession.Sequences}
+		// 	]
+		// )
+
 		setHotPanel("TheButtons")
+
 		if (!isRecording) {
 			setClickTime(Date.now())
 			setRecordingStart(Date.now())
@@ -379,11 +425,40 @@ export function TheSoundBoard(this: any) {
 			setIsRecording(false)
 			setRecordingStop(Date.now())
 			elapsedTime = Date.now() - RecordingStart
+
+			if (RecordingSession.Sequences) {
+				let previousSequences = RecordingSession.Sequences
+				previousSequences = previousSequences.slice(0)
+				setShouldWriteToDisk(true)
+				// setRecordingSession(  //  pinch off session
+				// 	[
+				// 		// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
+				// 		// {Sequences: [previousSequences], ActiveSequence}
+				// 	]
+				// )
+			} else {
+				// setRecordingSession(  //  pinch off session
+				// 	[
+				// 		{Sequences: [RecordingSession.Sequences, ActiveSequence]}
+				// 	]
+				// )
+				setShouldWriteToDisk(true)
+			}
+
+			if (ActiveSequence.Sequence) {
+				setRecordingSession(ActiveSequence.Sequence)
+				setShouldWriteToDisk(true)
+			}
+			// if (ActiveSequence.Sequence) {
+			// 	setActiveSequence(ActiveSequence.Sequence.slice(0))
+			// }
+
 			clearInterval(RecordingTimer)
-			//  pinch off session?
 		} else {
 			setIsRecording(false)
 		}
+		setShouldWriteToDisk(true)
+		setActiveSequence([])
 		return elapsedTime
 	}
 
@@ -396,7 +471,7 @@ export function TheSoundBoard(this: any) {
 		setTally([])
 		setRecordingSession(
 			[
-				{SessionData: [{RecStart: RecordingStart}]},
+				// {SessionData: [{RecStart: RecordingStart}]},
 				{
 					Sequences: [
 						// [...tally, button],
@@ -407,6 +482,7 @@ export function TheSoundBoard(this: any) {
 			]
 		)
 	}
+
 
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
 	const buttonBoardDiv = buttonBoardRef.current
@@ -507,16 +583,31 @@ export function TheSoundBoard(this: any) {
 			thisButton.end = Date.now() - RecordingStart
 			let completedButton = thisButton
 			setTally((prevTally: IButton[]) => [...prevTally, completedButton])
-			setRecordingSession(
-				[
-					{SessionData: [{RecStart: RecordingStart}]},
-					{
-						Sequences:
-							[...tally, completedButton]
 
-					}
-				]
-			)
+			if (ActiveSequence.Sequence !== undefined) {
+				ActiveSequence.Sequence.push(thisButton)
+			} else {
+				ActiveSequence.Sequence = [new IButton()]
+			}
+
+			// setRecordingSession(
+			// 	[
+			// 		{SessionData: [{RecStart: RecordingStart}]},
+			// 		...[ActiveSequence]
+			// 	]
+			// )
+
+			// setRecordingSession(  //  should we be calling this from the trenches?
+			// 	[
+			// 		// {SessionData: [{RecStart: RecordingStart}]},
+			// 		{
+			// 			Sequences:  // only touch highest index sequence?
+			// 				[...tally, completedButton]
+			//			
+			// 		}
+			// 	]
+			// )
+
 		}
 		if (realtime) {
 			DoTheButton(thisButton)
@@ -560,10 +651,13 @@ export function TheSoundBoard(this: any) {
 								<SoundBoardStatus
 									Sequence={tally}
 									TransportState={TransportState}
+									TransportTime={elapsedTime}
 									HotPanel={HotPanel}
 									HotPanelUpdater={setHotPanel}
 									TransportStateChangeHandler={HandleTransportChange}
 									Instructions={'Record A Few Seconds'}
+									RecordingSession={RecordingSession}
+									RecordingSessionChangeHandler={HandleRecordChange}
 								/>
 
 								<Populator
@@ -581,12 +675,6 @@ export function TheSoundBoard(this: any) {
 									HotPanelUpdater={setHotPanel}
 									Instructions={'Pick A Voice'}
 								/>
-
-								{/*<RecordingSessions*/}
-								{/*	Sessions={RecordingSession}*/}
-								{/*	SessionChangeHandler={HandleRecordChange}*/}
-								{/*	HotPanel={HotPanel}*/}
-								{/*/>*/}
 
 								<TheButtons
 									WordList={WordList}

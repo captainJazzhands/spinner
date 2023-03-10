@@ -5,12 +5,10 @@ export type path = { fullPath: string }
 export type IStroopMode = "unsure" | "text" | "speech" | "color" | "shape" | "tone"
 
 export class IRecordingSession {
-	SessionData: ISessionData;
 	Sequences: ISequence[];
 	HandleRecordChange!: Function;
 
 	constructor() {
-		this.SessionData = new ISessionData();
 		this.Sequences = [];
 		// this.Sequences = [new ISequence([new IButton(new ISound())])];
 	}
@@ -35,19 +33,23 @@ export class ISessionData {
 	}
 }
 
-export type ISequence = {
-	Sequence?: IButton[];
-}
-
-// export class ISequence {
-// 	Sequence: IButton[];
-//
-// 	constructor(
-// 		Sequence: IButton[]
-// 	) {
-// 		this.Sequence = Sequence
-// 	}
+// export type ISequence = {
+// 	Sequence?: IButton[];
 // }
+
+export class ISequence {
+	SessionData?: ISessionData;
+	Sequence: IButton[] | undefined;
+	id: number;
+
+	constructor(
+		Sequence?: IButton[]
+	) {
+		this.SessionData = new ISessionData();
+		this.Sequence = Sequence
+		this.id = Date.now()
+	}
+}
 
 export class ISound {
 	name: string;
@@ -115,6 +117,32 @@ export class IButton {
 		this.end = 0;
 		this.status = status;
 		this.order = order;
+	}
+}
+
+export class ISlider {
+	value: number;
+	name?: string;
+	lower?: number;
+	upper?: number;
+	color?: string | string[];
+	min?: number;
+	max?: number;
+
+	constructor(
+		value: number,
+		name?: string,
+		lower?: number,
+		upper?: number,
+		min?: number,
+		max?: number,
+	) {
+		this.value = value;
+		this.name = name;
+		this.lower = 1;
+		this.upper = value * 5;
+		this.min = 1;
+		this.max = value * 5;
 	}
 }
 

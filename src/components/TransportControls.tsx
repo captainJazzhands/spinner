@@ -1,17 +1,9 @@
 import React, {
-	Component,
-	Context,
 	useState,
 	useEffect,
-	useContext,
-	createContext,
 	Ref,
 	useRef
 } from 'react'
-import {Speak, MakeNoise} from './AudioCode'
-import {IRecordingSession, IButton, ISound, ISequence, IStroopMode} from './Types';
-
-let override = true
 
 export function TransportControls(props: {
 	TransportState: string,
