@@ -89,6 +89,7 @@ let soundList: IButton[] = [
 export function Populator(props:
 	                          {
 		                          handleDataSource: Function,
+		                          WordList: Array<any>,
 		                          setWordList: Function,
 		                          Instructions: string,
 		                          HotPanel: string,
@@ -101,7 +102,7 @@ export function Populator(props:
 	//    select mulitple responses
 	//    setContext(selection)
 
-	const [WordList, setWordList]: [any, Function] = useState(props.setWordList)
+	const setWordList = props.setWordList
 	const [SpeechPart, setSpeechPart]: [any, Function] = useState([])
 	const [WhichData, setWhichData]: [any, Function] = useState([])
 
@@ -128,16 +129,18 @@ export function Populator(props:
 		}
 	}
 
-	const fetchData = async (WhichDataAxios: RawAxiosRequestConfig<string>) => {
-		try {
-			const DataSource = await axios(
-				WhichDataAxios
-			)
-			setWordList(DataSource.data)
-		} catch (err) {
-			console.error(err)
-		}
-	}
+	// const fetchData = async (WhichDataAxios: RawAxiosRequestConfig<string>) => {
+	// 	try {
+	// 		const DataSource = await axios(
+	// 			WhichDataAxios
+	// 		)
+	// 		setWordList(DataSource.data)
+	// 	} catch (err) {
+	// 		console.error(err)
+	// 	}
+	// }
+
+	let WordList = props.WordList
 
 	const uniqueParts: any[] = []
 	if (WordList !== undefined) {
@@ -147,12 +150,13 @@ export function Populator(props:
 			}
 		})
 	}
-	useEffect(() => {
-		fetchData(WhichData)
-	}, [WhichData])
+	// useEffect(() => {
+	// 	fetchData(WhichData)
+	// }, [WhichData])
 
 	const setHotPanel: Function = props.HotPanelUpdater
 	let isHot: boolean = (props.HotPanel.toString().toLowerCase() === 'populator')
+
 	const filteredWords = WordList && WordList.length > 1 ? WordList.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
 			return theWord.partOfSpeech == SpeechPart
 		}

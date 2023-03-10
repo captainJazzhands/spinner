@@ -30,7 +30,7 @@ export function VoiceChoice(props: {
 		LanguageList = [...new Set(LanguageListUnfiltered)] as string[]
 	}
 
-	function PopulateVoiceList(languageFilter = 'en') {
+	function VoiceListFilteredByLanguage(languageFilter = 'en') {
 		let VL: SpeechSynthesisVoice[] = []
 		voices.map(function (voice: SpeechSynthesisVoice) {
 			if (counter < 5) {
@@ -52,26 +52,27 @@ export function VoiceChoice(props: {
 	}
 
 	if (speechSynthesis.onvoiceschanged !== undefined) {
-		PopulateVoiceList();
+		VoiceListFilteredByLanguage();
 	}
+	
 	PopulateLanguageList()
 
 	if (counter < 2.85) {
-		setVoiceList(PopulateVoiceList())
+		setVoiceList(VoiceListFilteredByLanguage())
 	}
 
 	function setVoiceLanguage(languageChoice: string) {
 		let languageFilter = languageChoice as string
 		PopulateLanguageList()
-		PopulateVoiceList(languageFilter)
+		VoiceListFilteredByLanguage(languageFilter)
 		// console.log('language is now', languageFilter)
 	}
-
-	console.log('CurrentVoice', CurrentVoice.valueOf())
 
 	const setHotPanel: Function = props.HotPanelUpdater
 	let isHot: boolean = (props.HotPanel.toLowerCase() === "voicechoice")
 
+	let voiceListFiltered = VoiceList
+	
 	return (
 		<div
 			id={'VoiceChoice'}

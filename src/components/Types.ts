@@ -9,8 +9,8 @@ export class IRecordingSession {
 	HandleRecordChange!: Function;
 
 	constructor() {
-		this.Sequences = [];
-		// this.Sequences = [new ISequence([new IButton(new ISound())])];
+		//  this.Sequences = [];
+		this.Sequences = [new ISequence([new IButton()])];
 	}
 }
 

@@ -10,6 +10,7 @@ import {Populator} from "./Populator";
 import {TheButtons} from "./TheButtons";
 import {VoiceChoice} from "./VoiceChoice";
 import {RecordingSessions} from "./RecordingSessions";
+import {debug} from "util";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
 let soundList: IButton[] = [
@@ -196,7 +197,6 @@ export function TheSoundBoard(this: any) {
 			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
 		} else {
 			//  write anyway until I work out conditions
-			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
 		}
 		setShouldWriteToDisk(false)
 	}, [shouldWriteToDisk])
@@ -425,40 +425,39 @@ export function TheSoundBoard(this: any) {
 			setIsRecording(false)
 			setRecordingStop(Date.now())
 			elapsedTime = Date.now() - RecordingStart
+			// setShouldWriteToDisk(true)
 
-			if (RecordingSession.Sequences) {
-				let previousSequences = RecordingSession.Sequences
-				previousSequences = previousSequences.slice(0)
+			if (RecordingSession.Sequences === undefined) {
+				setRecordingSession(  //  pinch off first session
+					{Sequences: tally}
+				)
 				setShouldWriteToDisk(true)
-				// setRecordingSession(  //  pinch off session
-				// 	[
-				// 		// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
-				// 		// {Sequences: [previousSequences], ActiveSequence}
-				// 	]
-				// )
 			} else {
-				// setRecordingSession(  //  pinch off session
-				// 	[
-				// 		{Sequences: [RecordingSession.Sequences, ActiveSequence]}
-				// 	]
-				// )
+				let previousSequences = RecordingSession.Sequences.slice(0)
+				setRecordingSession(  //  pinch off another session
+					// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
+					{Sequences: [...previousSequences, [tally]]}
+				)
 				setShouldWriteToDisk(true)
 			}
 
-			if (ActiveSequence.Sequence) {
-				setRecordingSession(ActiveSequence.Sequence)
-				setShouldWriteToDisk(true)
+			if (ActiveSequence.Sequence && ActiveSequence.Sequence.length > 1) {
+				// setRecordingSession(ActiveSequence)
+			} else {
+				if (tally.length > 1) {
+					setRecordingSession({RecordingSession}, tally as IButton[])
+					alert('FALLBACK PLAN!')
+				}
 			}
-			// if (ActiveSequence.Sequence) {
-			// 	setActiveSequence(ActiveSequence.Sequence.slice(0))
-			// }
 
 			clearInterval(RecordingTimer)
+
 		} else {
 			setIsRecording(false)
 		}
-		setShouldWriteToDisk(true)
-		setActiveSequence([])
+
+		
+		setTally([])
 		return elapsedTime
 	}
 
@@ -469,18 +468,18 @@ export function TheSoundBoard(this: any) {
 		//  delete session
 		clearInterval(RecordingTimer)
 		setTally([])
-		setRecordingSession(
-			[
-				// {SessionData: [{RecStart: RecordingStart}]},
-				{
-					Sequences: [
-						// [...tally, button],
-						// [...tally, button],
-						// [...tally, button]
-					]
-				}
-			]
-		)
+		// setRecordingSession(
+		// 	[
+		// 		// {SessionData: [{RecStart: RecordingStart}]},
+		// 		{
+		// 			Sequences: [
+		// 				// [...tally, button],
+		// 				// [...tally, button],
+		// 				// [...tally, button]
+		// 			]
+		// 		}
+		// 	]
+		// )
 	}
 
 
@@ -665,6 +664,7 @@ export function TheSoundBoard(this: any) {
 									HotPanel={HotPanel}
 									HotPanelUpdater={setHotPanel}
 									Instructions={'Choose Your Words'}
+									WordList={WordList}
 									setWordList={HandleWordListChange}
 								/>
 

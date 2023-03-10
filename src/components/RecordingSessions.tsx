@@ -16,7 +16,7 @@ export function RecordingSessions(props: {
 
 	let seqs: (ISequence | IButton)[]
 
-	if (props.Sessions && props.Sessions.Sequences) {
+	if (props.Sessions.Sequences) {
 		seqs = props.Sessions.Sequences
 	} else {
 		seqs = [new IButton()]
@@ -37,26 +37,29 @@ export function RecordingSessions(props: {
 				// disabled={props.TransportState != "recording"}
 			>{'+'}</button>
 
-			{/*<ul>*/}
-			{/*	{*/}
-			{/*		seqs.map((session, index, sequence) => {*/}
-			{/*				return (<li*/}
-			{/*					className={'sequence-length-' + typeof (session)}*/}
-			{/*					key={index}*/}
-			{/*					value={'add'}*/}
-			{/*					onClick={props.SessionChangeHandler('Event')}*/}
-			{/*				>)*/}
-			{/*					<span className={'meta'}>*/}
-			{/*					{index}*/}
-			{/*				</span>*/}
-			{/*					<span className={'meta'}>*/}
-			{/*					{JSON.stringify(session)}*/}
-			{/*				</span>*/}
-			{/*				</li>)*/}
-			{/*			}*/}
-			{/*		)*/}
-			{/*	}*/}
-			{/*</ul>*/}
+			<ul>
+				{
+					seqs.map((sequence, index, button_maybe) => {
+							return (<li
+								className={'sequence-length-' + typeof (sequence)}
+								key={index}
+								value={'add'}
+								onClick={props.SessionChangeHandler('Event')}
+							>)
+								<span className={'meta'}>
+									{index}
+								</span>
+								<span className={'meta'}>
+									{JSON.stringify(sequence)}
+								</span>
+								<span className={'meta'}>
+									{JSON.stringify(button_maybe)}
+								</span>
+							</li>)
+						}
+					)
+				}
+			</ul>
 
 		</div>
 	)
