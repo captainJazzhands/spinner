@@ -384,12 +384,12 @@ export function TheSoundBoard(this: any) {
 		setIsRecording(false)
 	}
 
-	function compare(sequenceA: ISequence, sequenceB: ISequence) {
+	function compare(sequences: ISequence[]) {
 		setComparison(null)
-		for (let note in sequenceA) {
+		for (let note in sequences) {
 			// if (challenge.length >= sequence.length)
 			// @ts-ignore
-			Comparison.push([note[0].toString(), sequenceB[0].toString()])
+			Comparison.push([note[0].toString(), sequences[0].toString()])
 		} //  or maybe should be map()  TODO
 	}
 
@@ -436,7 +436,7 @@ export function TheSoundBoard(this: any) {
 				let previousSequences = RecordingSession.Sequences.slice(0)
 				setRecordingSession(  //  pinch off another session
 					// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
-					{Sequences: [...previousSequences, [tally]]}
+					{Sequences: [[previousSequences], tally]}
 				)
 				setShouldWriteToDisk(true)
 			}
@@ -456,8 +456,6 @@ export function TheSoundBoard(this: any) {
 			setIsRecording(false)
 		}
 
-		
-		setTally([])
 		return elapsedTime
 	}
 

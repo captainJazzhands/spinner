@@ -437,17 +437,23 @@ p.LCD {
 	transition: ease-in .3s 0.4s;
 	.tablature {
 		position: relative;
-		left: calc((var(--graph-height) * 5vh) - 80vh);
-		height: calc((var(--graph-height) * 5vh) + 25vh);
+		left: 0;
+		//left: calc((var(--graph-height) * 5vh) - 80vh);
+		height: 1000vh;
 		top: 0;
 		padding: 0;
-		overflow-y: scroll;
-		overflow-x: scroll;
+		overflow: visible;
 		display: flex;
 		flex-direction: row;
 		transform-origin: 0 0;
 		background-color: $clr_boxBG;
-		scale: calc(var(--zoom-level) / 10);
+		//scale: calc(.4 + (var(--zoom-level) / 100) - (var(--sequence-duration) / 20000));
+		scale: calc(
+			 .05 +
+			 ((var(--sequence-duration) + 1500) / 10000000)
+		*
+			 ((var(--zoom-level) + 1) / .2)
+		);
 		pointer-events: none;
 		//* {
 		//	font-size: calc(2pt + (var(--zoom-level) / 5));
@@ -461,7 +467,7 @@ p.LCD {
 				display: inline-block;
 				white-space: pre;
 				transition: none;
-				height: calc(100vh - 3rem);
+				//height: calc(100vh - 3rem);
 				transform-origin: center;
 				flex-grow: 0;
 				flex-shrink: 0;
