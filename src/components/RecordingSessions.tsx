@@ -16,8 +16,12 @@ export function RecordingSessions(props: {
 
 	let seqs: (ISequence | IButton)[]
 
-	if (props.Sessions.Sequences) {
-		seqs = props.Sessions.Sequences
+	if (props.Sessions) {
+		if (props.Sessions.Sequences && props.Sessions.Sequences.length > 1) {
+			seqs = props.Sessions.Sequences
+		} else {
+			seqs = [new IButton()]
+		}
 	} else {
 		seqs = [new IButton()]
 	}
@@ -44,7 +48,7 @@ export function RecordingSessions(props: {
 								className={'sequence-length-' + typeof (sequence)}
 								key={index}
 								value={'add'}
-								onClick={props.SessionChangeHandler('Event')}
+								onClick={props.SessionChangeHandler()}
 							>)
 								<span className={'meta'}>
 									{index}

@@ -5,12 +5,11 @@ export type path = { fullPath: string }
 export type IStroopMode = "unsure" | "text" | "speech" | "color" | "shape" | "tone"
 
 export class IRecordingSession {
-	Sequences: ISequence[];
+	Sequences?: ISequence[];
 	HandleRecordChange!: Function;
 
 	constructor() {
-		//  this.Sequences = [];
-		this.Sequences = [new ISequence([new IButton()])];
+		 this.Sequences = [];
 	}
 }
 

@@ -202,7 +202,7 @@ export function TheSoundBoard(this: any) {
 	}, [shouldWriteToDisk])
 
 	function HandleRecordChange(sesh: IRecordingSession) {
-		setRecordingSession(sesh)
+		// setRecordingSession(sesh)
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
@@ -427,27 +427,15 @@ export function TheSoundBoard(this: any) {
 			elapsedTime = Date.now() - RecordingStart
 			// setShouldWriteToDisk(true)
 
-			if (RecordingSession.Sequences === undefined) {
-				setRecordingSession(  //  pinch off first session
-					{Sequences: tally}
-				)
+			if (RecordingSession === undefined || RecordingSession.Sequences === undefined) {  //  pinch off first session
+				setRecordingSession({Sequences: tally})
 				setShouldWriteToDisk(true)
-			} else {
-				let previousSequences = RecordingSession.Sequences.slice(0)
-				setRecordingSession(  //  pinch off another session
-					// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
-					{Sequences: [[previousSequences], tally]}
-				)
+			} else { //  pinch off another session
+				let previousSequences = RecordingSession.Sequences  //.slice(0)
+				// let slicedTally = tally.slice(0)
+				// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
+				setRecordingSession({Sequences: [...previousSequences, tally]})
 				setShouldWriteToDisk(true)
-			}
-
-			if (ActiveSequence.Sequence && ActiveSequence.Sequence.length > 1) {
-				// setRecordingSession(ActiveSequence)
-			} else {
-				if (tally.length > 1) {
-					setRecordingSession({RecordingSession}, tally as IButton[])
-					alert('FALLBACK PLAN!')
-				}
 			}
 
 			clearInterval(RecordingTimer)
@@ -586,24 +574,6 @@ export function TheSoundBoard(this: any) {
 			} else {
 				ActiveSequence.Sequence = [new IButton()]
 			}
-
-			// setRecordingSession(
-			// 	[
-			// 		{SessionData: [{RecStart: RecordingStart}]},
-			// 		...[ActiveSequence]
-			// 	]
-			// )
-
-			// setRecordingSession(  //  should we be calling this from the trenches?
-			// 	[
-			// 		// {SessionData: [{RecStart: RecordingStart}]},
-			// 		{
-			// 			Sequences:  // only touch highest index sequence?
-			// 				[...tally, completedButton]
-			//			
-			// 		}
-			// 	]
-			// )
 
 		}
 		if (realtime) {
