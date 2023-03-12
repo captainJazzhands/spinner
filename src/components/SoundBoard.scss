@@ -429,6 +429,17 @@ p.LCD {
 	}
 }
 
+#RecordingSessions {
+	width: 100%;
+	ul {
+		padding: 0.5rem;
+		li {
+			text-align: left;
+			background-color: $clr_boxBG_alpha;
+		}
+	}
+}
+
 #DotGraph {
 	height: 100%; width: 100%;
 	flex-grow: 5;
@@ -451,7 +462,7 @@ p.LCD {
 		scale: calc(
 			 .05 +
 			 ((var(--sequence-duration) + 1500) / 10000000)
-		*
+			 *
 			 ((var(--zoom-level) + 1) / .2)
 		);
 		pointer-events: none;
@@ -497,8 +508,8 @@ p.LCD {
 .control-group {
 	//transform: scale(80%);
 	width: calc(100% - 5vw);
-	position: relative;
-	bottom: 25vh;
+	position: sticky;
+	bottom: 2vw;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-around;
@@ -537,8 +548,8 @@ p.LCD {
 }
 
 .floater {
-	position: relative;
-	bottom: 40%;
+	position: sticky;
+	bottom: 3rem;
 	width: 100%;
 	border-radius: 0;
 	border: none;

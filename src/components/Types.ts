@@ -37,14 +37,12 @@ export class ISessionData {
 // }
 
 export class ISequence {
-	SessionData?: ISessionData;
 	Sequence: IButton[] | undefined;
 	id: number;
 
 	constructor(
 		Sequence?: IButton[]
 	) {
-		this.SessionData = new ISessionData();
 		this.Sequence = Sequence
 		this.id = Date.now()
 	}

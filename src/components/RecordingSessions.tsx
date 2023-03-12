@@ -35,30 +35,22 @@ export function RecordingSessions(props: {
 				You have <span className={'LCD'}>{seqs.length}</span> recordings.
 			</span>
 
-			<button
-				value={'NewRecording'}
-				onClick={() => props.SessionChangeHandler}
-				// disabled={props.TransportState != "recording"}
-			>{'+'}</button>
-
 			<ul>
 				{
 					seqs.map((sequence, index, button_maybe) => {
 							return (<li
-								className={'sequence-length-' + typeof (sequence)}
+								className={'recording-session'}
 								key={index}
 								value={'add'}
-								onClick={props.SessionChangeHandler()}
 							>)
 								<span className={'meta'}>
-									{index}
+									Recording #{index}
 								</span>
-								<span className={'meta'}>
-									{JSON.stringify(sequence)}
-								</span>
-								<span className={'meta'}>
-									{JSON.stringify(button_maybe)}
-								</span>
+								<button
+									value={'SelectRecording'}
+									onClick={() => props.SessionChangeHandler(sequence)}
+								>{'SELECT'}</button>
+
 							</li>)
 						}
 					)

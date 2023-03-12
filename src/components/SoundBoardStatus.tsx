@@ -20,7 +20,7 @@ import {RecordingSessions} from "./RecordingSessions";
 let root = document.documentElement
 
 export function SoundBoardStatus(props: {
-	Sequence: IButton[],
+	Sequence: IButton[] | undefined,
 	HotPanel: string,
 	HotPanelUpdater: Function,
 	TransportState: string,
@@ -50,7 +50,13 @@ export function SoundBoardStatus(props: {
 		}
 	}
 
-	let rs: IButton[] = props.Sequence
+	let rs: IButton[]
+	if (props.Sequence) {
+		rs = props.Sequence
+	} else {
+		rs = []
+	}
+
 	let begin = 0
 	let duration = 0
 	let gap = 0
@@ -86,10 +92,12 @@ export function SoundBoardStatus(props: {
 	}
 
 	let sequenceBegin: number
-	if (rs[0] !== undefined) {
-		sequenceBegin = rs[0].begin ? rs[0].begin : -1
-	} else {
-		sequenceBegin = Date.now()
+	if (rs) {
+		if (rs[0] !== undefined) {
+			sequenceBegin = rs[0].begin ? rs[0].begin : -1
+		} else {
+			sequenceBegin = Date.now()
+		}
 	}
 
 	let sequenceDuration: number = 0
@@ -150,7 +158,7 @@ export function SoundBoardStatus(props: {
 
 			<RecordingSessions
 				Sessions={props.RecordingSession}
-				SessionChangeHandler={props.RecordingSessionChangeHandler}
+				SessionChangeHandler={() => props.RecordingSessionChangeHandler}
 			/>
 
 			<div
@@ -192,7 +200,7 @@ export function SoundBoardStatus(props: {
 										{button.begin!.toString() + 'ms'}
 									</span>
 										<span className={'meta'}>
-										{button.sound!.name!.toString()}
+										{button.sound ? button.sound!.name!.toString() : ''}
 									</span>
 										<span className={'meta'}>
 										{duration.toString() + 'ms'}
@@ -210,7 +218,7 @@ export function SoundBoardStatus(props: {
 										{button.begin!.toString() + 'ms'}
 									</span>
 										<span className={'meta'}>
-										{button.sound!.name!.toString()}
+										{button.sound ? button.sound!.name!.toString() : ''}
 									</span>
 										<span className={'meta'}>
 										{duration.toString() + 'ms'}

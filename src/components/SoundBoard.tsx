@@ -122,6 +122,7 @@ export function TheSoundBoard(this: any) {
 	const [isPlaying, setIsPlaying]: [boolean, Function] = useState(false)
 	const [isRecording, setIsRecording]: [boolean, Function] = useState(false)
 	const [shouldWriteToDisk, setShouldWriteToDisk]: [boolean, Function] = useState(false)
+	const [shouldReadFromDisk, setShouldReadFromDisk]: [boolean, Function] = useState(true)
 	const [RecordingStart, setRecordingStart]: [number, Function] = useState(0)
 	const [RecordingStop, setRecordingStop]: [number, Function] = useState(Date.now())
 	const [clickTime, setClickTime]: [number, Function] = useState(0)
@@ -191,18 +192,30 @@ export function TheSoundBoard(this: any) {
 		}
 	}
 
-	useEffect(() => {   //  onLoad()?
+	useEffect(() => {
 		const rsArray = RecordingSession ? [...[RecordingSession]] : [[[[['']]]]]
-		if (shouldWriteToDisk) {
+		if (shouldWriteToDisk && JSON.stringify(rsArray).length > 23) {
 			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
-		} else {
-			//  write anyway until I work out conditions
 		}
 		setShouldWriteToDisk(false)
 	}, [shouldWriteToDisk])
 
+	useEffect(() => {
+		if (shouldReadFromDisk) {
+			let ls = localStorage.getItem('RecordingSession')
+			if (ls !== undefined && ls !== null) {
+				if (ls.length > 1) {
+					let newRS:IRecordingSession = JSON.parse(ls) as IRecordingSession
+					setRecordingSession(newRS)
+				}
+			}
+		}
+		setShouldReadFromDisk(false)
+	}, [shouldReadFromDisk])
+
 	function HandleRecordChange(sesh: IRecordingSession) {
-		// setRecordingSession(sesh)
+		setActiveSequence(sesh)
+		console.log('sesh:', sesh.Sequences?.length, JSON.stringify(sesh))
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
@@ -394,18 +407,12 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function startRecordingTimer() {
-
 		// we’re not touching a RecordingSession yet
-
 		setTally([])
 
-		// setRecordingSession(
-		// 	[
-		// 		{SessionData: [{RecStart}] ? [{RecStart}] : [{RecStart: RecordingStart}]},
-		// 		{Sequences: RecordingSession.Sequences}
-		// 	]
-		// )
-
+		if (getRecordingSessionFromDisk().length > 1) {
+			setShouldReadFromDisk(true)
+		}
 		setHotPanel("TheButtons")
 
 		if (!isRecording) {
@@ -425,16 +432,22 @@ export function TheSoundBoard(this: any) {
 			setIsRecording(false)
 			setRecordingStop(Date.now())
 			elapsedTime = Date.now() - RecordingStart
+			let localStorageSession = getRecordingSessionFromDisk()
 			// setShouldWriteToDisk(true)
 
 			if (RecordingSession === undefined || RecordingSession.Sequences === undefined) {  //  pinch off first session
-				setRecordingSession({Sequences: tally})
-				setShouldWriteToDisk(true)
+				if (localStorageSession.length > 1) {
+					setRecordingSession(localStorageSession.slice(0))
+					setShouldWriteToDisk(true)
+				} else {
+					setShouldWriteToDisk(true)
+				}
 			} else { //  pinch off another session
-				let previousSequences = RecordingSession.Sequences  //.slice(0)
+				let previousSequences
+				previousSequences = RecordingSession.Sequences  //.slice(0)
 				// let slicedTally = tally.slice(0)
 				// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
-				setRecordingSession({Sequences: [...previousSequences, tally]})
+				setRecordingSession({Sequences: [...previousSequences], tally})
 				setShouldWriteToDisk(true)
 			}
 
@@ -453,7 +466,9 @@ export function TheSoundBoard(this: any) {
 		setCount(0)
 		//  delete session
 		clearInterval(RecordingTimer)
+
 		setTally([])
+
 		// setRecordingSession(
 		// 	[
 		// 		// {SessionData: [{RecStart: RecordingStart}]},
@@ -467,7 +482,6 @@ export function TheSoundBoard(this: any) {
 		// 	]
 		// )
 	}
-
 
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
 	const buttonBoardDiv = buttonBoardRef.current
@@ -616,7 +630,7 @@ export function TheSoundBoard(this: any) {
 								/>
 
 								<SoundBoardStatus
-									Sequence={tally}
+									Sequence={ActiveSequence.Sequence}
 									TransportState={TransportState}
 									TransportTime={elapsedTime}
 									HotPanel={HotPanel}

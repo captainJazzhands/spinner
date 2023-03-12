@@ -34,7 +34,7 @@ $mtrx_FontSize: [
 
 /*# colors */
 $clr_primaryColor: hsl(240, 40%, 40%);
-$clr_secondaryColor: hsl(90, 50%, 50%);
+$clr_secondaryColor: hsl(60, 50%, 50%);
 $clr_white: hsl(0, 0%, 85%);
 $clr_plastic: rgb(26, 26, 26);
 $clr_black: hsl(0, 0%, 5%);
@@ -97,8 +97,8 @@ $clr_boxBG: color.adjust(
 );
 $clr_boxBG_alpha: color.adjust(
 			$clr_secondaryColor,
-	 $lightness: -30%,
-	 $alpha: -0.6
+	 $lightness: +50%,
+	 $alpha: -0.75
 );
 $clr_heroTextBG_alpha: color.adjust(
 			$clr_white,
