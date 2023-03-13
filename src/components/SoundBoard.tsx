@@ -12,84 +12,6 @@ import {VoiceChoice} from "./VoiceChoice";
 import {RecordingSessions} from "./RecordingSessions";
 import {debug} from "util";
 
-//<editor-fold defaultstate='collapsed' desc='array: buttons list'>
-let soundList: IButton[] = [
-	{
-		color: 'white',
-		sound: {
-			name: 'Malama',
-			type: 'speech',
-			pronunciation: 'mah lah ma',
-			pitch: -4
-		}
-	},
-	{
-		color: 'gray',
-		sound: {
-			name: 'Yahweh',
-			type: 'speech',
-			pronunciation: 'yah wey',
-			pitch: -3
-		}
-	},
-	{
-		color: 'yellow',
-		sound: {
-			name: 'Mr. Bits',
-			type: 'speech',
-			pronunciation: 'mister bits',
-			pitch: -2
-		}
-	},
-	{
-		color: ['gray', 'white'],
-		sound: {
-			name: 'Mayday',
-			type: 'speech',
-			pronunciation: 'may day',
-			pitch: -1
-		}
-	},
-	{
-		color: 'brown',
-		sound: {
-			name: 'Bae Bae',
-			type: 'speech',
-			pronunciation: 'bay bay',
-			pitch: 0
-		}
-	},
-	{
-		color: 'red',
-		sound: {
-			name: 'Mr. Ball Legs',
-			type: 'speech',
-			pronunciation: 'mister ball legs',
-			pitch: 1
-		}
-	},
-	{
-		color: 'black',
-		sound: {
-			name: 'Shaft',
-			type: 'speech',
-			pronunciation: 'bad mother fucker',
-			pitch: 2
-		}
-	},
-	{
-		color: 'brown',
-		sound: {
-			name: 'Jeebus',
-			type: 'speech',
-			pronunciation: 'jeebus',
-			pitch: 3
-		}
-	}
-]
-
-//</editor-fold>
-
 let override = true
 let realtime = true
 
@@ -192,8 +114,10 @@ export function TheSoundBoard(this: any) {
 		}
 	}
 
+	
+	
 	useEffect(() => {
-		const rsArray = RecordingSession ? [...[RecordingSession]] : [[[[['']]]]]
+		const rsArray = RecordingSession ? RecordingSession as unknown as Array<any> : [[[[['']]]]]
 		if (shouldWriteToDisk && JSON.stringify(rsArray).length > 23) {
 			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
 		}
@@ -205,8 +129,13 @@ export function TheSoundBoard(this: any) {
 			let ls = localStorage.getItem('RecordingSession')
 			if (ls !== undefined && ls !== null) {
 				if (ls.length > 1) {
-					let newRS:IRecordingSession = JSON.parse(ls) as IRecordingSession
-					setRecordingSession(newRS)
+					let newRS: IRecordingSession = JSON.parse(ls) as IRecordingSession
+					if (newRS.Sequences !== undefined) {
+						setRecordingSession(newRS)
+					} else {
+						// @ts-ignore
+						setRecordingSession(newRS[0]) // because I’m storing it wrong
+					}
 				}
 			}
 		}
@@ -274,23 +203,10 @@ export function TheSoundBoard(this: any) {
 		}
 	}
 
-	// function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
-	// 	console.log('current:', CurrentVoice.displayName, 'new:', NewVoice.name)
-	// 	setCurrentVoice(NewVoice)
-	// }
-
-	// let color: string = button.color ? button.color!.toString() : ''
-
-
-	// // setter
-	// localStorage.setItem('myData', JSON.stringify(RecordingSession));
-	// // getter
-	// localStorage.getItem('myData');
-	// // remove
-	// localStorage.removeItem('myData');
-	// // remove all
-	// localStorage.clear();
-	//
+	function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
+		console.log('current:', CurrentVoice.name, 'new:', NewVoice.name)
+		setCurrentVoice(NewVoice)
+	}
 
 	const resetCountdown = () => {
 		if (!downTimerOn) {
@@ -409,7 +325,6 @@ export function TheSoundBoard(this: any) {
 	function startRecordingTimer() {
 		// we’re not touching a RecordingSession yet
 		setTally([])
-
 		if (getRecordingSessionFromDisk().length > 1) {
 			setShouldReadFromDisk(true)
 		}
@@ -445,18 +360,16 @@ export function TheSoundBoard(this: any) {
 			} else { //  pinch off another session
 				let previousSequences
 				previousSequences = RecordingSession.Sequences  //.slice(0)
-				// let slicedTally = tally.slice(0)
 				// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
-				setRecordingSession({Sequences: [...previousSequences], tally})
+				setRecordingSession(
+					{Sequences: [...previousSequences, tally]}
+				)
 				setShouldWriteToDisk(true)
 			}
-
 			clearInterval(RecordingTimer)
-
 		} else {
 			setIsRecording(false)
 		}
-
 		return elapsedTime
 	}
 
@@ -466,21 +379,7 @@ export function TheSoundBoard(this: any) {
 		setCount(0)
 		//  delete session
 		clearInterval(RecordingTimer)
-
 		setTally([])
-
-		// setRecordingSession(
-		// 	[
-		// 		// {SessionData: [{RecStart: RecordingStart}]},
-		// 		{
-		// 			Sequences: [
-		// 				// [...tally, button],
-		// 				// [...tally, button],
-		// 				// [...tally, button]
-		// 			]
-		// 		}
-		// 	]
-		// )
 	}
 
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
@@ -652,7 +551,7 @@ export function TheSoundBoard(this: any) {
 
 								<VoiceChoice
 									CurrentVoice={voiceContext}
-									VoiceUpdater={setCurrentVoice}
+									VoiceUpdater={HandleVoiceChange}
 									HotPanel={HotPanel}
 									HotPanelUpdater={setHotPanel}
 									Instructions={'Pick A Voice'}
