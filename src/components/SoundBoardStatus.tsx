@@ -20,7 +20,7 @@ import {RecordingSessions} from "./RecordingSessions";
 let root = document.documentElement
 
 export function SoundBoardStatus(props: {
-	Sequence: IButton[] | undefined,
+	ActiveSequence: ISequence | undefined,
 	HotPanel: string,
 	HotPanelUpdater: Function,
 	TransportState: string,
@@ -29,11 +29,12 @@ export function SoundBoardStatus(props: {
 	RecordingSession: IRecordingSession,
 	TransportStateChangeHandler: (requestedState: string) => void,
 	RecordingSessionChangeHandler: (sesh: IRecordingSession) => void
+	SequenceSelector: (sequence: ISequence) => void
 }) {
 	const stroopMode = useContext(stroopContext)
 	const [[ZoomLower, ZoomLevel, ZoomUpper], setZoomLevel]: [number[], Function] = useState([1, 50, 100])
 	const [[GraphHeightLower, GraphHeight, GraphHeightUpper], setGraphHeight]: [number[], Function] = useState([-250, 50, 150])
-	const [button, setButton]: [IButton, Function] = useState(new IButton())
+	const [button, setButton]: [IButton, Function] = useState(new IButton(''))
 
 
 	function throttle(fn: Function, ms: number) {
@@ -43,18 +44,20 @@ export function SoundBoardStatus(props: {
 			fn.call(fn, ms)
 		}
 
-		if (fn !== undefined && ms !== undefined) {
+		if (fn != undefined && ms != undefined) {
 			timeout = setTimeout(exec, ms)
 		} else {
 			console.error('callback function and the timeout must be supplied')
 		}
 	}
 
-	let rs: IButton[]
-	if (props.Sequence) {
-		rs = props.Sequence
-	} else {
-		rs = []
+	let ActiveSequence = props.ActiveSequence
+	let rs: Array<IButton> = [new IButton('')]
+	if (ActiveSequence) {
+		rs = ActiveSequence as unknown as Array<IButton>
+		if (ActiveSequence.ButtStream) {
+			rs = ActiveSequence.ButtStream as Array<IButton>
+		}
 	}
 
 	let begin = 0
@@ -71,33 +74,14 @@ export function SoundBoardStatus(props: {
 
 	let classes: string[] = []
 
-	// if (isHot) {
-	// 	classes.push('HOT')
-	// } else if (isRecording) {
-	// 	classes.push('MEDIUM')
-	// } else if (isPlaying) {
-	// 	classes.push('HOT')
-	// } else {
-	// 	classes.push('COLD')
-	// }
-
 	if (!isHot && isRecording) {
 		classes.push('MEDIUM')
-	}
-	if (!isHot && isPlaying) {
+	} else if (!isHot && isPlaying) {
 		classes.push('MEDIUM')
-	}
-	if (isHot) {
+	} else if (isHot) {
 		classes.push('HOT')
-	}
-
-	let sequenceBegin: number
-	if (rs) {
-		if (rs[0] !== undefined) {
-			sequenceBegin = rs[0].begin ? rs[0].begin : -1
-		} else {
-			sequenceBegin = Date.now()
-		}
+	} else {
+		classes.push('COLD')
 	}
 
 	let sequenceDuration: number = 0
@@ -145,6 +129,38 @@ export function SoundBoardStatus(props: {
 		setGraphHeight(manageSliderValues(chosenValue, GraphHeightLower, GraphHeightUpper, 1, 100))
 	}
 
+	let renderRS: IButton[] = []
+
+	useEffect(() => {
+			if (rs && Array.isArray(rs)) {
+				renderRS = rs.map((button, index, buttstream) => {
+					return (button)
+				})
+			} else {
+				let tempRS = rs as Array<IButton>
+				if (renderRS.length > 1) {
+					renderRS = tempRS.map((button, index, buttstream) => {
+						return (button)
+					})
+				} else {
+					renderRS = tempRS
+						console.log(button.sound ? button.sound.name : ' ', Date.now().toString())
+				}
+			}
+		},
+		[ActiveSequence, props.ActiveSequence])
+
+// if (renderRS == undefined) {
+// 	renderRS = rs.Sequence ? rs.Sequence : [new IButton()]
+// } else {
+// 	if (rs.Sequence == undefined) {
+// 		// @ts-ignore
+// 		renderRS = rs as Array<IButton[]>
+// 	} else {
+// 		renderRS = rs.Sequence
+// 	}
+// }
+
 	return (
 		<div
 			className={'box ' + classes.slice()}
@@ -152,13 +168,8 @@ export function SoundBoardStatus(props: {
 		>
 			<InstructionHeader
 				NavTarget={'SoundBoardStatus'}
-				HeaderText={'Lay down a beat.'}
+				HeaderText={props.Instructions}
 				HotPanelUpdater={setHotPanel}
-			/>
-
-			<RecordingSessions
-				Sessions={props.RecordingSession}
-				SessionChangeHandler={() => props.RecordingSessionChangeHandler}
 			/>
 
 			<div
@@ -170,12 +181,12 @@ export function SoundBoardStatus(props: {
 					data-duration={sequenceDuration}
 				>
 					{
-						rs.map((button, index, sequence) => {
+						renderRS.map((button, index, sequence) => {
 								root.style.setProperty('--sequence-item-count', index.toString())
 								if (button.end && button.begin) {
 									duration = (button.end - button.begin)
-									begin = button.begin - sequenceBegin
-									gap = rs[index - 1] ? button.begin - rs[index - 1].end! : 0
+									begin = button.begin
+									gap = renderRS[index - 1] ? button.begin - renderRS[index - 1].end! : 0
 								}
 								sequenceDuration = begin + duration + 1
 								root.style.setProperty('--sequence-duration', sequenceDuration.toString())

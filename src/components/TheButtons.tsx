@@ -4,14 +4,14 @@ import React, {
 	useState,
 	useContext,
 	Ref,
-	useRef
+	useRef, useEffect
 } from 'react'
 import * as Types from './Types'
 import {Speak, MakeNoise} from './AudioCode'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
-import {IRecordingSession, IButton, ISound, IStroopMode} from './Types'
-import {stroopContext, voiceContext, wordContext} from "./SoundBoard"
+import {IRecordingSession, IButton, ISound, IWord, IStroopMode} from './Types'
+import {stroopContext, voiceContext, voices, wordContext} from "./SoundBoard"
 import {InstructionHeader} from "./InstructionHeader";
 
 //<editor-fold defaultstate='collapsed' desc='array: buttons list'>
@@ -48,7 +48,8 @@ let soundList: IButton[] = [
 	},
 	{
 		name: 'Mayday',
-		color: ['gray', 'white'],
+		color: 'purple',
+		// color: ['gray', 'white'],
 		sound: {
 			name: 'Mayday',
 			type: 'speech',
@@ -77,7 +78,7 @@ let soundList: IButton[] = [
 		}
 	},
 	{
-		color: 'black',
+		color: 'green',
 		name: 'Shaft',
 		sound: {
 			name: 'Shaft',
@@ -87,7 +88,7 @@ let soundList: IButton[] = [
 		}
 	},
 	{
-		color: 'brown',
+		color: 'blue',
 		name: 'Jeebus',
 		sound: {
 			name: 'Jeebus',
@@ -105,45 +106,54 @@ let override = true
 export function TheButtons(props: {
 	HotPanel: string,
 	HotPanelUpdater: Function,
-	WordList: [],
+	WordList: IWord[],
 	Instructions: string,
 	HandleButtonPress: Function
 }) {
 
-	const [WordList, setWordList] = useState(useContext(wordContext))
+	const [SoundList, setSoundList] = useState(soundList)
+	const [WordList, setWordList] = useState(props.WordList)
 	const [CurrentVoice, setCurrentVoice] = useState(useContext(voiceContext))
-
-	const buildButtonList = () => {
-		let newButton: IButton = new IButton('bob')
-		let newButtonList: IButton[] = [newButton]
-
-		if (newButton !== undefined && newButton.sound !== undefined) {
-			props.WordList.map(function (oneWord: [], i) {
-				newButton = props.WordList[i]
-				newButton.name = props.WordList[i]
-				newButton.sound!.type = "speech"
-				newButton.sound!.pronunciation = props.WordList[i]
-				newButton.sound!.voice = CurrentVoice ? CurrentVoice : undefined
-				newButton.color = "rebeccapurple"
-				newButtonList.push(newButton)
-			})
-			return newButtonList
-		} else {
-			return soundList
-		}
-	}
-
-	const [button, setButton]: [IButton, Function] = useState(new IButton())
-
+	const [button, setButton]: [IButton, Function] = useState(new IButton(''))
 	const buttonBoardRef: Ref<HTMLDivElement> = useRef(null)
-	// const buttonBoardDiv = buttonBoardRef.current
+
+	useEffect(() => {
+			try {
+				//  new plan: update text in existing IButton[]
+				if (props.WordList && props.WordList.length >= 8) {
+					for (let i = 0; i < 8; i++) {
+						console.log('kilroy')
+						soundList[i].name = props.WordList[i].theWord
+
+						if (soundList[i] != undefined && soundList[i].sound != undefined) {
+							// @ts-ignore
+							if (soundList[i].sound.pronunciation != undefined) {
+								// @ts-ignore
+								soundList[i].sound.name = props.WordList[i].theWord
+								// @ts-ignore
+								soundList[i].sound.pronunciation = props.WordList[i].theWord
+							} else {
+								//  bail
+							}
+						}
+
+					}
+				}
+				setWordList(props.WordList)
+				setSoundList(soundList)
+			} catch (err) {
+				console.log('Failed to update button text from Populator choices, defaults remain.')
+				// buildButtonList = soundList
+			}
+		},
+		[props.WordList])
 
 	const setHotPanel: Function = props.HotPanelUpdater
 	let isHot: boolean = (props.HotPanel.toString() === "TheButtons")
 
 	return (
 		<div
-			className={isHot ? 'box MEDIUM' : 'box COLD'}
+			className={isHot ? 'box HOT' : 'box MEDIUM'}
 			id={'buttonBoard'}
 			ref={buttonBoardRef}
 		>
@@ -158,16 +168,15 @@ export function TheButtons(props: {
 				className={'' + button.color}
 				id={'TheButtons'}
 			>
-				{buildButtonList().map(function (oneButton: IButton, i: React.Key) {
+				{SoundList.map((oneButton: IButton, i: React.Key) => {
 					return <button
 						key={i}
-						name={oneButton.sound!.name}
-						value={oneButton.sound!.name}
+						name={oneButton.name}
+						value={oneButton.name}
 						className={oneButton.color ? oneButton.color.toString() : ''}
-						//  ToDo: replace onClicks with addEventListeners()
 						onMouseDown={() => props.HandleButtonPress(oneButton, "down")}
 						onMouseUp={() => props.HandleButtonPress(oneButton, "up")}
-					>{oneButton.sound!.name}</button>
+					>{oneButton.name}</button>
 				})}
 			</div>
 		</div>

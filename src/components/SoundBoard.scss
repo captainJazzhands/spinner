@@ -11,7 +11,7 @@ $clr_stroop-shape: purple;
 $clr_stroop-sound: green;
 $clr_stroop-tone: teal;
 
-$sz_COLD: 4vh;
+$sz_COLD: 3.5vh;
 $sz_HOT: 75vh;
 
 :root {
@@ -117,10 +117,10 @@ button:disabled {
 	//height: 100%;
 	//height: calc(100vh - 10vw);
 	max-height: calc(100vh - 10vw);
-	background-color: $clr_boxBG;
+	background-color: $clr_InterfaceBG_alpha;
 	overflow: hidden;
 	border-radius: 1rem;
-	border: 1px solid white;
+	border: 2pt solid white;
 	transition: ease-in .3s 0.007s;
 	ul:nth-child(2),
 	div:nth-child(2),
@@ -244,12 +244,14 @@ button:disabled {
 
 #stroopSwitch {
 	width: 100%;
+	min-height: $sz_COLD;
+	height: $sz_COLD;
+	max-height: $sz_COLD;
 	button {
 		//writing-mode: vertical-lr;
 		//transform: rotateZ(-90deg);
 		flex: 10 1 auto;
 		width: 31.5vw;
-		height: 100%;
 		font-size: 150%;
 		padding: .5rem;
 	}
@@ -259,7 +261,7 @@ button:disabled {
 	flex-shrink: 0;
 	flex-grow: 0;
 	#stroopButtons {
-		height: 130%;
+		height: $sz_COLD;
 	}
 }
 
@@ -436,9 +438,24 @@ p.LCD {
 		li {
 			text-align: left;
 			background-color: $clr_boxBG_alpha;
+			.mini-list {
+				display: flex;
+				flex-direction: row;
+				section {
+					width: 10pt;
+					height: 10pt;
+					flex-shrink: .5;
+					span {
+						margin: 0;
+						padding: 0;
+						background-color: $clr_heroTextBG_alpha;
+					}
+				}
+			}
 		}
 	}
 }
+
 
 #DotGraph {
 	height: 100%; width: 100%;
@@ -632,7 +649,7 @@ p.LCD {
 	position: relative;
 	top: 0;
 	font-size: 80%;
-	line-height: 80%;
+	line-height: 125%;
 	font-weight: 900;
 	background-color: white;
 	padding: .25rem 1.25rem;
@@ -641,11 +658,17 @@ p.LCD {
 	color: #242442;
 }
 
+.HOT .instruction {
+	opacity: 1;
+}
+
 .COLD .instruction {
-	opacity: 0.75;
+	opacity: 0.5;
 	width: 100%;
 	height: $sz_COLD;
-	margin-top: 0;
+	border-radius: $sz_COLD;
+	margin: 0;
+	padding: 8pt;
 }
 
 .gray {background-color: gray;}
@@ -654,11 +677,17 @@ p.LCD {
 
 .brown {background-color: brown;}
 
+.blue {background-color: blue;}
+
 .black {background-color: black;}
 
 .red {background-color: red;}
 
+.green {background-color: green;}
+
 .yellow {background-color: yellow;}
+
+.purple {background-color: rebeccapurple;}
 
 .orange {background-color: orange;}
 

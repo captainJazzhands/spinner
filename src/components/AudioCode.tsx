@@ -1,6 +1,6 @@
 import {ISound} from './Types';
-import {voiceContext, voices} from "./SoundBoard";
-import React, {useContext} from "react";
+import {voiceContext, voiceNameContext, voices} from "./SoundBoard";
+import React from "react";
 
 let override = true
 
@@ -34,16 +34,24 @@ const wave = ac.createPeriodicWave(real, imag)
 osc.setPeriodicWave(wave)
 osc.connect(ac.destination)
 
-// const localVoices = window.speechSynthesis.getVoices()
-// const CurrentVoice: SpeechSynthesisVoice = voiceContext ? useContext(voiceContext) : localVoices[0]
 
-export const Speak: Function = (sound: ISound) => {
-	let localVoice = new SpeechSynthesisVoice
-	// let localVoice = CurrentVoice
+export const Speak: Function = (sound: ISound, duration?: number, argVoice?: string) => {
 	let synth = window.speechSynthesis
 	let what = new SpeechSynthesisUtterance('')
+	let localVoice
+
+	let filteredVoices = voices.filter(function (voice) {
+		return voice.name == argVoice
+	})
+
+	if (filteredVoices.length === 1) {
+		localVoice = filteredVoices[0]
+	} else {
+		localVoice = voices[0]
+	}
+
 	// for (let i = 0; i < voices.length; i++) {
-	// 	if (voices[i].name === CurrentVoice.name) {
+	// 	if (localVoice != undefined && voices[i].name === localVoice.name) {
 	// 		if (override) {
 	// 			what.voice = localVoice as SpeechSynthesisVoice
 	// 		} else {
@@ -53,12 +61,17 @@ export const Speak: Function = (sound: ISound) => {
 	// 		what.voice = localVoice as SpeechSynthesisVoice
 	// 	}
 	// }
-	what.voice = localVoice as SpeechSynthesisVoice
+
+	if (localVoice != undefined) {
+		what.voice = localVoice
+	} else {
+		what.voice = Object.assign(voiceContext.Provider)
+	}
 	what.text = sound.pronunciation ? sound.pronunciation : sound.name
 	what.volume = 1
 	what.pitch = sound.pitch as number
 	what.rate = 1
-	console.log('attempting to say', what, sound.pronunciation)
+	console.log('attempting to say', sound.pronunciation?.toUpperCase(), 'for', duration, 'ms')
 	// synth.cancel()
 	synth.speak(what)
 }
@@ -66,6 +79,9 @@ export const Speak: Function = (sound: ISound) => {
 export const MakeNoise: Function = (sound: ISound, duration: number) => {
 	// const [buttonMode, setButtonMode] = useState('tone')
 
+	function startMakingNoise(){
+		
+	}
 	let audioCtx: AudioContext
 	if (window.AudioContext) {
 		audioCtx = new (window.AudioContext)()
@@ -74,31 +90,36 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 		audioCtx = new (window.webkitAudioContext)()
 	}
 
-	duration = duration / 100
-
 	const myArrayBuffer = audioCtx.createBuffer(
-		2,
-		audioCtx.sampleRate * duration,
-		audioCtx.sampleRate
+		1,
+		22050,
+		22050
 	)
+	// const bufferSize = (duration / 50000) + 10000
+	//
+	// const myArrayBuffer = audioCtx.createBuffer(
+	// 	2,
+	// 	audioCtx.sampleRate * bufferSize,
+	// 	audioCtx.sampleRate
+	// )
 
 	let sweepLength = .5
 	let attackTime = duration / 5
 	let releaseTime = duration / 5
 
-	let basePitch: number = 600
+	let basePitch: number = 1200
 
-	let pitch: number = 0
+	let pitch: number
 	pitch = sound.pitch === 1 ? .999 : sound.pitch as number
 
 	const thisTone = (duration: number, pitch: number) => {
 		let osc = audioCtx.createOscillator()
 		osc.setPeriodicWave(wave)
-		osc.frequency.value = basePitch / Math.pow(2, -pitch)
+		osc.frequency.value = basePitch / Math.pow(1.5, -pitch)
 
-		let volumeCompensator: number = Math.pow(2, -pitch / 12)
+		let volumeCompensator: number = Math.pow(2, -pitch / 8)
 
-		console.log('TONE:', osc.frequency.value, 'hz', volumeCompensator.valueOf())
+		console.log('TONE:', osc.frequency.value, 'hz', volumeCompensator.valueOf(), 'db')
 
 		let sweepEnv = audioCtx.createGain()
 		sweepEnv.gain.cancelScheduledValues(duration)
@@ -142,6 +163,8 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 	// pitch 3: toneFreq=3520
 	// 440 * 8
 	// 440 * Math.pow(2, Math.abs(pitch))
+
+	console.log('attempting to play', sound.name, 'for', duration, 'ms')
 	thisTone(duration, pitch)
 
 }

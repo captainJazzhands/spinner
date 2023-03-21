@@ -1,20 +1,18 @@
 import React, {Context, Ref, useEffect, useRef, useState} from 'react'
-import {IButton, IRecordingSession, ISequence, ISound, IStroopMode} from './Types'
+import {IButton, IRecordingSession, ISequence, IWord, ISound, IStroopMode} from './Types'
 import {MakeNoise, Speak} from './AudioCode'
 import {SoundBoardStatus} from './SoundBoardStatus'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
-import {Directions} from "./Directions";
-import {StroopSwitch} from "./StroopSwitch";
-import {Populator} from "./Populator";
-import {TheButtons} from "./TheButtons";
-import {VoiceChoice} from "./VoiceChoice";
-import {RecordingSessions} from "./RecordingSessions";
-import {debug} from "util";
+import {Directions} from './Directions';
+import {StroopSwitch} from './StroopSwitch';
+import {Populator} from './Populator';
+import {TheButtons} from './TheButtons';
+import {VoiceChoice} from './VoiceChoice';
+import {RecordingSessions} from './RecordingSessions';
 
-let override = true
-let realtime = true
-
+let override: boolean = true
+let realtime: boolean = true
 let planck: number = 10
 
 let playbackTimer: NodeJS.Timer
@@ -32,17 +30,20 @@ downTimerOn = false
 
 export const voices = window.speechSynthesis.getVoices()
 export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
+export const voiceNameContext: React.Context<string> = React.createContext('')
 // export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(new SpeechSynthesisVoice())
 export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
-export const stroopContext: React.Context<any> = React.createContext("speech")
-export const wordContext: React.Context<any> = React.createContext("")
-export let dataSourceContext: React.Context<any> = React.createContext("")
+export const stroopContext: React.Context<any> = React.createContext('speech')
+export const wordContext: React.Context<any> = React.createContext('')
+export let dataSourceContext: React.Context<any> = React.createContext('')
 
 export function TheSoundBoard(this: any) {
 
+	const [debug, setDebug]: [number, Function] = useState(8)
 	const [count, setCount]: [number, Function] = useState(0)
 	const [isPlaying, setIsPlaying]: [boolean, Function] = useState(false)
 	const [isRecording, setIsRecording]: [boolean, Function] = useState(false)
+	const [shouldStop, setShouldStop]: [boolean, Function] = useState(false)
 	const [shouldWriteToDisk, setShouldWriteToDisk]: [boolean, Function] = useState(false)
 	const [shouldReadFromDisk, setShouldReadFromDisk]: [boolean, Function] = useState(true)
 	const [RecordingStart, setRecordingStart]: [number, Function] = useState(0)
@@ -51,12 +52,14 @@ export function TheSoundBoard(this: any) {
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
 	const [ActiveSequence, setActiveSequence]: [ISequence, Function] = useState(new ISequence)
-	const [button, setButton]: [IButton, Function] = useState(new IButton)
+	const [SelectedSequences, setSelectedSequences]: [ISequence[], Function] = useState([new ISequence])
+	const [button, setButton]: [IButton, Function] = useState(new IButton(''))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
 	const [WordList, setWordList]: [[], Function] = useState([])
 	const [HotPanel, setHotPanel]: [string, Function] = useState('Directions')
 	const [ZoomLevel, setZoomLevel]: [number, Function] = useState(0)
 	const [CurrentVoice, setCurrentVoice]: [SpeechSynthesisVoice, Function] = useState(voices[0])
+	const [CurrentVoiceName, setCurrentVoiceName]: [string, Function] = useState('')
 
 	const [user, setUser]: [number, Function] = useState(6668675309)
 	const [Comparison, setComparison]: [[], Function] = useState([])
@@ -106,18 +109,31 @@ export function TheSoundBoard(this: any) {
 	//    note preroll
 
 	function getRecordingSessionFromDisk() {
+		let lsRS
 		if (typeof localStorage.getItem('RecordingSession') === 'string') {
-			// @ts-ignore
-			return JSON.parse(localStorage.getItem('RecordingSession'))
+			lsRS = localStorage.getItem('RecordingSession')
+			if (lsRS) {
+				try {
+					let lsRSobjects = JSON.parse(lsRS)
+					if (lsRSobjects.Sequences) {
+						return lsRSobjects.Sequences
+					} else {
+						return lsRSobjects
+					}
+				} catch (err) {
+					if (debug > 7) {
+						alert('getRecordingSessionFromDisk()' + err)
+					}
+					console.log(err)
+				}
+			}
 		} else {
-			return ''
+			return {}
 		}
 	}
 
-	
-	
 	useEffect(() => {
-		const rsArray = RecordingSession ? RecordingSession as unknown as Array<any> : [[[[['']]]]]
+		const rsArray = RecordingSession.Sequences ? RecordingSession.Sequences : RecordingSession as unknown as Array<any>
 		if (shouldWriteToDisk && JSON.stringify(rsArray).length > 23) {
 			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
 		}
@@ -127,10 +143,10 @@ export function TheSoundBoard(this: any) {
 	useEffect(() => {
 		if (shouldReadFromDisk) {
 			let ls = localStorage.getItem('RecordingSession')
-			if (ls !== undefined && ls !== null) {
+			if (ls != undefined) {
 				if (ls.length > 1) {
 					let newRS: IRecordingSession = JSON.parse(ls) as IRecordingSession
-					if (newRS.Sequences !== undefined) {
+					if (newRS.Sequences != undefined) {
 						setRecordingSession(newRS)
 					} else {
 						// @ts-ignore
@@ -144,40 +160,59 @@ export function TheSoundBoard(this: any) {
 
 	function HandleRecordChange(sesh: IRecordingSession) {
 		setActiveSequence(sesh)
-		console.log('sesh:', sesh.Sequences?.length, JSON.stringify(sesh))
+		setHotPanel('SoundBoardStatus')
+	}
+
+	function ActiveSequenceSelector(sequence: ISequence) {
+		setActiveSequence(sequence)
+	}
+
+	function MultipleSequenceSelector(sequences: ISequence[]) {
+		setSelectedSequences(sequences)
+	}
+
+	function HandleSequenceDelete(victim: ISequence) {
+		if (RecordingSession.Sequences) {
+			let allSequences = RecordingSession.Sequences.slice(0)
+			let mostSequences = allSequences  // but without victim
+			setRecordingSession(
+				{Sequences: mostSequences}
+			)
+			setShouldWriteToDisk(true)
+		}
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
 
 		switch (StroopMode) {
-			case "speech":
-				setHotPanel("VoiceChoice")
+			case 'speech':
+				setHotPanel('VoiceChoice')
 				break;
-			case "text":
-				setHotPanel("DataSelector")
+			case 'text':
+				setHotPanel('DataSelector')
 				break;
-			case "color":
-				setHotPanel("StroopSwitch")
-				// setHotPanel("RoncoPocketColorPicker")
+			case 'color':
+				setHotPanel('StroopSwitch')
+				// setHotPanel('RoncoPocketColorPicker')
 				break;
-			case "shape":
-				setHotPanel("TheButtons")
-				// setHotPanel("Shapely")
+			case 'shape':
+				setHotPanel('TheButtons')
+				// setHotPanel('Shapely')
 				break;
-			case "tone":
-				setHotPanel("TheButtons")
-				// setHotPanel("Toney")
+			case 'tone':
+				setHotPanel('TheButtons')
+				// setHotPanel('Toney')
 				break;
 			default:
-				setHotPanel("StroopSwitch")
+				setHotPanel('StroopSwitch')
 		}
 	}
 
-	function HandleWordListChange(WordList: any) {
-		let localVar = WordList
-		setWordList(localVar)
-		console.log(JSON.stringify(localVar))
+	function HandleWordListChange(ChosenWordList: IWord[]) {
+		let NewWordList = ChosenWordList.slice(0)
+		setWordList(NewWordList)
+		console.log(JSON.stringify(NewWordList))
 	}
 
 	function HandleDataSource(requestedSource: string) {
@@ -190,15 +225,18 @@ export function TheSoundBoard(this: any) {
 		if (requestedState === 'play') {
 			// @ts-ignore
 			// PlayButtStream(RecordingSession[1].Sequences)
+			setShouldStop(false)
 			PlayButtStream(ActiveSequence)
 		}
 		if (requestedState === 'stop') {
 			StopEverything()
 		}
 		if (requestedState === 'record') {
+			setShouldStop(false)
 			startRecordingTimer()
 		}
 		if (requestedState === 'reset') {
+			setShouldStop(false)
 			resetRecordingTimer()
 		}
 	}
@@ -224,7 +262,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const PlayButtStream = (RequestedSequence: ISequence | null) => {
-		setHotPanel("SoundBoardStatus")
+		setHotPanel('SoundBoardStatus')
 		setUser(0)
 		StopEverything()
 		resetCountdown()
@@ -235,45 +273,53 @@ export function TheSoundBoard(this: any) {
 		let localSeq
 		// const Sequence: ISequence = RequestedSequence ? RequestedSequence : new ISequence([new IButton(new ISound())]) as ISequence
 
-		if (RequestedSequence) {
-			if (typeof (RequestedSequence) !== 'undefined') {
-				localSeq = Object.assign(RequestedSequence)
+		if (!shouldStop) {
+			if (RequestedSequence == undefined) {
+				RequestedSequence = ActiveSequence
 			}
-			if (RequestedSequence.Sequence) {
-				localSeq = Object.assign(RequestedSequence.Sequence)
+			localSeq = Object.assign(RequestedSequence)
+			if (RequestedSequence.ButtStream) {
+				localSeq = Object.assign(RequestedSequence.ButtStream)
 			}
-			localSeq.reduce(function (p: Promise<any>, button: IButton, i: number, ray: { begin: any }[]) {
-				return p.then(async () => {
-					if (button.sound && button.begin) {
-						let x = i > 0 ? i - 1 : 0 as number
-						delta = button.begin - ray[x].begin
+			if (Array.isArray(localSeq)) {
+				localSeq.reduce(function (p: Promise<any>, button: IButton, i: number, ray: { begin: any }[]) {
+					return p.then(async () => {
+						if (button.sound && button.begin) {
+							let x = i > 0 ? i - 1 : 0 as number
+							delta = button.begin - ray[x].begin
+						} else {
+							delta = 42
+						}
 						return await PlayButton(button).then(await delay.bind(null, delta)).then()
-					} else {
-						console.log('giving up')
-						return null
-					}
-				})
-			}, Promise.resolve()).then(() => {
-				setIsPlaying(false)
-				setUser(8675309)
-			}).catch((err: { toString: () => any }) => {
-				console.log('error:', err.toString())
-			});
-		} else {
-			console.log('shouldn’t have been undefined I guess')
+					})
+				}, Promise.resolve()).then(() => {
+					setIsPlaying(false)
+					setUser(8675309)
+				}).catch((err: { toString: () => any }) => {
+					console.log('error:', err.toString())
+				});
+			} else {
+				console.log('we failed to cast RequestedSequence as an object')
+			}
 		}
 	}
 
 	async function PlayButton(button: IButton) {
-		setIsPlaying(true)
-		if (button.end && button.begin) {
-			duration = button.end - button.begin
-		}
-		if (StroopMode === 'speech') {
-			Speak(button.sound, duration)
-		}
-		if (StroopMode === 'tone') {
-			MakeNoise(button.sound, duration)
+		if (!shouldStop) {
+			setIsPlaying(true)
+			if (button.end && button.begin) {
+				duration = button.end - button.begin
+			}
+			duration = duration < 1 ? 1 : duration
+			duration = duration > 8675309 ? 666 : duration
+
+			if (StroopMode === 'speech') {
+				let voice = voiceContext.Provider.name ? voiceContext.Provider.name.toString() : ''
+				Speak(button.sound, duration, voice)
+			}
+			if (StroopMode === 'tone') {
+				MakeNoise(button.sound, duration)
+			}
 		}
 	}
 
@@ -327,8 +373,11 @@ export function TheSoundBoard(this: any) {
 		setTally([])
 		if (getRecordingSessionFromDisk().length > 1) {
 			setShouldReadFromDisk(true)
+			setActiveSequence(getRecordingSessionFromDisk())
+		} else {
+			setActiveSequence(new ISequence())
 		}
-		setHotPanel("TheButtons")
+		setHotPanel('TheButtons')
 
 		if (!isRecording) {
 			setClickTime(Date.now())
@@ -336,40 +385,43 @@ export function TheSoundBoard(this: any) {
 			RecordingTimer = setInterval(() => {
 				elapsedTime = Date.now() - RecordingStart
 			}, planck)
-			setIsRecording(true)
 		}
+		setIsRecording(true)
 		return elapsedTime
 	}
 
 	function stopRecordingTimer() {
-		setHotPanel("ButtonBoardStatus")
-		if (isRecording) {
-			setIsRecording(false)
-			setRecordingStop(Date.now())
-			elapsedTime = Date.now() - RecordingStart
-			let localStorageSession = getRecordingSessionFromDisk()
-			// setShouldWriteToDisk(true)
+		let localStorageSession: IRecordingSession = getRecordingSessionFromDisk()
+		// setShouldWriteToDisk(true)
 
-			if (RecordingSession === undefined || RecordingSession.Sequences === undefined) {  //  pinch off first session
-				if (localStorageSession.length > 1) {
-					setRecordingSession(localStorageSession.slice(0))
-					setShouldWriteToDisk(true)
-				} else {
-					setShouldWriteToDisk(true)
-				}
-			} else { //  pinch off another session
-				let previousSequences
-				previousSequences = RecordingSession.Sequences  //.slice(0)
-				// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
-				setRecordingSession(
-					{Sequences: [...previousSequences, tally]}
-				)
+		if (RecordingSession.Sequences == undefined) {  //  pinch off first session
+			if (localStorageSession.Sequences && localStorageSession.Sequences.length > 1) {
+				setRecordingSession(localStorageSession)
+				setShouldWriteToDisk(true)
+			} else {
 				setShouldWriteToDisk(true)
 			}
-			clearInterval(RecordingTimer)
-		} else {
-			setIsRecording(false)
+		} else { //  pinch off another session
+			if (isRecording) {
+				let previousSequences: ISequence[]
+				if (RecordingSession.Sequences) {
+					previousSequences = RecordingSession.Sequences.slice(0)
+					setRecordingSession({Sequences: [...previousSequences, tally.slice(0)]})
+					setShouldWriteToDisk(true)
+					setTally([])
+				} else {
+					setRecordingSession({Sequences: [tally].slice(0)})
+					setShouldWriteToDisk(true)
+					setTally([])
+				}
+			}
+			// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
 		}
+		// setHotPanel('ButtonBoardStatus')
+		setIsRecording(false)
+		setRecordingStop(Date.now())
+		elapsedTime = Date.now() - RecordingStart
+		clearInterval(RecordingTimer)
 		return elapsedTime
 	}
 
@@ -388,11 +440,11 @@ export function TheSoundBoard(this: any) {
 	useEffect(() => {
 			if (buttonBoardDiv != null) {
 				if (isPlaying) {
-					buttonBoardDiv.style.opacity = "0.75"
-					buttonBoardDiv.style.pointerEvents = "none"
+					buttonBoardDiv.style.opacity = '0.75'
+					buttonBoardDiv.style.pointerEvents = 'none'
 				} else {
-					buttonBoardDiv.style.opacity = "1"
-					buttonBoardDiv.style.pointerEvents = "initial"
+					buttonBoardDiv.style.opacity = '1'
+					buttonBoardDiv.style.pointerEvents = 'initial'
 				}
 			}
 		},
@@ -428,79 +480,67 @@ export function TheSoundBoard(this: any) {
 		}
 	}, [isRecording, recordClockDiv, isPlaying])
 
-	const DoTheButton = (button: IButton) => {
-		let thisButton = Object.assign({}, button)
-		if (user > 0) {
-			if (!isRecording) {
-				startRecordingTimer()
-			}
-		} else {
-			if (count === 0) {
-				thisButton.begin = 1
-			} else {
-				thisButton.begin = Date.now() - RecordingStart
-			}
-		}
-
-		setButton(thisButton)
-
-		function stop(thisButton: IButton) {
-			thisButton.end = Date.now() - RecordingStart
-		}
-
-		// setClickTime(Date.now())
-
-		setCount((count: number) => count + 1)
-		// shouldn’t hit tally until mouse up
-		// setTally((prevTally: IButton[]) => [...prevTally, thisButton])
-
-		if (stroopContext.Provider.toString() === 'speech' && thisButton.sound) {
-			// let what: SpeechSynthesisUtterance = new SpeechSynthesisUtterance()
-			// what.text = thisButton.sound?.pronunciation as string
-			Speak(thisButton.sound)
-		}
-
-		if (stroopContext.Provider.toString() === 'tone' && thisButton.sound) {
-			let duration = thisButton.end ? thisButton.end - thisButton.begin! : 1
-			MakeNoise(thisButton.sound, duration)
-		}
-	}
-
 	const HandleButtonPress = (oneButton: IButton, direction: string) => {
 		let thisButton = Object.assign({}, oneButton)
-		if (direction === "down") {
+		if (direction === 'down') {
 			if (count === 0) {
 				thisButton.begin = 1
 			} else {
-				thisButton.begin = Date.now() - RecordingStart
+				thisButton.begin = RecordingStart > 1 ? Date.now() - RecordingStart : 199
 			}
-			// setButton(thisButton)
+			setButton(thisButton)
 			setCount((count: number) => count + 1)
-		} else if (direction === "up") {
-			thisButton = button
-			thisButton.end = Date.now() - RecordingStart
+			if (realtime) {
+				PlayButton(thisButton)
+			}
+		} else if (direction === 'up') {
+			// thisButton = button
+			thisButton.end = RecordingStart > 1 ? Date.now() - RecordingStart : 11
 			let completedButton = thisButton
 			setTally((prevTally: IButton[]) => [...prevTally, completedButton])
-
-			if (ActiveSequence.Sequence !== undefined) {
-				ActiveSequence.Sequence.push(thisButton)
-			} else {
-				ActiveSequence.Sequence = [new IButton()]
-			}
-
-		}
-		if (realtime) {
-			DoTheButton(thisButton)
+			// setActiveSequence((prevSequences: IButton[]) => [...prevSequences, completedButton])
+			setActiveSequence([...tally, thisButton])
 		}
 		return thisButton
 	}
 
-	let TransportState = "empty"
+	// 	const DoTheButton = (button: IButton) => {
+	// 	let thisButton = Object.assign({}, button)
+	// 	if (user > 0) {
+	// 		if (!isRecording) {
+	// 			startRecordingTimer()
+	// 		}
+	// 	} else {
+	// 		if (count === 0) {
+	// 			thisButton.begin = 1
+	// 		} else {
+	// 			thisButton.begin = Date.now() - RecordingStart
+	// 		}
+	// 	}
+	//
+	// 	setButton(thisButton)
+	//
+	// 	setCount((count: number) => count + 1)
+	// 	// shouldn’t hit tally until mouse up
+	// 	// setTally((prevTally: IButton[]) => [...prevTally, thisButton])
+	//
+	// 	if (stroopContext.Provider.toString() === 'speech' && thisButton.sound) {
+	// 		Speak(thisButton.sound)
+	// 	}
+	//
+	// 	if (stroopContext.Provider.toString() === 'tone' && thisButton.sound) {
+	// 		let duration = thisButton.begin && thisButton.end ? thisButton.end - thisButton.begin : 1
+	// 		MakeNoise(thisButton.sound, duration)
+	// 	}
+	// }
+
+
+	let TransportState = 'empty'
 	if (isPlaying) {
-		TransportState = "playing"
+		TransportState = 'playing'
 	}
 	if (isRecording) {
-		TransportState = "recording"
+		TransportState = 'recording'
 	}
 
 	return (
@@ -512,60 +552,73 @@ export function TheSoundBoard(this: any) {
 				<stroopContext.Provider value={StroopMode}>
 					<wordContext.Provider value={WordList}>
 						<voiceContext.Provider value={CurrentVoice}>
-							<RecordingContext.Provider value={RecordingSession}>
+							<voiceNameContext.Provider value={CurrentVoiceName}>
+								<RecordingContext.Provider value={RecordingSession}>
 
-								<Directions
-									HotPanel={HotPanel}
-									HotPanelUpdater={setHotPanel}
-									Instructions={'How To Play'}
-								/>
+									<Directions
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										Instructions={'How To Play'}
+									/>
 
-								<StroopSwitch
-									StroopMode={StroopMode}
-									StroopUpdater={HandleStroopChange}
-									HotPanel={HotPanel}
-									HotPanelUpdater={setHotPanel}
-									Instructions={'Select A Mode'}
-								/>
+									<StroopSwitch
+										StroopMode={StroopMode}
+										StroopUpdater={HandleStroopChange}
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										Instructions={'Select A Mode'}
+									/>
 
-								<SoundBoardStatus
-									Sequence={ActiveSequence.Sequence}
-									TransportState={TransportState}
-									TransportTime={elapsedTime}
-									HotPanel={HotPanel}
-									HotPanelUpdater={setHotPanel}
-									TransportStateChangeHandler={HandleTransportChange}
-									Instructions={'Record A Few Seconds'}
-									RecordingSession={RecordingSession}
-									RecordingSessionChangeHandler={HandleRecordChange}
-								/>
+									<SoundBoardStatus
+										ActiveSequence={ActiveSequence}
+										TransportState={TransportState}
+										TransportTime={elapsedTime}
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										TransportStateChangeHandler={HandleTransportChange}
+										Instructions={'Look Upon Your Creation'}
+										RecordingSession={RecordingSession}
+										RecordingSessionChangeHandler={HandleRecordChange}
+										SequenceSelector={ActiveSequenceSelector}
+									/>
 
-								<Populator
-									handleDataSource={HandleDataSource}
-									HotPanel={HotPanel}
-									HotPanelUpdater={setHotPanel}
-									Instructions={'Choose Your Words'}
-									WordList={WordList}
-									setWordList={HandleWordListChange}
-								/>
+									<RecordingSessions
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										Instructions={'Manage Your Recordings'}
+										RecordingSession={RecordingSession}
+										SessionChangeHandler={HandleRecordChange}
+										SequenceDeleteHandler={HandleSequenceDelete}
+										SequenceSelector={ActiveSequenceSelector}
+									/>
 
-								<VoiceChoice
-									CurrentVoice={voiceContext}
-									VoiceUpdater={HandleVoiceChange}
-									HotPanel={HotPanel}
-									HotPanelUpdater={setHotPanel}
-									Instructions={'Pick A Voice'}
-								/>
+									<Populator
+										handleDataSource={HandleDataSource}
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										Instructions={'Choose Your Words'}
+										WordList={WordList}
+										setWordList={HandleWordListChange}
+									/>
 
-								<TheButtons
-									WordList={WordList}
-									HandleButtonPress={HandleButtonPress}
-									HotPanel={HotPanel}
-									HotPanelUpdater={setHotPanel}
-									Instructions={'Get Rhythm'}
-								/>
+									<VoiceChoice
+										CurrentVoice={voiceContext}
+										VoiceUpdater={HandleVoiceChange}
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										Instructions={'Pick A Voice'}
+									/>
 
-							</RecordingContext.Provider>
+									<TheButtons
+										WordList={WordList}
+										HandleButtonPress={HandleButtonPress}
+										HotPanel={HotPanel}
+										HotPanelUpdater={setHotPanel}
+										Instructions={'Get Rhythm'}
+									/>
+
+								</RecordingContext.Provider>
+							</voiceNameContext.Provider>
 						</voiceContext.Provider>
 					</wordContext.Provider>
 				</stroopContext.Provider>

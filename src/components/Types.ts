@@ -9,7 +9,7 @@ export class IRecordingSession {
 	HandleRecordChange!: Function;
 
 	constructor() {
-		 this.Sequences = [];
+		this.Sequences = [];
 	}
 }
 
@@ -37,13 +37,13 @@ export class ISessionData {
 // }
 
 export class ISequence {
-	Sequence: IButton[] | undefined;
+	ButtStream: IButton[] | undefined;
 	id: number;
 
 	constructor(
-		Sequence?: IButton[]
+		ButtStream?: IButton[]
 	) {
-		this.Sequence = Sequence
+		this.ButtStream = ButtStream
 		this.id = Date.now()
 	}
 }
@@ -89,9 +89,9 @@ export class ISound {
 }
 
 export class IButton {
-	name?: string;
+	name: string;
 	type?: string;
-	sound?: ISound;
+	sound: ISound | undefined;
 	color?: string | string[];
 	begin?: number;
 	end?: number;
@@ -99,7 +99,7 @@ export class IButton {
 	order?: number;
 
 	constructor(
-		name?: string,
+		name: string,
 		sound?: ISound,
 		color?: string,
 		begin?: number,
@@ -140,6 +140,18 @@ export class ISlider {
 		this.upper = value * 5;
 		this.min = 1;
 		this.max = value * 5;
+	}
+}
+
+export class IWord {
+	theWord: string;
+	partOfSpeech?: string;
+
+	constructor(
+		theWord: string,
+		partOfSpeech?: string
+	) {
+		this.theWord = '';
 	}
 }
 

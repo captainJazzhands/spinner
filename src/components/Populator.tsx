@@ -2,89 +2,12 @@ import React, {
 	useState,
 	useEffect
 } from 'react'
+import {TheSoundBoard} from "./SoundBoard";
 import axios, {RawAxiosRequestConfig} from "axios"
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
 import {IButton, ISound, IStroopMode} from './Types';
 import {InstructionHeader} from "./InstructionHeader";
-
-//<editor-fold defaultstate='collapsed' desc='array: buttons list'>
-let soundList: IButton[] = [
-	{
-		color: 'white',
-		sound: {
-			name: 'Malama',
-			type: 'speech',
-			pronunciation: 'mah lah ma',
-			pitch: -4
-		}
-	},
-	{
-		color: 'gray',
-		sound: {
-			name: 'Yahweh',
-			type: 'speech',
-			pronunciation: 'yah wey',
-			pitch: -3
-		}
-	},
-	{
-		color: 'yellow',
-		sound: {
-			name: 'Mr. Bits',
-			type: 'speech',
-			pronunciation: 'mister bits',
-			pitch: -2
-		}
-	},
-	{
-		color: ['gray', 'white'],
-		sound: {
-			name: 'Mayday',
-			type: 'speech',
-			pronunciation: 'may day',
-			pitch: -1
-		}
-	},
-	{
-		color: 'brown',
-		sound: {
-			name: 'Bae Bae',
-			type: 'speech',
-			pronunciation: 'bay bay',
-			pitch: 0
-		}
-	},
-	{
-		color: 'red',
-		sound: {
-			name: 'Mr. Ball Legs',
-			type: 'speech',
-			pronunciation: 'mister ball legs',
-			pitch: 1
-		}
-	},
-	{
-		color: 'black',
-		sound: {
-			name: 'Shaft',
-			type: 'speech',
-			pronunciation: 'bad mother fucker',
-			pitch: 2
-		}
-	},
-	{
-		color: 'brown',
-		sound: {
-			name: 'Jeebus',
-			type: 'speech',
-			pronunciation: 'jeebus',
-			pitch: 3
-		}
-	}
-]
-
-//</editor-fold>
 
 export function Populator(props:
 	                          {
@@ -102,37 +25,32 @@ export function Populator(props:
 	//    select mulitple responses
 	//    setContext(selection)
 
-	const setWordList = props.setWordList
 	const [SpeechPart, setSpeechPart]: [any, Function] = useState([])
-	const [WhichData, setWhichData]: [any, Function] = useState([])
+	const [APISource, setAPISource]: [any, Function] = useState([])
+	const [APIData, setAPIData]: [any, Function] = useState([])
+	const setWordList = props.setWordList
+	const [PlayerChoseWords, setPlayerChoseWords]: [boolean, Function] = useState(false)
+	const [ButtonEnabled_DataSource, setButtonEnabled_DataSource]: [boolean, Function] = useState(true)
+	const [ButtonEnabled_SpeechParts, setButtonEnabled_SpeechParts]: [boolean, Function] = useState(false)
+	const [ButtonEnabled_UseThese, setButtonEnabled_UseThese]: [boolean, Function] = useState(false)
+	const [debug, setDebug]: [number, Function] = useState(8)
 
 	const APIlist = [
 		{
-			url: "http://world.openWordfacts.org/api/v0/product/737628064502.json",
+			url: "https://world.openWordfacts.org/api/v0/product/737628064502.json",
 			shortName: "food facts",
 			longName: "Food Facts from Open World Facts, who conveniently offers a free API for people like us to play with."
 		}, {
 			url: "https://localhost:7000/api/Words",
 			shortName: "words",
-			longName: "English words, served by an API on localhost that I put together in .Net to play with because CORS, am I right?"
+			longName: "English words, served by an API on localhost that I put together in .Net to play with, because CORS."
 		}
 	]
 
-	const fetchWords = async () => {
-		try {
-			const DataSource = await axios(
-				APIlist[1].url.toString()
-			)
-			setWordList(DataSource.data)
-		} catch (err) {
-			console.error(err)
-		}
-	}
-
-	// const fetchData = async (WhichDataAxios: RawAxiosRequestConfig<string>) => {
+	// const fetchWords = async () => {
 	// 	try {
 	// 		const DataSource = await axios(
-	// 			WhichDataAxios
+	// 			APIlist[1].url.toString()
 	// 		)
 	// 		setWordList(DataSource.data)
 	// 	} catch (err) {
@@ -140,32 +58,55 @@ export function Populator(props:
 	// 	}
 	// }
 
-	let WordList = props.WordList
+	const fetchData = async (WhichDataAxios: RawAxiosRequestConfig<string>) => {
+		try {
+			const DataSource = await axios(
+				WhichDataAxios
+			)
+			setAPIData(DataSource.data)
+		} catch (err) {
+			console.error(err)
+		}
+	}
 
 	const uniqueParts: any[] = []
-	if (WordList !== undefined) {
-		WordList.map((PoS: { part: string; }, idx: number) => {
-			if (uniqueParts.indexOf(WordList[idx].partOfSpeech) === -1) {
-				uniqueParts.push(WordList[idx].partOfSpeech)
+	if (APIData != undefined) {
+		APIData.map((PoS: { part: string; }, idx: number) => {
+			if (uniqueParts.indexOf(APIData[idx].partOfSpeech) === -1) {
+				uniqueParts.push(APIData[idx].partOfSpeech)
 			}
 		})
 	}
-	// useEffect(() => {
-	// 	fetchData(WhichData)
-	// }, [WhichData])
 
+	useEffect(() => {
+		fetchData(APISource)
+	}, [APISource])
+
+	function HandleAPISourceChange(newSource: { url: string; shortName: string; longName: string; }) {
+		setAPISource(newSource)
+		setButtonEnabled_SpeechParts(true)
+	}
+
+	function HandleSpeechPartChange(newPart: any) {
+		setSpeechPart(newPart)
+		setButtonEnabled_UseThese(true)
+	}
+	
 	const setHotPanel: Function = props.HotPanelUpdater
 	let isHot: boolean = (props.HotPanel.toString().toLowerCase() === 'populator')
-
-	const filteredWords = WordList && WordList.length > 1 ? WordList.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
+	const APIWords:any = APIData.slice(0)
+	const filteredWords = APIWords.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
 			return theWord.partOfSpeech == SpeechPart
 		}
-	) : ['nope']
+	)
 
 	const PopulateStuff = () => {
 		try {
 			setWordList(truncatedFilteredWords)
-			console.log(JSON.stringify(truncatedFilteredWords))
+			setPlayerChoseWords(true)
+			if (debug > 3) {
+				console.log(JSON.stringify(truncatedFilteredWords))
+			}
 		} catch (err) {
 			console.error(err)
 		}
@@ -200,7 +141,8 @@ export function Populator(props:
 			>{
 				Object.keys(APIlist).map((item, i, thing) => {
 					return <button
-						onClick={() => setWhichData(APIlist[i])}
+						onClick={() => HandleAPISourceChange(APIlist[i])}
+						disabled={!ButtonEnabled_DataSource}
 						className={'dataSource texty'}
 						key={i}
 					>
@@ -221,7 +163,8 @@ export function Populator(props:
 			>{
 				uniqueParts.map((item, r, thing) => {
 					return <button
-						onClick={() => setSpeechPart(uniqueParts[r])}
+						onClick={() => HandleSpeechPartChange(uniqueParts[r])}
+						disabled={!ButtonEnabled_SpeechParts}
 						className={''}
 						key={r}
 					>
@@ -255,6 +198,7 @@ export function Populator(props:
 
 				<button
 					onClick={() => PopulateStuff()}
+					disabled={!ButtonEnabled_UseThese}
 					className={''}
 				>
 					use these

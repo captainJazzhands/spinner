@@ -51,7 +51,7 @@ export function VoiceChoice(props: {
 		return VL
 	}
 
-	if (speechSynthesis.onvoiceschanged !== undefined) {
+	if (speechSynthesis.onvoiceschanged != undefined) {
 		VoiceListFilteredByLanguage();
 	}
 	
