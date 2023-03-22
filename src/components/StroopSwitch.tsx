@@ -16,12 +16,12 @@ export function StroopSwitch(props: {
 	const setHotPanel: Function = props.HotPanelUpdater
 	let StroopMode: IStroopMode = useContext(stroopContext)
 	const setStroopMode: Function = props.StroopUpdater
-	let isHot: boolean = (props.HotPanel.toString().toLowerCase() === 'stroopswitch')
+	// let isHot: boolean = (props.HotPanel.toString().toLowerCase() === 'stroopswitch')
 
 	return (
 		<div
 			id={'stroopSwitch'}
-			className={isHot ? 'box HOT' : 'box COLD'}
+			className={'box COLD'}
 		>
 			<InstructionHeader
 				NavTarget={'StroopSwitch'}

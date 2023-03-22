@@ -35,7 +35,7 @@ export function RecordingSessions(props: {
 	const setHotPanel: Function = props.HotPanelUpdater
 	const selectSequence: Function = props.SequenceSelector
 	const deleteSequence: Function = props.SequenceDeleteHandler
-	let isHot: boolean = (props.HotPanel.toLowerCase() === "recordingsession")
+	let isHot: boolean = (props.HotPanel.toLowerCase() === "recordingsessions")
 
 	return (
 		<div
@@ -43,7 +43,7 @@ export function RecordingSessions(props: {
 			id={'RecordingSession'}
 		>
 			<InstructionHeader
-				NavTarget={'RecordingSession'}
+				NavTarget={'RecordingSessions'}
 				HeaderText={props.Instructions}
 				HotPanelUpdater={setHotPanel}
 			/>

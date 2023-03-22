@@ -72,16 +72,13 @@ export const Speak: Function = (sound: ISound, duration?: number, argVoice?: str
 	what.pitch = sound.pitch as number
 	what.rate = 1
 	console.log('attempting to say', sound.pronunciation?.toUpperCase(), 'for', duration, 'ms')
-	// synth.cancel()
+	synth.cancel()
 	synth.speak(what)
+
+	return what
 }
 
-export const MakeNoise: Function = (sound: ISound, duration: number) => {
-	// const [buttonMode, setButtonMode] = useState('tone')
-
-	function startMakingNoise(){
-		
-	}
+export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 	let audioCtx: AudioContext
 	if (window.AudioContext) {
 		audioCtx = new (window.AudioContext)()
@@ -104,38 +101,44 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 	// )
 
 	let sweepLength = .5
-	let attackTime = duration / 5
-	let releaseTime = duration / 5
+	let attackTime = duration ? duration / 15 : .01
+	let releaseTime = attackTime
 
-	let basePitch: number = 1200
+	let basePitch: number = 440
 
 	let pitch: number
 	pitch = sound.pitch === 1 ? .999 : sound.pitch as number
 
-	const thisTone = (duration: number, pitch: number) => {
-		let osc = audioCtx.createOscillator()
-		osc.setPeriodicWave(wave)
-		osc.frequency.value = basePitch / Math.pow(1.5, -pitch)
+	const thisTone = (pitch: number, duration?: number) => {
+		let thisTone_osc = audioCtx.createOscillator()
+		thisTone_osc.setPeriodicWave(wave)
+		thisTone_osc.frequency.value = basePitch / Math.pow(1.5, -pitch)
 
-		let volumeCompensator: number = Math.pow(2, -pitch / 8)
+		let volumeCompensator: number = Math.pow(1.5, -pitch)
 
-		console.log('TONE:', osc.frequency.value, 'hz', volumeCompensator.valueOf(), 'db')
-
+		console.log('TONE:', thisTone_osc.frequency.value, 'hz', volumeCompensator.valueOf(), 'db')
 		let sweepEnv = audioCtx.createGain()
-		sweepEnv.gain.cancelScheduledValues(duration)
-		sweepEnv.gain.setValueAtTime(0, duration)
-		sweepEnv.gain.linearRampToValueAtTime(volumeCompensator, duration + attackTime)
-		sweepEnv.gain.linearRampToValueAtTime(0, duration + sweepLength - releaseTime)
 
-		osc.connect(sweepEnv).connect(audioCtx.destination)
-		osc.start(duration)
-		osc.stop(duration + sweepLength)
+		if (duration) {
+			sweepEnv.gain.cancelScheduledValues(duration)
+			sweepEnv.gain.setValueAtTime(0, duration)
+			sweepEnv.gain.linearRampToValueAtTime(volumeCompensator, duration + (attackTime))
+			sweepEnv.gain.linearRampToValueAtTime(0, duration + sweepLength - releaseTime)
+			thisTone_osc.connect(sweepEnv).connect(audioCtx.destination)
+			thisTone_osc.start(duration)
+			thisTone_osc.stop(duration + sweepLength)
+		} else {
+			sweepEnv.gain.setValueAtTime(0, 0)
+			sweepEnv.gain.linearRampToValueAtTime(volumeCompensator, (attackTime) )
+			thisTone_osc.connect(sweepEnv).connect(audioCtx.destination)
+			thisTone_osc.start()
+		}
+		return thisTone_osc
 	}
 
 	const source = audioCtx.createBufferSource()
 	source.buffer = myArrayBuffer
 	source.connect(audioCtx.destination)
-	// source.start()
 
 	// pitch -3: toneFreq=55
 	// 440 / 8
@@ -164,8 +167,15 @@ export const MakeNoise: Function = (sound: ISound, duration: number) => {
 	// 440 * 8
 	// 440 * Math.pow(2, Math.abs(pitch))
 
-	console.log('attempting to play', sound.name, 'for', duration, 'ms')
-	thisTone(duration, pitch)
+	if (duration) {
+		console.log('attempting to play', sound.name, 'for', duration, 'ms')
+		thisTone(duration, pitch)
+	} else {
+		console.log('beginning to play', sound.name, 'until told otherwise')
+		return thisTone(pitch)
+	}
+
+	return osc
 
 }
 

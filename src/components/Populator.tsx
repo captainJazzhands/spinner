@@ -126,7 +126,7 @@ export function Populator(props:
 
 	return (
 		<section
-			className={isHot ? 'box MEDIUM' : 'box COLD'}
+			className={isHot ? 'box HOT' : 'box COLD'}
 			id={'Populator'}
 		>
 

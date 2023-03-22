@@ -48,7 +48,7 @@ export function TheSoundBoard(this: any) {
 	const [shouldReadFromDisk, setShouldReadFromDisk]: [boolean, Function] = useState(true)
 	const [RecordingStart, setRecordingStart]: [number, Function] = useState(0)
 	const [RecordingStop, setRecordingStop]: [number, Function] = useState(Date.now())
-	const [clickTime, setClickTime]: [number, Function] = useState(0)
+	const [ButtonBegin, setButtonBegin]: [number, Function] = useState(0)
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
 	const [ActiveSequence, setActiveSequence]: [ISequence, Function] = useState(new ISequence)
@@ -184,7 +184,6 @@ export function TheSoundBoard(this: any) {
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
 		setStroopMode(StroopMode)
-
 		switch (StroopMode) {
 			case 'speech':
 				setHotPanel('VoiceChoice')
@@ -305,22 +304,26 @@ export function TheSoundBoard(this: any) {
 	}
 
 	async function PlayButton(button: IButton) {
+		let currentlyOscillating
 		if (!shouldStop) {
 			setIsPlaying(true)
-			if (button.end && button.begin) {
-				duration = button.end - button.begin
+			if (button.begin && button.end) {
+				duration = Math.abs(button.end - button.begin)
+				duration = duration < 1 ? 1 : duration
+				duration = duration > 8675309 ? 666 : duration
 			}
-			duration = duration < 1 ? 1 : duration
-			duration = duration > 8675309 ? 666 : duration
+			if (button.begin && !button.end) {
+				if (StroopMode === 'tone') {
+					currentlyOscillating = MakeNoise(button.sound)
+				}
+			}
 
 			if (StroopMode === 'speech') {
 				let voice = voiceContext.Provider.name ? voiceContext.Provider.name.toString() : ''
-				Speak(button.sound, duration, voice)
-			}
-			if (StroopMode === 'tone') {
-				MakeNoise(button.sound, duration)
+				currentlyOscillating = Speak(button.sound, duration, voice)
 			}
 		}
+		return currentlyOscillating
 	}
 
 	function startPlaybackTimer() {
@@ -369,24 +372,23 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function startRecordingTimer() {
-		// we’re not touching a RecordingSession yet
-		setTally([])
-		if (getRecordingSessionFromDisk().length > 1) {
-			setShouldReadFromDisk(true)
-			setActiveSequence(getRecordingSessionFromDisk())
-		} else {
-			setActiveSequence(new ISequence())
-		}
-		setHotPanel('TheButtons')
 
 		if (!isRecording) {
-			setClickTime(Date.now())
+			// we’re not touching a RecordingSession yet
+			setTally([])
+			if (getRecordingSessionFromDisk().length > 1) {
+				setShouldReadFromDisk(true)
+				setActiveSequence(getRecordingSessionFromDisk())
+			} else {
+				setActiveSequence(new ISequence())
+			}
+			setHotPanel('TheButtons')
 			setRecordingStart(Date.now())
 			RecordingTimer = setInterval(() => {
 				elapsedTime = Date.now() - RecordingStart
 			}, planck)
+			setIsRecording(true)
 		}
-		setIsRecording(true)
 		return elapsedTime
 	}
 
@@ -480,21 +482,39 @@ export function TheSoundBoard(this: any) {
 		}
 	}, [isRecording, recordClockDiv, isPlaying])
 
-	const HandleButtonPress = (oneButton: IButton, direction: string) => {
+	const [current, setCurrent] = useState<{ OscillatorNode: { stop: (when: number) => void } }>()
+	const HandleButtonPress = async (oneButton: IButton, direction: string) => {
 		let thisButton = Object.assign({}, oneButton)
 		if (direction === 'down') {
 			if (count === 0) {
-				thisButton.begin = 1
+				thisButton.begin = 0
 			} else {
 				thisButton.begin = RecordingStart > 1 ? Date.now() - RecordingStart : 199
 			}
 			setButton(thisButton)
+			setButtonBegin(Date.now())
 			setCount((count: number) => count + 1)
 			if (realtime) {
-				PlayButton(thisButton)
+				// speechSynthesis.cancel()
+				setCurrent(await PlayButton(thisButton))
 			}
 		} else if (direction === 'up') {
-			// thisButton = button
+			if (thisButton.sound) {
+				if (realtime && current) {
+					if (current.OscillatorNode) {
+						current.OscillatorNode.stop(0)
+						console.log("never lands here")
+						// @ts-ignore
+					} else if (typeof current == OscillatorNode) {
+						// @ts-ignore
+						current.stop(0)
+						console.log("here, either")
+					}
+					console.log((Date.now() - ButtonBegin + 200) / 1000)
+					// @ts-ignore
+					current.stop((Date.now() - ButtonBegin + 200) / 1000)
+				}
+			}
 			thisButton.end = RecordingStart > 1 ? Date.now() - RecordingStart : 11
 			let completedButton = thisButton
 			setTally((prevTally: IButton[]) => [...prevTally, completedButton])
@@ -533,7 +553,6 @@ export function TheSoundBoard(this: any) {
 	// 		MakeNoise(thisButton.sound, duration)
 	// 	}
 	// }
-
 
 	let TransportState = 'empty'
 	if (isPlaying) {

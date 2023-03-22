@@ -11,7 +11,7 @@ $clr_stroop-shape: purple;
 $clr_stroop-sound: green;
 $clr_stroop-tone: teal;
 
-$sz_COLD: 3.5vh;
+$sz_COLD: 1.6rem;
 $sz_HOT: 75vh;
 
 :root {
@@ -247,21 +247,28 @@ button:disabled {
 	min-height: $sz_COLD;
 	height: $sz_COLD;
 	max-height: $sz_COLD;
+	.instruction {
+		z-index: 1;
+	}
 	button {
 		//writing-mode: vertical-lr;
 		//transform: rotateZ(-90deg);
 		flex: 10 1 auto;
 		width: 31.5vw;
 		font-size: 150%;
-		padding: .5rem;
+		padding: 3pt;
+		z-index: 100;
 	}
 }
 
 #stroopSwitch.COLD {
 	flex-shrink: 0;
 	flex-grow: 0;
+	z-index: 100;
 	#stroopButtons {
 		height: $sz_COLD;
+		margin-top: -$sz_COLD;
+		z-index: 100;
 	}
 }
 
@@ -284,7 +291,7 @@ button:disabled {
 }
 
 .HOT .DataSelectorList {
-	margin-top: -1rem;
+	margin-top: $sz_COLD;
 }
 
 #VoiceChoice {
@@ -646,7 +653,8 @@ p.LCD {
 }
 
 .instruction {
-	position: relative;
+	position: sticky;
+	z-index: 100;
 	top: 0;
 	font-size: 80%;
 	line-height: 125%;
@@ -663,7 +671,7 @@ p.LCD {
 }
 
 .COLD .instruction {
-	opacity: 0.5;
+	opacity: 0.8;
 	width: 100%;
 	height: $sz_COLD;
 	border-radius: $sz_COLD;
