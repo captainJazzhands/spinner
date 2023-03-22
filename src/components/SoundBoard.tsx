@@ -409,10 +409,10 @@ export function TheSoundBoard(this: any) {
 			let previousSequences: ISequence[]
 			if (RecordingSession.Sequences && RecordingSession.Sequences.length > 0) {
 				previousSequences = RecordingSession.Sequences.slice(0)
-				setRecordingSession({Sequences: [...previousSequences, ActiveSequence]})
+				setRecordingSession({Sequences: [...previousSequences, {ButtStream: ActiveSequence}]})
 				setShouldWriteToDisk(true)
 			} else {
-				setRecordingSession({Sequences: [ActiveSequence]})
+				setRecordingSession({Sequences: [{ButtStream: ActiveSequence}]})
 				setShouldWriteToDisk(true)
 			}
 			setTally([])
@@ -481,7 +481,7 @@ export function TheSoundBoard(this: any) {
 		}
 	}, [isRecording, recordClockDiv, isPlaying])
 
-	const [current, setCurrent] = useState<{ OscillatorNode: { stop: (when: number) => void } }>()
+	const [current, setCurrent] = useState<{ OscillatorNode: { stop: (arg0: number | undefined) => void } }>()
 	const HandleButtonPress = async (oneButton: IButton, direction: string) => {
 		let thisButton = Object.assign({}, oneButton)
 		if (direction === 'down') {
@@ -498,9 +498,11 @@ export function TheSoundBoard(this: any) {
 				setCurrent(await PlayButton(thisButton))
 			}
 		} else if (direction === 'up') {
+
 			if (thisButton.sound) {
 				if (realtime && current) {
 					if (current.OscillatorNode) {
+						// @ts-ignore
 						current.OscillatorNode.stop(0)
 						console.log("never lands here")
 						// @ts-ignore
@@ -516,7 +518,7 @@ export function TheSoundBoard(this: any) {
 						} else {
 							console.log((Date.now() - ButtonBegin + 250) / 1000)
 							// @ts-ignore
-							current.stop((Date.now() - ButtonBegin + 250) / 1000)
+							current.stop()
 						}
 					}
 				}

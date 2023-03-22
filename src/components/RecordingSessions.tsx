@@ -1,7 +1,7 @@
 import React, {Ref, useContext, useEffect, useRef, useState} from 'react'
 import {
 	IRecordingSession,
-	IButton
+	IButton, ISequence
 } from './Types'
 import './SoundBoard.css'
 import {stroopContext} from './SoundBoard';
@@ -18,17 +18,14 @@ export function RecordingSessions(props: {
 	SequenceDeleteHandler: Function
 }) {
 
-	let seqs: IButton[]
+	let seqs: ISequence[] = []
 
 	if (props.RecordingSession) {
 		if (props.RecordingSession.Sequences && props.RecordingSession.Sequences.length > 1) {
-			// @ts-ignore
 			seqs = props.RecordingSession.Sequences
 		} else {
-			seqs = [new IButton('')]
 		}
 	} else {
-		seqs = [new IButton('')]
 	}
 	const buttonCount = seqs.filter(i => i != undefined).length
 
@@ -53,36 +50,54 @@ export function RecordingSessions(props: {
 
 			<ul>
 				{
-					seqs.map((sequence, index, button_array) => {
-							return (<li
+					seqs.map((singleSequence, idx, button_array) => {
+							return <li
 								className={'recording-session'}
-								key={index}
+								key={idx}
 								value={'add'}
 							>
-								<div className={'mini-list'}>
-									{button_array.map((item, idx, item_array) => (
-										<section key={idx}>
-											<span className={'meta'}>
-												{item.sound?.name ? item.sound.name.toString() : ''}
-											</span>
-											<span className={'meta'}>
-												{item.begin ? item.begin.toString() : ''}
-											</span>
-										</section>
-									))}
+								<div className={'sequence-commands'}>
+									<button
+										value={'SelectSequence'}
+										onClick={() => selectSequence}
+									>{'Select'}
+									</button>
 								</div>
-								<button
-									value={'SelectSequence'}
-									onClick={() => selectSequence}
-								>{'Select'}</button>
-								<span className={'meta'}>
-									Recording #{index}
-								</span>
-								<span className={'meta'}>
-									{button_array.filter(i => i != undefined).length}
-								</span>
 
-							</li>)
+								<div className={'sequence-info'}>
+
+									<div className={'sequence-summary'}>
+										<span className={'meta'}>
+											Recording #{idx}
+										</span>
+										<span className={'meta'}>
+											{singleSequence.ButtStream?.length}
+										</span>
+										{/*<span className={'meta'}>*/}
+										{/*	{button_array.filter(i => i != undefined).length}*/}
+										{/*</span>*/}
+									</div>
+
+									<div className={'mini-list'}>
+										{singleSequence.ButtStream != undefined ? singleSequence.ButtStream.map((item, idx, item_array) =>
+											<div
+												className={'press-gap-pair'}
+												key={idx}
+											>
+											<span className={(item.color != undefined) ? ('press ' + item.color!.toString()) : ('press')}>
+												{item.begin ? item.begin.toString() : ''}
+												{(item.begin && item.end) ? (item.end - item.begin).toString() : ''}
+											</span>
+												<span className={'gap'}>
+												{item.begin ? item.begin.toString() : ''}
+													{(item.begin && item.end) ? (item.end - item.begin).toString() : ''}
+											</span>
+											</div>) : <h3>nada</h3>
+										}
+									</div>
+								</div>
+
+							</li>
 						}
 					)
 				}

@@ -438,26 +438,50 @@ p.LCD {
 	}
 }
 
-#RecordingSessions {
+#RecordingSession {
 	width: 100%;
 	ul {
 		padding: 0.5rem;
+		width: 100%;
 		li {
+			display: flex;
+			flex-direction: row;
+			.sequence-commands {
+				flex-grow: 0.5;
+				flex-shrink: 1;
+			}
+			.sequence-info {
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				flex-grow: 1;
+				flex-shrink: 1;
+			}
 			text-align: left;
 			background-color: $clr_boxBG_alpha;
 			.mini-list {
 				display: flex;
 				flex-direction: row;
-				section {
-					width: 10pt;
+				.press-gap-pair {
+					flex-grow: 1;
+					flex-shrink: 10;
+					display: flex;
+					flex-direction: row;
 					height: 10pt;
-					flex-shrink: .5;
-					span {
-						margin: 0;
-						padding: 0;
+					//background-color: $clr_white;
+					.gap {
 						background-color: $clr_heroTextBG_alpha;
 					}
+					span {
+						display: block;
+						position: relative;
+						height: 100%;
+						flex-grow: 1;
+						flex-shrink: 10;
+					}
 				}
+				padding: 0 .5rem;
+				opacity: 0.65;
 			}
 		}
 	}
@@ -540,6 +564,7 @@ p.LCD {
 	border-radius: 0;
 	background-color: $clr_white;
 }
+
 #CurrentSessionStatus {
 	z-index: 100;
 }

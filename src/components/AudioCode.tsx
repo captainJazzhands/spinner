@@ -97,17 +97,24 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 	let attackTime = duration ? duration / 15 : .01
 	let releaseTime = attackTime
 
-	let basePitch: number = 440
+	let basePitch: number = 300
 
 	let pitch: number
 	pitch = sound.pitch === 1 ? .999 : sound.pitch as number
+
+	const fadeOut = (thisTone_osc: OscillatorNode, begin: number, end: number) => {
+		let sweepEnv = audioCtx.createGain()
+		sweepEnv.gain.linearRampToValueAtTime(0, end)
+		thisTone_osc.connect(sweepEnv).connect(audioCtx.destination)
+		thisTone_osc.stop(end)
+	}
 
 	const thisTone = (pitch: number, duration?: number) => {
 		let thisTone_osc = audioCtx.createOscillator()
 		thisTone_osc.setPeriodicWave(wave)
 		thisTone_osc.frequency.value = basePitch / Math.pow(1.5, -pitch)
 
-		let volumeCompensator: number = Math.pow(1.5, -pitch)
+		let volumeCompensator: number = Math.pow(1.5, -pitch) / 5
 
 		console.log('TONE:', thisTone_osc.frequency.value, 'hz', volumeCompensator.valueOf(), 'db')
 		let sweepEnv = audioCtx.createGain()
@@ -129,9 +136,9 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 		return thisTone_osc
 	}
 
-	const source = audioCtx.createBufferSource()
-	source.buffer = myArrayBuffer
-	source.connect(audioCtx.destination)
+	// const source = audioCtx.createBufferSource()
+	// source.buffer = myArrayBuffer
+	// source.connect(audioCtx.destination)
 
 	// pitch -3: toneFreq=55
 	// 440 / 8
@@ -167,7 +174,5 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 		console.log('beginning to play', sound.name, 'until told otherwise')
 		return thisTone(pitch)
 	}
-
-	return osc
 
 }
