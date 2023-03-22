@@ -92,13 +92,6 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 		22050,
 		22050
 	)
-	// const bufferSize = (duration / 50000) + 10000
-	//
-	// const myArrayBuffer = audioCtx.createBuffer(
-	// 	2,
-	// 	audioCtx.sampleRate * bufferSize,
-	// 	audioCtx.sampleRate
-	// )
 
 	let sweepLength = .5
 	let attackTime = duration ? duration / 15 : .01
@@ -129,7 +122,7 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 			thisTone_osc.stop(duration + sweepLength)
 		} else {
 			sweepEnv.gain.setValueAtTime(0, 0)
-			sweepEnv.gain.linearRampToValueAtTime(volumeCompensator, (attackTime) )
+			sweepEnv.gain.linearRampToValueAtTime(volumeCompensator, (attackTime))
 			thisTone_osc.connect(sweepEnv).connect(audioCtx.destination)
 			thisTone_osc.start()
 		}
@@ -178,119 +171,3 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 	return osc
 
 }
-
-
-// const noteBuffer = noteContext.createBuffer(2, noteContext.sampleRate / 3, noteContext.sampleRate)
-
-// // Fill the buffer with white noise;
-// //just random values between -1.0 and 1.0
-// for (let channel = 0; channel < myArrayBuffer.numberOfChannels; channel++) {
-// 	// This gives us the actual ArrayBuffer that contains the data
-// 	const nowBuffering = myArrayBuffer.getChannelData(channel);
-// 	for (let i = 0; i < myArrayBuffer.length; i++) {
-// 		// Math.random() is in [0; 1.0]
-// 		// audio needs to be in [-1.0; 1.0]
-// 		nowBuffering[i] = Math.random() * .2 - 2;
-// 	}
-// }
-
-// const wave = audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
-
-
-// let VolumeSample: {
-// 	play: () => void;
-// 	gainNode: AudioNode | null;
-// 	// gainNode: {
-// 	// 	prototype?: GainNode;
-// 	// 	new(context: BaseAudioContext, options?: GainOptions): GainNode
-// 	// 	connect(destination: AudioDestinationNode): void;
-// 	// } | null;
-// 	noteOff: () => void;
-// 	stop: () => void;
-// 	playing: boolean;
-// 	toggle: () => void;
-// 	source: undefined;
-// 	GainNode: null;
-// 	connect: () => void;
-// 	changeVolume: () => void
-// } = {
-// 	gainNode: null,
-// 	GainNode: null,
-// 	source: undefined,
-// 	playing: false,
-// 	noteOff: function () {
-// 	},
-// 	connect: function () {
-// 	},
-// 	stop: function () {
-// 	},
-// 	play: function () {
-// 	},
-// 	toggle: function () {
-// 	},
-// 	changeVolume: function () {
-// 	}
-// };
-// VolumeSample.gainNode = null
-//
-// VolumeSample.play = function () {
-// 	// if (!noteContext.createGain) {
-// 	// 	noteContext.createGain = noteContext.createGainNode()
-// 	// }
-// 	this.gainNode = noteContext.createGain()
-// 	let source = noteContext.createBufferSource()
-// 	source.buffer = Buffer
-//
-// 	// Connect source to a gain node
-// 	source.connect(this.gainNode)
-// 	// Connect gain node to destination
-// 	this.gainNode?.connect(noteContext.destination)
-//
-// 	// Start playback in a loop
-// 	source.loop = true;
-// 	if (!source.start)
-// 		source.start = source.noteOn;
-// 	source.start(0);
-// 	this.source = source;
-// };
-//
-// VolumeSample.changeVolume = function (element: { value: string; max: string; }) {
-// 	const volume = element.value;
-// 	const fraction = parseInt(element.value) / parseInt(element.max);
-// 	// Let's use an x*x curve (x-squared) since simple linear (x) does not
-// 	// sound as good.
-// 	// this.gainNode.gain.value = fraction * fraction;
-// };
-//
-// VolumeSample.stop = function () {
-// 	if (!this.stop)
-// 		this.stop = this.noteOff;
-// 	this.stop();
-// };
-//
-// VolumeSample.toggle = function () {
-// 	this.playing ? this.stop() : this.play();
-// 	this.playing = !this.playing;
-// };
-//
-//
-// function playSound(this: any, buffer: AudioBuffer | null) {
-//
-// 	if (!noteContext.createGain)
-// 		noteContext.createGain = noteContext.createGainNode
-// 	this.gainNode = noteContext.createGain()
-// 	let source: AudioBufferSourceNode = noteContext.createBufferSource()    // creates a sound source
-// 	source.buffer = buffer    // tell the source which sound to play
-//
-// 	let gainNode: GainNode = noteContext.createGain()
-//
-// 	source.connect(this.gainNode)
-//
-// 	this.gainNode.connect(noteContext.destination)
-//
-// 	this.gainNode.gain.value = 0.017
-//
-// 	source.connect(noteContext.destination)   // connect the source to the context's destination (the speakers)
-// 	source.start(0)   // play the source now
-//
-// }

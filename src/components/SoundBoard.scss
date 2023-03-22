@@ -463,7 +463,6 @@ p.LCD {
 	}
 }
 
-
 #DotGraph {
 	height: 100%; width: 100%;
 	flex-grow: 5;
@@ -519,27 +518,30 @@ p.LCD {
 	}
 }
 
-.COLD #DotGraph {
-	height: 20vh;
+.MEDIUM #DotGraph {
+	height: 50vh;
 	width: 100%;
 }
 
-.MEDIUM #DotGraph {
-	height: 50%;
+.HOT #DotGraph {
+	height: 100%;
 	width: 100%;
 }
 
 .control-group {
 	//transform: scale(80%);
-	width: calc(100% - 5vw);
+	width: 100%;
 	position: sticky;
-	bottom: 2vw;
+	bottom: 0;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-around;
 	border: $buttonBorder;
-	border-radius: .5rem;
-	background-color: $clr_InterfaceBG_alpha;
+	border-radius: 0;
+	background-color: $clr_white;
+}
+#CurrentSessionStatus {
+	z-index: 100;
 }
 
 .range-slider {

@@ -133,7 +133,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	useEffect(() => {
-		const rsArray = RecordingSession.Sequences ? RecordingSession.Sequences : RecordingSession as unknown as Array<any>
+		const rsArray = RecordingSession ? RecordingSession : RecordingSession as unknown as Array<any>
 		if (shouldWriteToDisk && JSON.stringify(rsArray).length > 23) {
 			localStorage.setItem('RecordingSession', JSON.stringify(rsArray))
 		}
@@ -149,8 +149,8 @@ export function TheSoundBoard(this: any) {
 					if (newRS.Sequences != undefined) {
 						setRecordingSession(newRS)
 					} else {
-						// @ts-ignore
-						setRecordingSession(newRS[0]) // because I’m storing it wrong
+						setRecordingSession(newRS) // because I’m storing it wrong
+						//  or at least, was… am I still with Sequences[] resolved?
 					}
 				}
 			}
@@ -229,6 +229,7 @@ export function TheSoundBoard(this: any) {
 		}
 		if (requestedState === 'stop') {
 			StopEverything()
+			setHotPanel('SoundBarStatus')
 		}
 		if (requestedState === 'record') {
 			setShouldStop(false)
@@ -388,6 +389,7 @@ export function TheSoundBoard(this: any) {
 				elapsedTime = Date.now() - RecordingStart
 			}, planck)
 			setIsRecording(true)
+			return elapsedTime
 		}
 		return elapsedTime
 	}
@@ -398,25 +400,22 @@ export function TheSoundBoard(this: any) {
 
 		if (RecordingSession.Sequences == undefined) {  //  pinch off first session
 			if (localStorageSession.Sequences && localStorageSession.Sequences.length > 1) {
-				setRecordingSession(localStorageSession)
-				setShouldWriteToDisk(true)
+				setRecordingSession(localStorageSession)  //  read from disk
+				// setShouldWriteToDisk(true)
 			} else {
 				setShouldWriteToDisk(true)
 			}
 		} else { //  pinch off another session
-			if (isRecording) {
-				let previousSequences: ISequence[]
-				if (RecordingSession.Sequences) {
-					previousSequences = RecordingSession.Sequences.slice(0)
-					setRecordingSession({Sequences: [...previousSequences, tally.slice(0)]})
-					setShouldWriteToDisk(true)
-					setTally([])
-				} else {
-					setRecordingSession({Sequences: [tally].slice(0)})
-					setShouldWriteToDisk(true)
-					setTally([])
-				}
+			let previousSequences: ISequence[]
+			if (RecordingSession.Sequences && RecordingSession.Sequences.length > 0) {
+				previousSequences = RecordingSession.Sequences.slice(0)
+				setRecordingSession({Sequences: [...previousSequences, ActiveSequence]})
+				setShouldWriteToDisk(true)
+			} else {
+				setRecordingSession({Sequences: [ActiveSequence]})
+				setShouldWriteToDisk(true)
 			}
+			setTally([])
 			// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
 		}
 		// setHotPanel('ButtonBoardStatus')
@@ -505,14 +504,21 @@ export function TheSoundBoard(this: any) {
 						current.OscillatorNode.stop(0)
 						console.log("never lands here")
 						// @ts-ignore
-					} else if (typeof current == OscillatorNode) {
+					} else if (typeof current === OscillatorNode) {
 						// @ts-ignore
 						current.stop(0)
 						console.log("here, either")
+					} else { // @ts-ignore
+						if (typeof current === SpeechSynthesisUtterance) {
+							console.log('utterance', (Date.now() - ButtonBegin + 250) / 1000)
+							// @ts-ignore
+							current.stop((Date.now() - ButtonBegin + 250) / 1000)
+						} else {
+							console.log((Date.now() - ButtonBegin + 250) / 1000)
+							// @ts-ignore
+							current.stop((Date.now() - ButtonBegin + 250) / 1000)
+						}
 					}
-					console.log((Date.now() - ButtonBegin + 200) / 1000)
-					// @ts-ignore
-					current.stop((Date.now() - ButtonBegin + 200) / 1000)
 				}
 			}
 			thisButton.end = RecordingStart > 1 ? Date.now() - RecordingStart : 11

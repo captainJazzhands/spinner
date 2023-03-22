@@ -51,7 +51,7 @@ export function SoundBoardStatus(props: {
 		}
 	}
 
-	let ActiveSequence = props.ActiveSequence
+	let ActiveSequence = JSON.parse(JSON.stringify(props.ActiveSequence))
 	let rs: Array<IButton> = [new IButton('')]
 	if (ActiveSequence) {
 		rs = ActiveSequence as unknown as Array<IButton>
@@ -129,7 +129,7 @@ export function SoundBoardStatus(props: {
 		setGraphHeight(manageSliderValues(chosenValue, GraphHeightLower, GraphHeightUpper, 1, 100))
 	}
 
-	let renderRS: IButton[] = []
+	let renderRS: Array<IButton> = []
 
 	useEffect(() => {
 			if (rs && Array.isArray(rs)) {
@@ -143,7 +143,7 @@ export function SoundBoardStatus(props: {
 						return (button)
 					})
 				} else {
-					renderRS = tempRS
+					renderRS = ActiveSequence ? ActiveSequence : tempRS
 						console.log(button.sound ? button.sound.name : ' ', Date.now().toString())
 				}
 			}
