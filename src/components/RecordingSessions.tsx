@@ -41,12 +41,12 @@ export function RecordingSessions(props: {
 		>
 			<InstructionHeader
 				NavTarget={'RecordingSessions'}
-				HeaderText={props.Instructions}
+				HeaderText={(seqs.length > 1) ? 'Manage ' + seqs.length + ' Recordings' : props.Instructions}
 				HotPanelUpdater={setHotPanel}
 			/>
-			<span>
-				You have <span className={'LCD'}>{seqs.length}</span> recordings.
-			</span>
+			{/*<span>*/}
+			{/*	You have <span className={'LCD'}>{seqs.length}</span> recordings.*/}
+			{/*</span>*/}
 
 			<ul>
 				{
@@ -59,9 +59,14 @@ export function RecordingSessions(props: {
 								<div className={'sequence-commands'}>
 									<button
 										value={'SelectSequence'}
-										onClick={() => selectSequence}
+										onClick={() => selectSequence()}
 									>{'Select'}
 									</button>
+									{/*<button*/}
+									{/*	value={'DeleteSequence'}*/}
+									{/*	onClick={() => deleteSequence()}*/}
+									{/*>{'Delete'}*/}
+									{/*</button>*/}
 								</div>
 
 								<div className={'sequence-info'}>
@@ -79,7 +84,7 @@ export function RecordingSessions(props: {
 									</div>
 
 									<div className={'mini-list'}>
-										{singleSequence.ButtStream != undefined ? singleSequence.ButtStream.map((item, idx, item_array) =>
+										{(singleSequence.ButtStream != undefined && singleSequence.ButtStream.length > 0) ? singleSequence.ButtStream.map((item, idx, item_array) =>
 											<div
 												className={'press-gap-pair'}
 												key={idx}
@@ -92,7 +97,7 @@ export function RecordingSessions(props: {
 												{item.begin ? item.begin.toString() : ''}
 													{(item.begin && item.end) ? (item.end - item.begin).toString() : ''}
 											</span>
-											</div>) : <h3>nada</h3>
+											</div>) : <span className={'meta'}>nada</span>
 										}
 									</div>
 								</div>

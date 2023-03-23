@@ -52,7 +52,7 @@ h1, h2, h3, h4, h5, h6, button {
 
 button {
 	margin: 0;
-	padding: 0 .5rem;
+	padding: 0 .125rem;
 	white-space: nowrap;
 	overflow: hidden;
 	border: none;
@@ -78,7 +78,7 @@ button {
 }
 
 .tintable button {
-	padding: 3pt 6pt;
+	padding: 3pt 9pt;
 	//border: 1px solid white;
 	//border-radius: 6pt;
 }
@@ -118,7 +118,8 @@ button:disabled {
 	//height: calc(100vh - 10vw);
 	max-height: calc(100vh - 10vw);
 	background-color: $clr_InterfaceBG_alpha;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	border-radius: 1rem;
 	border: 2pt solid white;
 	transition: ease-in .3s 0.007s;
@@ -182,6 +183,7 @@ button:disabled {
 	height: $sz_COLD;
 	flex-grow: 0;
 	flex-shrink: 0;
+	overflow-y: hidden;
 	button {
 		height: 50%;
 	}
@@ -441,14 +443,21 @@ p.LCD {
 #RecordingSession {
 	width: 100%;
 	ul {
-		padding: 0.5rem;
+		margin: 0;
+		padding: 0;
 		width: 100%;
+		overflow-y: scroll;
 		li {
 			display: flex;
 			flex-direction: row;
 			.sequence-commands {
 				flex-grow: 0.5;
 				flex-shrink: 1;
+				margin: .25rem .25rem;
+				button {
+					border-radius: .25rem;
+					background-color: $clr_InterfaceBG_alpha;
+				}
 			}
 			.sequence-info {
 				width: 100%;
@@ -458,6 +467,7 @@ p.LCD {
 				flex-shrink: 1;
 			}
 			text-align: left;
+			margin: .25rem 0;
 			background-color: $clr_boxBG_alpha;
 			.mini-list {
 				display: flex;
@@ -467,8 +477,7 @@ p.LCD {
 					flex-shrink: 10;
 					display: flex;
 					flex-direction: row;
-					height: 10pt;
-					//background-color: $clr_white;
+					height: 1rem;
 					.gap {
 						background-color: $clr_heroTextBG_alpha;
 					}

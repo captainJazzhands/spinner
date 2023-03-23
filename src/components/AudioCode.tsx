@@ -1,6 +1,6 @@
 import {ISound} from './Types';
 import {voiceContext, voiceNameContext, voices} from "./SoundBoard";
-import React from "react";
+import React, {useContext} from "react";
 
 let override = true
 
@@ -34,44 +34,38 @@ const wave = ac.createPeriodicWave(real, imag)
 osc.setPeriodicWave(wave)
 osc.connect(ac.destination)
 
-
-export const Speak: Function = (sound: ISound, duration?: number, argVoice?: string) => {
+export const Speak: Function = (sound: ISound, duration?: number, argVoice?: SpeechSynthesisVoice) => {
 	let synth = window.speechSynthesis
 	let what = new SpeechSynthesisUtterance('')
-	let localVoice
+	let localVoice: SpeechSynthesisVoice
 
 	let filteredVoices = voices.filter(function (voice) {
-		return voice.name == argVoice
+		return voice.name == argVoice!.name
 	})
 
-	if (filteredVoices.length === 1) {
-		localVoice = filteredVoices[0]
-	} else {
-		localVoice = voices[0]
-	}
-
-	// for (let i = 0; i < voices.length; i++) {
-	// 	if (localVoice != undefined && voices[i].name === localVoice.name) {
-	// 		if (override) {
-	// 			what.voice = localVoice as SpeechSynthesisVoice
-	// 		} else {
-	// 			what.voice = sound.voice as SpeechSynthesisVoice
-	// 		}
-	// 	} else {
-	// 		what.voice = localVoice as SpeechSynthesisVoice
-	// 	}
+	// if (filteredVoices.length === 1) {
+	// 	localVoice = filteredVoices[0]
+	// } else {
+	// 	localVoice = argVoice ? argVoice : voices[0]
 	// }
 
-	if (localVoice != undefined) {
-		what.voice = localVoice
-	} else {
-		what.voice = Object.assign(voiceContext.Provider)
+	for (let i = 0; i < voices.length; i++) {
+		if (filteredVoices != undefined && voices[i] == filteredVoices[i]) {
+			if (override) {
+				what.voice = filteredVoices[i] as SpeechSynthesisVoice
+			} else {
+				what.voice = sound.voice as SpeechSynthesisVoice
+			}
+		} else {
+			what.voice = argVoice as SpeechSynthesisVoice
+		}
 	}
+
 	what.text = sound.pronunciation ? sound.pronunciation : sound.name
 	what.volume = 1
 	what.pitch = sound.pitch as number
 	what.rate = 1
-	console.log('attempting to say', sound.pronunciation?.toUpperCase(), 'for', duration, 'ms')
+	console.log('attempting to say', sound.pronunciation?.toUpperCase(), 'as', what.voice!.name, 'for', duration, 'ms')
 	synth.cancel()
 	synth.speak(what)
 

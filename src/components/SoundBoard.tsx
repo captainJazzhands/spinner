@@ -172,14 +172,19 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function HandleSequenceDelete(victim: ISequence) {
-		if (RecordingSession.Sequences) {
-			let allSequences = RecordingSession.Sequences.slice(0)
-			let mostSequences = allSequences  // but without victim
-			setRecordingSession(
-				{Sequences: mostSequences}
-			)
-			setShouldWriteToDisk(true)
-		}
+		// if (RecordingSession.Sequences) {
+		// 	let allSequences = RecordingSession.Sequences.slice(0)
+		//
+		// 	let isVictim = (element: number) => element > 13;
+		//
+		// 	let theIndex = allSequences.findIndex(isVictim)
+		//
+		// 	let mostSequences = delete allSequences[0]  // but without victim
+		// 	setRecordingSession(
+		// 		{Sequences: mostSequences}
+		// 	)
+		// 	setShouldWriteToDisk(true)
+		// }
 	}
 
 	function HandleStroopChange(StroopMode: IStroopMode) {
@@ -320,7 +325,7 @@ export function TheSoundBoard(this: any) {
 			}
 
 			if (StroopMode === 'speech') {
-				let voice = voiceContext.Provider.name ? voiceContext.Provider.name.toString() : ''
+				let voice = CurrentVoice
 				currentlyOscillating = Speak(button.sound, duration, voice)
 			}
 		}
