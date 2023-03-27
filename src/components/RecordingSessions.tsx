@@ -14,7 +14,8 @@ export function RecordingSessions(props: {
 	Instructions: string,
 	RecordingSession: IRecordingSession,
 	SequenceSelector: Function,
-	SessionChangeHandler: Function
+	SequenceComparator: Function,
+	SessionChangeHandler: Function,
 	SequenceDeleteHandler: Function
 }) {
 
@@ -31,6 +32,7 @@ export function RecordingSessions(props: {
 
 	const setHotPanel: Function = props.HotPanelUpdater
 	const selectSequence: Function = props.SequenceSelector
+	const compareSequence: Function = props.SequenceComparator
 	const deleteSequence: Function = props.SequenceDeleteHandler
 	let isHot: boolean = (props.HotPanel.toLowerCase() === "recordingsessions")
 
@@ -55,12 +57,13 @@ export function RecordingSessions(props: {
 								className={'recording-session'}
 								key={idx}
 								value={'add'}
+								onClick={() => selectSequence(singleSequence)}
 							>
 								<div className={'sequence-commands'}>
 									<button
-										value={'SelectSequence'}
-										onClick={() => selectSequence(singleSequence)}
-									>{'Select'}
+										value={'CompareSequence'}
+										onClick={() => compareSequence(singleSequence)}
+									>{'+'}
 									</button>
 									{/*<button*/}
 									{/*	value={'DeleteSequence'}*/}

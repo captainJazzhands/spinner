@@ -52,6 +52,7 @@ export function TheSoundBoard(this: any) {
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
 	const [ActiveSequence, setActiveSequence]: [ISequence, Function] = useState(new ISequence([]))
+	const [ReferenceSequence, setReferenceSequence]: [ISequence, Function] = useState(new ISequence([]))
 	const [SelectedSequences, setSelectedSequences]: [ISequence[], Function] = useState([])
 	const [ActiveButton, setActiveButton]: [IButton, Function] = useState(new IButton(''))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
@@ -146,12 +147,7 @@ export function TheSoundBoard(this: any) {
 			if (ls != undefined) {
 				if (ls.length > 1) {
 					let newRS: IRecordingSession = JSON.parse(ls) as IRecordingSession
-					if (newRS.Sequences != undefined) {
-						setRecordingSession(newRS)
-					} else {
-						setRecordingSession(newRS) // because I’m storing it wrong
-						//  or at least, was… am I still with Sequences[] resolved?
-					}
+					setRecordingSession(newRS)
 				}
 			}
 		}
@@ -166,6 +162,13 @@ export function TheSoundBoard(this: any) {
 	function ActiveSequenceSelector(sequence: ISequence) {
 		if (sequence) {
 			setActiveSequence(sequence)
+			setHotPanel('SoundBoardStatus')
+		}
+	}
+
+	function SequenceComparator(sequence: ISequence) {
+		if (sequence) {
+			setReferenceSequence(sequence)
 			setHotPanel('SoundBoardStatus')
 		}
 	}
@@ -285,9 +288,10 @@ export function TheSoundBoard(this: any) {
 			if (RequestedSequence == undefined) {
 				RequestedSequence = ActiveSequence
 			}
-			localSeq = Object.assign(RequestedSequence)
 			if (RequestedSequence.ButtStream) {
 				localSeq = Object.assign(RequestedSequence.ButtStream)
+			} else {
+				localSeq = Object.assign(RequestedSequence)
 			}
 			if (Array.isArray(localSeq)) {
 				localSeq.reduce(function (p: Promise<any>, button: IButton, i: number, ray: { begin: any }[]) {
@@ -298,7 +302,8 @@ export function TheSoundBoard(this: any) {
 						} else {
 							delta = 42
 						}
-						return await PlayButton(button).then(await delay.bind(null, delta)).then()
+						console.log('about to play', button.name)
+						return PlayButton(button).then(await delay.bind(null, delta)).then()
 					})
 				}, Promise.resolve()).then(() => {
 					setIsPlaying(false)
@@ -325,11 +330,17 @@ export function TheSoundBoard(this: any) {
 				if (StroopMode === 'tone') {
 					currentlyOscillating = MakeNoise(button.sound)
 				}
+				if (StroopMode === 'speech') {
+					currentlyOscillating = Speak(button.sound, duration, CurrentVoice)
+				}
 			}
-
-			if (StroopMode === 'speech') {
-				let voice = CurrentVoice
-				currentlyOscillating = Speak(button.sound, duration, voice)
+			if (button.begin && button.end) {
+				if (StroopMode === 'tone') {
+					currentlyOscillating = MakeNoise(button.sound, duration)
+				}
+				if (StroopMode === 'speech') {
+					currentlyOscillating = Speak(button.sound, duration, CurrentVoice)
+				}
 			}
 		}
 		return currentlyOscillating
@@ -404,37 +415,36 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function stopRecordingTimer() {
-		let localStorageSession: IRecordingSession = getRecordingSessionFromDisk()
-		// setShouldWriteToDisk(true)
+		if (isRecording) {
+			let localStorageSession: IRecordingSession = getRecordingSessionFromDisk()
 
-		if (RecordingSession.Sequences == undefined) {  //  pinch off first session
-			if (localStorageSession.Sequences && localStorageSession.Sequences.length > 1) {
-				setRecordingSession(localStorageSession)  //  read from disk
-				// setShouldWriteToDisk(true)
-			} else {
-				setShouldWriteToDisk(true)
+			if (RecordingSession.Sequences == undefined) {  //  pinch off first session
+				if (localStorageSession.Sequences && localStorageSession.Sequences.length > 1) {
+					setRecordingSession(localStorageSession)  //  read from disk
+				} else {
+					setShouldWriteToDisk(true)
+				}
+			} else { //  pinch off another session
+				let previousSequences: ISequence[]
+				if (RecordingSession.Sequences && RecordingSession.Sequences.length > 0) {
+					previousSequences = RecordingSession.Sequences.slice(0)
+					setRecordingSession({Sequences: [...previousSequences, {ButtStream: ActiveSequence}]})
+					setShouldWriteToDisk(true)
+				} else {
+					setRecordingSession({Sequences: [{ButtStream: ActiveSequence}]})
+					setShouldWriteToDisk(true)
+				}
+				setTally([
+					{SessionData: RecStart > 0 ? RecStart : RecStart}
+				])
 			}
-		} else { //  pinch off another session
-			let previousSequences: ISequence[]
-			if (RecordingSession.Sequences && RecordingSession.Sequences.length > 0) {
-				previousSequences = RecordingSession.Sequences.slice(0)
-				setRecordingSession({Sequences: [...previousSequences, {ButtStream: ActiveSequence}]})
-				setShouldWriteToDisk(true)
-			} else {
-				setRecordingSession({Sequences: [{ButtStream: ActiveSequence}]})
-				setShouldWriteToDisk(true)
-			}
-			setTally([
-				{SessionData: RecStart > 0 ? RecStart : RecStart}
-			])
+			setIsRecording(false)
+			setRecordingStop(Date.now())
+			elapsedTime = Date.now() - RecordingStart
+			clearInterval(RecordingTimer)
+			setCount(0)
+			return elapsedTime
 		}
-		// setHotPanel('ButtonBoardStatus')
-		setIsRecording(false)
-		setRecordingStop(Date.now())
-		elapsedTime = Date.now() - RecordingStart
-		clearInterval(RecordingTimer)
-		setCount(0)
-		return elapsedTime
 	}
 
 	function resetRecordingTimer() {
@@ -494,7 +504,7 @@ export function TheSoundBoard(this: any) {
 
 	const [current, setCurrent] = useState<{ OscillatorNode: { stop: (arg0: number | undefined) => void } }>()
 	const HandleButtonPress = async (oneButton: IButton, direction: string) => {
-		let thisButton
+		let thisButton: IButton
 		if (direction === 'down') {
 			thisButton = Object.assign({}, oneButton)
 			if (!isRecording) {
@@ -505,6 +515,8 @@ export function TheSoundBoard(this: any) {
 			} else {
 				thisButton.begin = RecordingStart > 1 ? Date.now() - RecordingStart : 199
 			}
+			setTally((prevTally: IButton[]) => [...prevTally, thisButton])  //  will this get it double counted?
+			setActiveSequence([...tally, thisButton])
 			setActiveButton(thisButton)
 			setButtonBegin(Date.now())
 			setCount((count: number) => count + 1)
@@ -518,17 +530,20 @@ export function TheSoundBoard(this: any) {
 					if (current.OscillatorNode) {
 						// @ts-ignore
 						current.OscillatorNode.stop(0)
-						console.log("never lands here")
 						// @ts-ignore
 					} else if (typeof current === OscillatorNode) {
 						// @ts-ignore
 						current.stop(0)
-						console.log("here, either")
 					} else { // @ts-ignore
-						if (typeof current === SpeechSynthesisUtterance) {
-							console.log('utterance', (Date.now() - ButtonBegin + 250) / 1000)
-							// @ts-ignore
-							current.stop((Date.now() - ButtonBegin + 250) / 1000)
+						if (current === SpeechSynthesisUtterance || current.voice) {
+							try {
+								console.log('utterance', (Date.now() - ButtonBegin + 250) / 1000)
+								// @ts-ignore
+								current.stop((Date.now() - ButtonBegin + 250) / 1000)
+							} catch (e) {
+								console.log(JSON.stringify(e))
+							} finally {
+							}
 						} else {
 							console.log((Date.now() - ButtonBegin + 250) / 1000)
 							// @ts-ignore
@@ -537,13 +552,15 @@ export function TheSoundBoard(this: any) {
 					}
 				}
 			} else {
-				// button doesn’t have a sound object
+				console.log('button doesn’t have a sound object', JSON.stringify(thisButton))
 			}
 			thisButton.end = RecordingStart > 1 ? Date.now() - RecordingStart : 11
-			let completedButton = thisButton
-			setTally((prevTally: IButton[]) => [...prevTally, completedButton])
+			// setTally((prevTally: IButton[]) => [...prevTally, thisButton])  //  if so, should I just pop() the first/down item?
+			// setActiveSequence([...tally, thisButton])
+			setActiveButton([])
 			// setActiveSequence((prevSequences: IButton[]) => [...prevSequences, completedButton])
-			setActiveSequence([...tally, thisButton])
+		} else {
+			thisButton = ActiveButton
 		}
 		return thisButton
 	}
@@ -633,6 +650,7 @@ export function TheSoundBoard(this: any) {
 										SessionChangeHandler={HandleRecordChange}
 										SequenceDeleteHandler={HandleSequenceDelete}
 										SequenceSelector={ActiveSequenceSelector}
+										SequenceComparator={SequenceComparator}
 									/>
 
 									<Populator

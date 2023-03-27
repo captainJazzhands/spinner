@@ -54,7 +54,7 @@ export function VoiceChoice(props: {
 	if (speechSynthesis.onvoiceschanged != undefined) {
 		VoiceListFilteredByLanguage();
 	}
-	
+
 	PopulateLanguageList()
 
 	if (counter < 2.85) {
@@ -65,14 +65,13 @@ export function VoiceChoice(props: {
 		let languageFilter = languageChoice as string
 		PopulateLanguageList()
 		VoiceListFilteredByLanguage(languageFilter)
-		// console.log('language is now', languageFilter)
 	}
 
 	const setHotPanel: Function = props.HotPanelUpdater
 	let isHot: boolean = (props.HotPanel.toLowerCase() === "voicechoice")
 
 	let voiceListFiltered = VoiceList
-	
+
 	return (
 		<div
 			id={'VoiceChoice'}
@@ -106,6 +105,7 @@ export function VoiceChoice(props: {
 				className={'DataSelectorList tintable'}
 			>
 				{
+					//  TODO: Make this not fail if resist fingerprinting enabled
 					VoiceList.map(function (whichVoice, i) {
 						return (
 							<li key={i}>

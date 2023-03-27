@@ -124,7 +124,6 @@ export function TheButtons(props: {
 					for (let i = 0; i < 8; i++) {
 						console.log('kilroy')
 						soundList[i].name = props.WordList[i].theWord
-
 						if (soundList[i] != undefined && soundList[i].sound != undefined) {
 							// @ts-ignore
 							if (soundList[i].sound.pronunciation != undefined) {
@@ -136,7 +135,6 @@ export function TheButtons(props: {
 								//  bail
 							}
 						}
-
 					}
 				}
 				setWordList(props.WordList)
@@ -153,7 +151,7 @@ export function TheButtons(props: {
 
 	return (
 		<div
-			className={isHot ? 'box HOT' : 'box MEDIUM'}
+			className={isHot ? 'box MEDIUM' : 'box MEDIUM'}
 			id={'buttonBoard'}
 			ref={buttonBoardRef}
 		>

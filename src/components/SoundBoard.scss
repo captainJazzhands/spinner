@@ -62,8 +62,8 @@ button {
 	font-weight: 900;
 	transition: ease-in .3s 0.14s;
 	background-color: $clr_formBG;
-	opacity: 0.75;
-	box-shadow: inset $clr_formShadow .2rem .2rem .6rem;
+	opacity: 0.85;
+	box-shadow: inset $clr_formShadow .1rem .1rem .4rem;
 	&.texty {
 		box-shadow: none !important;
 		background: none !important;
@@ -251,6 +251,7 @@ button:disabled {
 	max-height: $sz_COLD;
 	.instruction {
 		z-index: 1;
+		display: none;
 	}
 	button {
 		//writing-mode: vertical-lr;
@@ -269,7 +270,6 @@ button:disabled {
 	z-index: 100;
 	#stroopButtons {
 		height: $sz_COLD;
-		margin-top: -$sz_COLD;
 		z-index: 100;
 	}
 }
@@ -293,7 +293,7 @@ button:disabled {
 }
 
 .HOT .DataSelectorList {
-	margin-top: $sz_COLD;
+	//margin-top: $sz_COLD;
 }
 
 #VoiceChoice {
@@ -351,6 +351,7 @@ button:disabled {
 
 #SoundBoardStatus {
 	flex-grow: 5;
+	overflow: hidden;
 }
 
 #SoundBoardStatus,
@@ -494,10 +495,21 @@ p.LCD {
 					}
 				}
 				padding: 0 .5rem;
-				opacity: 0.65;
+				opacity: 0.8;
+				box-shadow: .2rem .2rem .4rem $clr_formShadow;
 			}
 		}
 	}
+}
+
+.sequence-info-overlay {
+	font-size: 12pt;
+	color: yellow;
+	position: sticky;
+	top: 40vh;
+	left: 20vw;
+	width: 20vw;
+	height: 20vh;
 }
 
 #DotGraph {
@@ -517,11 +529,10 @@ p.LCD {
 		display: flex;
 		flex-direction: row;
 		transform-origin: 0 0;
-		background-color: $clr_boxBG;
 		//scale: calc(.4 + (var(--zoom-level) / 100) - (var(--sequence-duration) / 20000));
 		scale: calc(
 			 .05 +
-			 ((var(--sequence-duration) + 1500) / 10000000)
+			 ((var(--sequence-duration) + 1500) / 1000000)
 			 *
 			 ((var(--zoom-level) + 1) / .2)
 		);
@@ -543,6 +554,10 @@ p.LCD {
 				flex-grow: 0;
 				flex-shrink: 0;
 				//transition: ease-in .3s 0.4s;
+			}
+			.press {
+				border-left: .2pt solid $clr_heroTextBG_alpha;
+				border-right: .2pt solid $clr_heroTextBG_alpha;
 			}
 			.gap {
 				background-color: $clr_boxBG_alpha;
@@ -716,12 +731,12 @@ p.LCD {
 }
 
 .COLD .instruction {
-	opacity: 0.8;
+	opacity: 1;
 	width: 100%;
 	height: $sz_COLD;
 	border-radius: $sz_COLD;
 	margin: 0;
-	padding: 8pt;
+	padding: .5rem;
 }
 
 .gray {background-color: gray;}

@@ -102,8 +102,8 @@ $clr_boxBG_alpha: color.adjust(
 );
 $clr_heroTextBG_alpha: color.adjust(
 			$clr_white,
-	 $lightness: -30%,
-	 $alpha: -0.65
+	 $lightness: +30%,
+	 $alpha: -0.7
 );
 $clr_InterfaceBG: color.adjust(
 			$clr_primaryColor,
