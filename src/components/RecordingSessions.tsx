@@ -59,7 +59,7 @@ export function RecordingSessions(props: {
 								<div className={'sequence-commands'}>
 									<button
 										value={'SelectSequence'}
-										onClick={() => selectSequence()}
+										onClick={() => selectSequence(singleSequence)}
 									>{'Select'}
 									</button>
 									{/*<button*/}

@@ -4,12 +4,12 @@
 //$sz_buttonBoardHeight: $sz_buttonBoardWidth * .75;
 
 $clr_stroop-unsure: black;
-$clr_stroop-text: blue;
-$clr_stroop-speech: rebeccapurple;
-$clr_stroop-color: red;
-$clr_stroop-shape: purple;
-$clr_stroop-sound: green;
-$clr_stroop-tone: teal;
+$clr_stroop-text: hsl(240, 80%, 40%);
+$clr_stroop-speech: hsl(270, 80%, 40%);
+$clr_stroop-color: hsl(0, 80%, 50%);
+$clr_stroop-shape: rebeccapurple;
+$clr_stroop-sound: hsl(120, 70%, 70%);
+$clr_stroop-tone: hsl(180, 80%, 40%);
 
 $sz_COLD: 1.6rem;
 $sz_HOT: 75vh;
@@ -117,7 +117,7 @@ button:disabled {
 	//height: 100%;
 	//height: calc(100vh - 10vw);
 	max-height: calc(100vh - 10vw);
-	background-color: $clr_InterfaceBG_alpha;
+	background-color: $clr_InterfaceBG;
 	overflow-x: hidden;
 	overflow-y: auto;
 	border-radius: 1rem;
@@ -478,6 +478,10 @@ p.LCD {
 					display: flex;
 					flex-direction: row;
 					height: 1rem;
+					overflow: hidden;
+					span {
+						font-size: 7pt;
+					}
 					.gap {
 						background-color: $clr_heroTextBG_alpha;
 					}
@@ -702,8 +706,13 @@ p.LCD {
 	color: #242442;
 }
 
-.HOT .instruction {
-	opacity: 1;
+.MEDIUM .instruction,
+.HOT .instruction,
+#SoundBoardStatus.COLD .instruction {
+	opacity: 0;
+	height: 0;
+	margin: 0;
+	padding: 0;
 }
 
 .COLD .instruction {

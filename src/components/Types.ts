@@ -37,11 +37,11 @@ export class ISessionData {
 // }
 
 export class ISequence {
-	ButtStream: IButton[] | undefined;
+	ButtStream: IButton[];
 	id: number;
 
 	constructor(
-		ButtStream?: IButton[]
+		ButtStream: IButton[]
 	) {
 		this.ButtStream = ButtStream
 		this.id = Date.now()

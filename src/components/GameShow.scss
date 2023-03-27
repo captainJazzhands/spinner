@@ -52,8 +52,8 @@ $clr_formBG: color.adjust(
 $clr_tileBG: color.adjust(
 			$clr_secondaryColor,
 	 $lightness: -15%,
-	 $saturation: -15%,
-	 $alpha: -0.75
+	 $saturation: -15%
+	 //$alpha: -0.75
 );
 $clr_tileType: color.adjust(
 			$clr_secondaryColor,
@@ -76,8 +76,8 @@ $clr_formBorder: color.adjust(
 $clr_formShadow: color.adjust(
 			$clr_primaryColor,
 	 $lightness: -40%,
-	 $saturation: -20%,
-	 $alpha: -0.2
+	 $saturation: -20%
+	 //$alpha: -0.2
 );
 $clr_tileShadow: color.adjust(
 			$clr_tileBG,
@@ -105,15 +105,20 @@ $clr_heroTextBG_alpha: color.adjust(
 	 $lightness: -30%,
 	 $alpha: -0.65
 );
+$clr_InterfaceBG: color.adjust(
+			$clr_primaryColor,
+	 $alpha: +1,
+	 $lightness: +20%
+);
 $clr_InterfaceBG_alpha: color.adjust(
 			$clr_secondaryColor,
-	 $alpha: -0.8,
-	 $lightness: 20%
+	 $alpha: -0.3,
+	 $lightness: -15%
 );
 $clr_subtle: color.adjust(
 			$clr_formBG,
-	 $saturation: -40%,
-	 $alpha: -.2
+	 $saturation: -40%
+	 //$alpha: -.2
 );
 /*# end colors */
 

@@ -51,9 +51,9 @@ export function TheSoundBoard(this: any) {
 	const [ButtonBegin, setButtonBegin]: [number, Function] = useState(0)
 	const [tally, setTally]: [IButton[], Function] = useState([])
 	const [RecordingSession, setRecordingSession]: [IRecordingSession, Function] = useState(new IRecordingSession())
-	const [ActiveSequence, setActiveSequence]: [ISequence, Function] = useState(new ISequence)
-	const [SelectedSequences, setSelectedSequences]: [ISequence[], Function] = useState([new ISequence])
-	const [button, setButton]: [IButton, Function] = useState(new IButton(''))
+	const [ActiveSequence, setActiveSequence]: [ISequence, Function] = useState(new ISequence([]))
+	const [SelectedSequences, setSelectedSequences]: [ISequence[], Function] = useState([])
+	const [ActiveButton, setActiveButton]: [IButton, Function] = useState(new IButton(''))
 	const [StroopMode, setStroopMode]: [IStroopMode, Function] = useState('unsure')
 	const [WordList, setWordList]: [[], Function] = useState([])
 	const [HotPanel, setHotPanel]: [string, Function] = useState('Directions')
@@ -164,7 +164,10 @@ export function TheSoundBoard(this: any) {
 	}
 
 	function ActiveSequenceSelector(sequence: ISequence) {
-		setActiveSequence(sequence)
+		if (sequence) {
+			setActiveSequence(sequence)
+			setHotPanel('SoundBoardStatus')
+		}
 	}
 
 	function MultipleSequenceSelector(sequences: ISequence[]) {
@@ -380,21 +383,22 @@ export function TheSoundBoard(this: any) {
 	function startRecordingTimer() {
 
 		if (!isRecording) {
+			setRecordingStart(Date.now())
 			// we’re not touching a RecordingSession yet
 			setTally([])
+			setActiveSequence([])
 			if (getRecordingSessionFromDisk().length > 1) {
 				setShouldReadFromDisk(true)
-				setActiveSequence(getRecordingSessionFromDisk())
-			} else {
-				setActiveSequence(new ISequence())
+				setRecordingSession(getRecordingSessionFromDisk())
 			}
 			setHotPanel('TheButtons')
-			setRecordingStart(Date.now())
 			RecordingTimer = setInterval(() => {
 				elapsedTime = Date.now() - RecordingStart
 			}, planck)
 			setIsRecording(true)
 			return elapsedTime
+		} else {
+			// was already recording
 		}
 		return elapsedTime
 	}
@@ -420,14 +424,16 @@ export function TheSoundBoard(this: any) {
 				setRecordingSession({Sequences: [{ButtStream: ActiveSequence}]})
 				setShouldWriteToDisk(true)
 			}
-			setTally([])
-			// {SessionData: {RecStart}.RecStart > 0 ? {RecStart}.RecStart : {RecStart: RecordingStart}.RecStart},
+			setTally([
+				{SessionData: RecStart > 0 ? RecStart : RecStart}
+			])
 		}
 		// setHotPanel('ButtonBoardStatus')
 		setIsRecording(false)
 		setRecordingStop(Date.now())
 		elapsedTime = Date.now() - RecordingStart
 		clearInterval(RecordingTimer)
+		setCount(0)
 		return elapsedTime
 	}
 
@@ -488,22 +494,25 @@ export function TheSoundBoard(this: any) {
 
 	const [current, setCurrent] = useState<{ OscillatorNode: { stop: (arg0: number | undefined) => void } }>()
 	const HandleButtonPress = async (oneButton: IButton, direction: string) => {
-		let thisButton = Object.assign({}, oneButton)
+		let thisButton
 		if (direction === 'down') {
+			thisButton = Object.assign({}, oneButton)
+			if (!isRecording) {
+				startRecordingTimer()
+			}
 			if (count === 0) {
 				thisButton.begin = 0
 			} else {
 				thisButton.begin = RecordingStart > 1 ? Date.now() - RecordingStart : 199
 			}
-			setButton(thisButton)
+			setActiveButton(thisButton)
 			setButtonBegin(Date.now())
 			setCount((count: number) => count + 1)
 			if (realtime) {
-				// speechSynthesis.cancel()
 				setCurrent(await PlayButton(thisButton))
 			}
 		} else if (direction === 'up') {
-
+			thisButton = ActiveButton  //  must have been a 'down' recently, find its thisButton
 			if (thisButton.sound) {
 				if (realtime && current) {
 					if (current.OscillatorNode) {
@@ -527,6 +536,8 @@ export function TheSoundBoard(this: any) {
 						}
 					}
 				}
+			} else {
+				// button doesn’t have a sound object
 			}
 			thisButton.end = RecordingStart > 1 ? Date.now() - RecordingStart : 11
 			let completedButton = thisButton
