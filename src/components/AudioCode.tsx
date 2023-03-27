@@ -63,7 +63,7 @@ export const Speak: Function = (sound: ISound, duration?: number, argVoice?: Spe
 
 	what.text = sound.pronunciation ? sound.pronunciation : sound.name
 	what.volume = 1
-	what.pitch = sound.pitch as number
+	what.pitch = sound.pitch ? sound.pitch as number : 1
 	what.rate = 1
 	console.log('attempting to say', sound.pronunciation?.toUpperCase(), 'as', what.voice!.name, 'for', duration, 'ms')
 	synth.cancel()

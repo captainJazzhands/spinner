@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react'
 import {voiceContext, voices} from "./SoundBoard";
 import './SoundBoard.css'
 import {InstructionHeader} from "./InstructionHeader";
+import {Speak} from "./AudioCode";
 
 export function VoiceChoice(props: {
 	CurrentVoice: any,
@@ -111,8 +112,9 @@ export function VoiceChoice(props: {
 							<li key={i}>
 								<button
 									key={i}
-									onMouseUp={() => setCurrentVoice(whichVoice)
-									}>
+									onMouseDown={() => Speak({name: whichVoice.name}, 23, whichVoice)}
+									onMouseUp={() => setCurrentVoice(whichVoice)}
+								>
 									{whichVoice.name}
 								</button>
 							</li>)
