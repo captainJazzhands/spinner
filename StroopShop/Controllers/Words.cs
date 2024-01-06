@@ -7,8 +7,4 @@ public class Word
 	// public int Quantity { get; set; }
 
 	public string TheWord { get; set; }
-
-	public Word()
-	{
-	}
 }

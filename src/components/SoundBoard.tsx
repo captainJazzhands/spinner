@@ -5,7 +5,7 @@ import {SoundBoardStatus} from './SoundBoardStatus'
 // import useSession, {UseSessionProvider} from 'react-session-hook'
 import './SoundBoard.css'
 import {Directions} from './Directions';
-import {StroopSwitch} from './StroopSwitch';
+import {StroopSwitch, dataSourceContext} from './StroopSwitch';
 import {Populator} from './Populator';
 import {TheButtons} from './TheButtons';
 import {VoiceChoice} from './VoiceChoice';
@@ -28,6 +28,8 @@ let RecordingTimer: NodeJS.Timer
 playbackTimerOn = false
 downTimerOn = false
 
+export let noteContext: AudioContext
+
 export const voices = window.speechSynthesis.getVoices()
 export const voiceContext: React.Context<SpeechSynthesisVoice> = React.createContext(voices[0])
 export const voiceNameContext: React.Context<string> = React.createContext('')
@@ -35,7 +37,6 @@ export const voiceNameContext: React.Context<string> = React.createContext('')
 export const RecordingContext: React.Context<IRecordingSession> = React.createContext(new IRecordingSession())
 export const stroopContext: React.Context<any> = React.createContext('speech')
 export const wordContext: React.Context<any> = React.createContext('')
-export let dataSourceContext: React.Context<any> = React.createContext('')
 
 export function TheSoundBoard(this: any) {
 
@@ -62,6 +63,8 @@ export function TheSoundBoard(this: any) {
 	const [CurrentVoice, setCurrentVoice]: [SpeechSynthesisVoice, Function] = useState(voices[0])
 	const [CurrentVoiceName, setCurrentVoiceName]: [string, Function] = useState('')
 
+	const [config, setConfig]: [{}, Function] = useState({})
+	
 	const [user, setUser]: [number, Function] = useState(6668675309)
 	const [Comparison, setComparison]: [[], Function] = useState([])
 
@@ -211,6 +214,11 @@ export function TheSoundBoard(this: any) {
 				// setHotPanel('Shapely')
 				break;
 			case 'tone':
+				try {
+					noteContext = new AudioContext()
+				} catch (e) {
+					alert('Web Audio API is not supported in this browser');
+				}
 				setHotPanel('TheButtons')
 				// setHotPanel('Toney')
 				break;
@@ -218,24 +226,9 @@ export function TheSoundBoard(this: any) {
 				setHotPanel('StroopSwitch')
 		}
 	}
-
-	function HandleWordListChange(ChosenWordList: IWord[]) {
-		let NewWordList = ChosenWordList.slice(0)
-		setWordList(NewWordList)
-		console.log(JSON.stringify(NewWordList))
-	}
-
-	function HandleDataSource(requestedSource: string) {
-		if (requestedSource) {  //  perhaps some type checking?
-			dataSourceContext = requestedSource as unknown as Context<URL>
-		}
-	}
-
+	
 	function HandleTransportChange(requestedState: string): void {
 		if (requestedState === 'play') {
-			// @ts-ignore
-			// PlayButtStream(RecordingSession[1].Sequences)
-			setShouldStop(false)
 			PlayButtStream(ActiveSequence)
 		}
 		if (requestedState === 'stop') {
@@ -250,11 +243,6 @@ export function TheSoundBoard(this: any) {
 			setShouldStop(false)
 			resetRecordingTimer()
 		}
-	}
-
-	function HandleVoiceChange(NewVoice: SpeechSynthesisVoice) {
-		console.log('current:', CurrentVoice.name, 'new:', NewVoice.name)
-		setCurrentVoice(NewVoice)
 	}
 
 	const resetCountdown = () => {
@@ -273,6 +261,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const PlayButtStream = (RequestedSequence: ISequence | null) => {
+		setShouldStop(false)
 		setHotPanel('SoundBoardStatus')
 		setUser(0)
 		StopEverything()
@@ -282,7 +271,6 @@ export function TheSoundBoard(this: any) {
 		setIsRecording(false)
 		let delta: number = 0
 		let localSeq
-		// const Sequence: ISequence = RequestedSequence ? RequestedSequence : new ISequence([new IButton(new ISound())]) as ISequence
 
 		if (!shouldStop) {
 			if (RequestedSequence == undefined) {
@@ -318,7 +306,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	async function PlayButton(button: IButton) {
-		let currentlyOscillating
+		let currentlyOscillating: any
 		if (!shouldStop) {
 			setIsPlaying(true)
 			if (button.begin && button.end) {
@@ -343,6 +331,9 @@ export function TheSoundBoard(this: any) {
 				}
 			}
 		}
+		// return new Promise(resolve => {
+		// 	currentlyOscillating.onend = resolve;
+		// });
 		return currentlyOscillating
 	}
 
@@ -369,6 +360,7 @@ export function TheSoundBoard(this: any) {
 	}
 
 	const StopEverything = () => {
+		setShouldStop(true)
 		speechSynthesis.pause()
 		speechSynthesis.cancel()
 		stopCountdown()
@@ -651,23 +643,6 @@ export function TheSoundBoard(this: any) {
 										SequenceDeleteHandler={HandleSequenceDelete}
 										SequenceSelector={ActiveSequenceSelector}
 										SequenceComparator={SequenceComparator}
-									/>
-
-									<Populator
-										handleDataSource={HandleDataSource}
-										HotPanel={HotPanel}
-										HotPanelUpdater={setHotPanel}
-										Instructions={'Choose Your Words'}
-										WordList={WordList}
-										setWordList={HandleWordListChange}
-									/>
-
-									<VoiceChoice
-										CurrentVoice={voiceContext}
-										VoiceUpdater={HandleVoiceChange}
-										HotPanel={HotPanel}
-										HotPanelUpdater={setHotPanel}
-										Instructions={'Pick A Voice'}
 									/>
 
 									<TheButtons

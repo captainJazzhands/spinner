@@ -72,7 +72,12 @@ export const Speak: Function = (sound: ISound, duration?: number, argVoice?: Spe
 	return what
 }
 
-export const MakeNoise: Function = (sound: ISound, duration?: number) => {
+let duration: number
+
+export const MakeNoise: Function = (sound: ISound, unsafeDuration?: number) => {
+	if (typeof unsafeDuration === "number") {
+		duration = Math.abs(unsafeDuration);  //  feels hacky
+	}
 	let audioCtx: AudioContext
 	if (window.AudioContext) {
 		audioCtx = new (window.AudioContext)()
@@ -88,7 +93,7 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 	)
 
 	let sweepLength = .5
-	let attackTime = duration ? duration / 15 : .01
+	let attackTime = duration ? Math.abs(duration / 15) : .01
 	let releaseTime = attackTime
 
 	let basePitch: number = 300
@@ -103,7 +108,10 @@ export const MakeNoise: Function = (sound: ISound, duration?: number) => {
 		thisTone_osc.stop(end)
 	}
 
-	const thisTone = (pitch: number, duration?: number) => {
+	const thisTone = (pitch: number, unsafeDuration?: number) => {
+		if (typeof unsafeDuration === "number") {
+			duration = Math.abs(unsafeDuration)
+		}
 		let thisTone_osc = audioCtx.createOscillator()
 		thisTone_osc.setPeriodicWave(wave)
 		thisTone_osc.frequency.value = basePitch / Math.pow(1.5, -pitch)

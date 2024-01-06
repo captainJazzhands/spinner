@@ -11,11 +11,11 @@ import '../src/sanitize.css-main/sanitize.css'
 import {TheSoundBoard} from "./components/SoundBoard";
 
 let GlobalStyles = createGlobalStyle`
-  html {
-    --color-text: white;
-    --color-background: blue;
-    --color-primary: rebeccapurple;
-  }
+	html {
+		--color-text: white;
+		--color-background: blue;
+		--color-primary: rebeccapurple;
+	}
 `
 
 export function App() {
@@ -24,14 +24,10 @@ export function App() {
 	return (
 		<Layout>
 			<GlobalStyles/>
-			{/*<Route*/}
-			{/*	exact path='/'*/}
-			{/*	component={TheSoundBoard}*/}
-			{/*/>*/}
 			<BrowserRouter>
 				<Routes>
 					<Route
-						path='/'
+						path='/SoundBoard'
 						element={<TheSoundBoard/>}
 					/>
 					<Route

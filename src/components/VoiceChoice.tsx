@@ -69,14 +69,15 @@ export function VoiceChoice(props: {
 	}
 
 	const setHotPanel: Function = props.HotPanelUpdater
-	let isHot: boolean = (props.HotPanel.toLowerCase() === "voicechoice")
+	let isHot: boolean = (props.HotPanel.toLowerCase() === "stroopswitch-speech")
+	let isRelevant: boolean = (props.HotPanel.toString().toLowerCase().slice(5) === 'words')
 
 	let voiceListFiltered = VoiceList
 
 	return (
 		<div
+			className={isRelevant ? 'relevant' : 'irrelevant'}
 			id={'VoiceChoice'}
-			className={isHot ? 'box MEDIUM' : 'box COLD'}
 		>
 			<InstructionHeader
 				NavTarget={'VoiceChoice'}
@@ -84,23 +85,23 @@ export function VoiceChoice(props: {
 				HotPanelUpdater={setHotPanel}
 			/>
 
-			{/*<ul*/}
-			{/*	className={'DataSelectorList'}*/}
-			{/*>*/}
-			{/*	{LanguageList.map(function (whichLang, i) {*/}
-			{/*		return (*/}
-			{/*			<li key={i}>*/}
-			{/*				<button*/}
-			{/*					key={i}*/}
-			{/*					onMouseUp={() => setVoiceLanguage(whichLang)*/}
-			{/*					}>*/}
-			{/*					{whichLang*/}
-			{/*					}*/}
-			{/*				</button>*/}
-			{/*			</li>*/}
-			{/*		)*/}
-			{/*	})}*/}
-			{/*</ul>*/}
+			<ul
+				className={'DataSelectorList'}
+			>
+				{LanguageList.map(function (whichLang, i) {
+					return (
+						<li key={i}>
+							<button
+								key={i}
+								onMouseUp={() => setVoiceLanguage(whichLang)
+								}>
+								{whichLang
+								}
+							</button>
+						</li>
+					)
+				})}
+			</ul>
 
 			<ul
 				className={'DataSelectorList tintable'}

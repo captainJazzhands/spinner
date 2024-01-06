@@ -91,10 +91,11 @@ export function Populator(props:
 		setSpeechPart(newPart)
 		setButtonEnabled_UseThese(true)
 	}
-	
+
 	const setHotPanel: Function = props.HotPanelUpdater
-	let isHot: boolean = (props.HotPanel.toString().toLowerCase() === 'populator')
-	const APIWords:any = APIData.slice(0)
+	let isHot: boolean = (props.HotPanel.toString().toLowerCase().slice(0, 12) === 'stroopswitch')
+	let isRelevant: boolean = (props.HotPanel.toString().toLowerCase().slice(5) === 'words')
+	const APIWords: any = APIData.slice(0)
 	const filteredWords = APIWords.sort(randomSort).filter(function (theWord: { partOfSpeech: string; }) {
 			return theWord.partOfSpeech == SpeechPart
 		}
@@ -126,7 +127,7 @@ export function Populator(props:
 
 	return (
 		<section
-			className={isHot ? 'box HOT' : 'box COLD'}
+			className={isRelevant ? 'relevant' : 'irrelevant'}
 			id={'Populator'}
 		>
 

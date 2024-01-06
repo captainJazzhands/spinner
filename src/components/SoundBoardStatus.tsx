@@ -69,7 +69,7 @@ export function SoundBoardStatus(props: {
 		duration = button.end - button.begin
 	}
 
-	let isHot: boolean = (props.HotPanel.toLowerCase() === "soundboardstatus")
+	let isHot: boolean = (props.HotPanel.toLowerCase().slice(16) === "soundboardstatus")
 	let isRecording: boolean = (props.HotPanel.toLowerCase() === "recording")
 	let isPlaying: boolean = (props.HotPanel.toLowerCase() === "playing")
 
@@ -110,12 +110,14 @@ export function SoundBoardStatus(props: {
 
 	let ScaleSlider = new ISlider(50)
 
+
 	root.style.setProperty('--zoom-level', ZoomLevel.toString())
 
 	function changeZoomLevel(event: React.ChangeEvent<HTMLInputElement>) {
 		let chosenValue: number = event.target ? parseInt(event.target.value) : ZoomLevel
 		root.style.setProperty('--zoom-level', ZoomLevel.toString())
-		setZoomLevel(manageSliderValues(chosenValue, ZoomLower, ZoomUpper, 1, 150))
+		setZoomLevel([1, chosenValue, 200])
+		// setZoomLevel(manageSliderValues(chosenValue, ZoomLower, ZoomUpper, 1, 150))
 	}
 
 	function changeGraphHeightUnthrottled(evt: React.ChangeEvent<HTMLInputElement>, fn: Function, ms: number) {
@@ -130,7 +132,30 @@ export function SoundBoardStatus(props: {
 		setGraphHeight(manageSliderValues(chosenValue, GraphHeightLower, GraphHeightUpper, 1, 100))
 	}
 
-	// let renderRS: Array<IButton> = []
+	function getWindowDimensions() {
+		const {innerWidth: windowWidth, innerHeight: windowHeight} = window;
+		return {
+			windowWidth,
+			windowHeight
+		};
+	}
+
+	function useWindowDimensions(): { windowWidth: number; windowHeight: number } {
+		const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+		useEffect(() => {
+			function handleResize() {
+				setWindowDimensions(getWindowDimensions());
+			}
+
+			window.addEventListener('resize', handleResize);
+			return () => window.removeEventListener('resize', handleResize);
+		}, []);
+		return windowDimensions;
+	}
+
+	const {windowHeight, windowWidth} = useWindowDimensions()
+
+// let renderRS: Array<IButton> = []
 
 	// useEffect(() => {
 	// 		if (rs && Array.isArray(rs)) {
@@ -194,13 +219,15 @@ export function SoundBoardStatus(props: {
 				className={'always-visible'}
 				id={'DotGraph'}
 			>
+
 				<div
 					className={'tablature'}
 					data-duration={sequenceDuration ? sequenceDuration : 667}
 				>
+
 					{
 						ActiveSequence.ButtStream ? ActiveSequence.ButtStream.map((button: IButton, index: number) => {
-								root.style.setProperty('--sequence-item-count', index.toString())
+								root.style.setProperty('--sequence-item-count', (index + 1).toString())
 								if (button.end && button.begin) {
 									duration = (button.end - button.begin)
 									begin = button.begin
@@ -208,9 +235,13 @@ export function SoundBoardStatus(props: {
 								}
 								sequenceDuration = begin + duration + 1
 								root.style.setProperty('--sequence-duration', sequenceDuration.toString())
-								duration = duration / 10
-								begin = begin / 10
-								gap = gap / 10
+								let zoomCalc: number = 0
+								zoomCalc = 1 / (sequenceDuration / 900) * windowWidth - (index / 50)
+								root.style.setProperty('--zoom-level', zoomCalc.toString())
+								// duration = duration > 5000 ? duration / 1000 : .5
+								duration = duration / 1000
+								begin = begin / 1000
+								gap = gap / 1000
 
 								return (<div
 									className={'press-gap-pair'}
@@ -219,90 +250,47 @@ export function SoundBoardStatus(props: {
 									<div
 										className={'press ' + button.color}
 										style={{
-											width: duration + "px",
+											width: duration > .3 ? duration + 'px' : '.3px',
 										}}
 										data-begin={begin}
 										data-duration={sequenceDuration}
-										// onClick={props.HandleRecordChange}
 									>
-										<span className={'meta'}>
-										{button.begin ? button.begin.toString() + 'ms' : ''}
-									</span>
-										<span className={'meta'}>
-										{button.sound ? button.sound!.name!.toString() : ''}
-									</span>
-										<span className={'meta'}>
-										{duration.toString() + 'ms'}
-									</span>
+										<div className={'meta'}>
+											{button.begin ? button.begin.toString() + 'ms' : ''}
+										</div>
+										<div className={'meta'}>
+											{button.sound ? button.sound!.name!.toString() : ''}
+										</div>
+										<div className={'meta'}>
+											{duration.toString() + 'ms'}
+										</div>
 									</div>
 
-									<div
+									{index + 1 < ActiveSequence.ButtStream.length ? (<div
 										className={'gap'}
 										style={{
 											width: gap + "px",
 										}}
 										data-gap={gap}
 									>
-										<span className={'meta'}>
-										{button.begin ? button.begin.toString() + 'ms' : ''}
-									</span>
-										<span className={'meta'}>
-										{button.sound ? button.sound!.name!.toString() : ''}
-									</span>
-										<span className={'meta'}>
-										{duration.toString() + 'ms'}
-									</span>
-									</div>
+										<div className={'meta'}>
+											{button.begin ? button.begin.toString() + 'ms' : ''}
+										</div>
+									</div>) : ''}
 
 								</div>)
 							}
 						) : ''
 					}
 				</div>
-			</div>
 
-			<div
-				id={'DotGraphScaling'}
-				className={'control-group floater'}
-			>
-				<div
-					className={'range-slider'}
-					id={'ZoomLevelControl'}
-				>
-					<label>{Math.round(ZoomLower)}</label>
-					<label>{Math.round(ZoomUpper)}</label>
-					<input
-						type='range'
-						onChange={(event) => changeZoomLevel(event)}
-						min={ZoomLower}
-						max={ZoomUpper}
-						step={1}
-						value={Math.round(ZoomLevel)}
-						className='custom-slider'>
-					</input>
-					<label className={'slider-value'}>
-						{Math.round(ZoomLevel * 100) / 100}
-					</label>
-				</div>
-
-				<div
-					className={'range-slider'}
-					id={'GraphHeightControl'}
-				>
-					<label>{Math.round(GraphHeightLower)}</label>
-					<label>{Math.round(GraphHeightUpper)}</label>
-					<input
-						type='range'
-						onChange={(event) => changeGraphHeight(event)}
-						min={GraphHeightLower}
-						max={GraphHeightUpper}
-						step={1}
-						value={Math.round(GraphHeight)}
-						className='custom-slider'>
-					</input>
-					<label className={'slider-value'}>
-						{Math.round(GraphHeight * 100) / 100}
-					</label>
+				<div id={'playhead'}>
+					<div id={'thumb'}>
+						&nbsp;
+					</div>
+					<div id={'bar'}>
+						&nbsp;
+					</div>
 				</div>
 
 			</div>

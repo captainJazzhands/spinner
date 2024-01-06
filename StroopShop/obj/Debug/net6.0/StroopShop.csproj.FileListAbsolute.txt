@@ -4,7 +4,6 @@
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/StroopShop.deps.json
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/StroopShop.runtimeconfig.json
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/StroopShop.dll
-/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/ref/StroopShop.dll
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/StroopShop.pdb
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/Microsoft.OpenApi.dll
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/bin/Debug/net6.0/Swashbuckle.AspNetCore.Swagger.dll
@@ -25,3 +24,9 @@
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/ref/StroopShop.dll
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/StroopShop.pdb
 /Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/StroopShop.genruntimeconfig.cache
+/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/staticwebassets/msbuild.StroopShop.Microsoft.AspNetCore.StaticWebAssets.props
+/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/staticwebassets/msbuild.build.StroopShop.props
+/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/staticwebassets/msbuild.buildMultiTargeting.StroopShop.props
+/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/staticwebassets/msbuild.buildTransitive.StroopShop.props
+/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/staticwebassets.pack.json
+/Users/bryan/Projects/HB/www.HireBryan.com/squeebles/StroopShop/obj/Debug/net6.0/refint/StroopShop.dll

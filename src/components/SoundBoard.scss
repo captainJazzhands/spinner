@@ -248,12 +248,14 @@ button:disabled {
 	width: 100%;
 	min-height: $sz_COLD;
 	height: $sz_COLD;
-	max-height: $sz_COLD;
+	display: flex;
+	flex-direction: column;
+	align-items: space-around;
 	.instruction {
 		z-index: 1;
 		display: none;
 	}
-	button {
+	#stroopButtons button {
 		//writing-mode: vertical-lr;
 		//transform: rotateZ(-90deg);
 		flex: 10 1 auto;
@@ -267,15 +269,20 @@ button:disabled {
 #stroopSwitch.COLD {
 	flex-shrink: 0;
 	flex-grow: 0;
-	z-index: 100;
 	#stroopButtons {
 		height: $sz_COLD;
-		z-index: 100;
+	}
+}
+#stroopSwitch.HOT {
+	flex-shrink: 0;
+	flex-grow: 5;
+	#stroopButtons {
+		//height: $sz_HOT;
 	}
 }
 
 .DataSelectorList {
-	height: 100%;
+	//height: 100%;
 	display: grid;
 	grid-template-columns: repeat(4, .1fr);
 	grid-template-rows: repeat(2, .1fr);
@@ -294,6 +301,18 @@ button:disabled {
 
 .HOT .DataSelectorList {
 	//margin-top: $sz_COLD;
+}
+
+.relevant {
+	flex-grow: 5;
+	flex-shrink: 0;
+	border: 4px solid green;
+}
+
+.irrelevant {
+	flex-grow: 0;
+	flex-shrink: 10;
+	//border: 4px solid red;
 }
 
 #VoiceChoice {
@@ -350,7 +369,7 @@ button:disabled {
 .tone .tintable button {background-color: $clr_stroop-tone;}
 
 #SoundBoardStatus {
-	flex-grow: 5;
+	//flex-grow: 5;
 	overflow: hidden;
 }
 
@@ -423,10 +442,6 @@ p.LCD {
 	margin: 0;
 }
 
-.meta {
-	padding: 6pt;
-}
-
 .Countdown {
 	width: 100%;
 	border: 1px solid white;
@@ -448,55 +463,86 @@ p.LCD {
 		padding: 0;
 		width: 100%;
 		overflow-y: scroll;
+		background-color: $clr_InterfaceBG;
 		li {
+			height: 2.5rem;
+			overflow: hidden;
 			display: flex;
 			flex-direction: row;
+			text-align: left;
+			margin: .5rem 0;
 			.sequence-commands {
 				flex-grow: 0.5;
 				flex-shrink: 1;
 				margin: .25rem .25rem;
 				button {
 					border-radius: .25rem;
-					background-color: $clr_InterfaceBG_alpha;
 				}
 			}
 			.sequence-info {
-				width: 100%;
+				position: relative;
+				left: 5%;
+				height: 3rem;
+				width: 90%;
 				display: flex;
 				flex-direction: column;
-				flex-grow: 1;
-				flex-shrink: 1;
+				flex-grow: 0;
+				flex-shrink: 0;
+				overflow: hidden;
+				border-radius: 9pt;
+				background-color: $clr_heroTextBG_alpha;
+				box-shadow: inset 0 0 6pt $clr_formShadow;
+				//box-shadow: 0 0 5pt $clr_formShadow;
+				.sequence-summary {
+					height: 1.5rem;
+					display: inline-block;
+					position: relative;
+					width: 50%;
+					z-index: 50;
+					color: $clr_primaryColor;
+					font-weight: 600;
+					font-size: 10pt;
+					border-radius: 9pt 0 9pt 0;
+					background-color: $clr_InterfaceBG;
+					box-shadow: 0 0 6pt $clr_formShadow;
+				}
 			}
-			text-align: left;
-			margin: .25rem 0;
-			background-color: $clr_boxBG_alpha;
 			.mini-list {
+				position: relative;
+				top: -1rem;
+				left: 0;
 				display: flex;
 				flex-direction: row;
+				padding: 0;
+				opacity: 0.8;
+				height: 2.5rem;
+				z-index: 20;
 				.press-gap-pair {
 					flex-grow: 1;
-					flex-shrink: 10;
+					flex-shrink: 1;
 					display: flex;
 					flex-direction: row;
-					height: 1rem;
+					height: 100%;
 					overflow: hidden;
 					span {
-						font-size: 7pt;
+						color: $clr_white;
+						font-size: 8pt;
+					}
+					.press {
+						box-shadow: inset 0 0 6pt $clr_formShadow;
 					}
 					.gap {
-						background-color: $clr_heroTextBG_alpha;
+						background: none; //  $clr_heroTextBG_alpha;
+						box-shadow: none;
 					}
 					span {
 						display: block;
 						position: relative;
 						height: 100%;
 						flex-grow: 1;
-						flex-shrink: 10;
+						flex-shrink: 1;
 					}
 				}
-				padding: 0 .5rem;
-				opacity: 0.8;
-				box-shadow: .2rem .2rem .4rem $clr_formShadow;
 			}
 		}
 	}
@@ -513,33 +559,26 @@ p.LCD {
 }
 
 #DotGraph {
-	height: 100%; width: 100%;
 	flex-grow: 5;
-	border: 1px solid black;
-	perspective-origin: -1500px 500px;
+	overflow: hidden;
+	//perspective-origin: -1500px 500px;
 	transition: ease-in .3s 0.4s;
 	.tablature {
-		position: relative;
 		left: 0;
-		//left: calc((var(--graph-height) * 5vh) - 80vh);
-		height: 1000vh;
 		top: 0;
 		padding: 0;
-		overflow: visible;
 		display: flex;
 		flex-direction: row;
 		transform-origin: 0 0;
 		//scale: calc(.4 + (var(--zoom-level) / 100) - (var(--sequence-duration) / 20000));
-		scale: calc(
-			 .05 +
-			 ((var(--sequence-duration) + 1500) / 1000000)
-			 *
-			 ((var(--zoom-level) + 1) / .2)
-		);
+		scale: var(--zoom-level) 1;
 		pointer-events: none;
-		//* {
-		//	font-size: calc(2pt + (var(--zoom-level) / 5));
-		//}
+		div.meta {
+			width: 100%;
+			font-size: 10pt;
+			scale: calc(1 / var(--zoom-level)) 1;
+			transition: none;
+		}
 		.press-gap-pair {
 			display: flex;
 			flex-direction: row;
@@ -549,15 +588,15 @@ p.LCD {
 				display: inline-block;
 				white-space: pre;
 				transition: none;
-				//height: calc(100vh - 3rem);
 				transform-origin: center;
 				flex-grow: 0;
 				flex-shrink: 0;
-				//transition: ease-in .3s 0.4s;
 			}
 			.press {
-				border-left: .2pt solid $clr_heroTextBG_alpha;
-				border-right: .2pt solid $clr_heroTextBG_alpha;
+				border-left: .0002px solid $clr_heroTextBG_alpha;
+				border-right: .0002px solid $clr_heroTextBG_alpha;
+				//box-shadow: inset .02px 0 .02px $clr_DotGraphTileShadow;
+				//mix-blend-mode: overlay;
 			}
 			.gap {
 				background-color: $clr_boxBG_alpha;
@@ -568,16 +607,34 @@ p.LCD {
 		[data-begin^="1"] { }
 		[data-duration^="1"] { }
 	}
+	#playhead {
+		position: relative;
+		left: calc(var(--sequence-duration) * .042px);
+		top: -60vh;
+		width: 1rem;
+		height: 50vh;
+		border: 1px solid white;
+		background-color: $clr_heroTextBG_alpha;
+		transition: none;
+	}
 }
 
-.MEDIUM #DotGraph {
+.COLD #DotGraph,
+.COLD .tablature {
 	height: 50vh;
-	width: 100%;
+	width: 95vw;
 }
 
-.HOT #DotGraph {
-	height: 100%;
-	width: 100%;
+.MEDIUM #DotGraph,
+.MEDIUM .tablature {
+	height: 50vh;
+	width: 95vw;
+}
+
+.HOT #DotGraph,
+.HOT .tablature {
+	//height: 75vh;
+	width: 95vw;
 }
 
 .control-group {
